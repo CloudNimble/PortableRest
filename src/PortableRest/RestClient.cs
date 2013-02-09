@@ -23,11 +23,29 @@ namespace PortableRest
         /// <summary>
         /// A list of KeyValuePairs that will be appended to the Headers collection for all requests.
         /// </summary>
-        public List<KeyValuePair<HttpRequestHeader, string>> Headers { get; set; }
+        private List<KeyValuePair<string, string>> Headers { get; set; }
 
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Creates a new instance of the RestClient class.
+        /// </summary>
+        public RestClient()
+        {
+            Headers = new List<KeyValuePair<string, string>>();
+        }
+
+        /// <summary>
+        /// Adds a header for a given string key and string value.
+        /// </summary>
+        /// <param name="key">The header to add.</param>
+        /// <param name="value">The value of the header being added.</param>
+        public void AddHeader(string key, string value)
+        {
+            Headers.Add(new KeyValuePair<string, string>(key, value));
+        }
 
         /// <summary>
         /// Executes an asynchronous request to the given resource and deserializes the response to an object of T.
