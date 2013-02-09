@@ -16,8 +16,7 @@ namespace System.Net
             {
                 using (var reader = new StreamReader(responseStream))
                 {
-                    var content = reader.ReadToEnd();
-                    return content;
+                    return reader.ReadToEnd();
                 }
             }
         } 
