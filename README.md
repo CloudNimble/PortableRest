@@ -1,7 +1,7 @@
 [PortableRest 1.0 Alpha](http://github.com/AdvancedREI/PortableRest)
 =================
 
-PortableRest is a Portable Class Library for implementing REST API clients in other Portable Class Libraries. It leverages JSON.NET for rapid, customizable serialization, as well as the Microsoft.Bcl.Async library for awaitable execution on any platform.
+PortableRest is a Portable Class Library for implementing REST API clients in other Portable Class Libraries. It leverages JSON.NET for rapid, customizable serialization, as well as the Microsoft.Bcl.Async library for awaitable execution on any platform. It is designed to be largely drop-in compatible with RestSharp, though you will need to make some changes and recompile.
 
 This initial release has limited support for simple JSON requests. More options (including XML and hopefully DataContract support) will be available in later releases. 
 
