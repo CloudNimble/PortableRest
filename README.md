@@ -8,7 +8,7 @@ This initial release has limited support for simple JSON requests. More options 
 Quick start
 -----------
 
-Clone the repo, `git clone git://github.com/advancedrei/portablerest.git`, or [download the latest release](https://github.com/advancedrei/portablerest/zipball/master).
+Install the NuGet package: `Install-Package PortableRest`, clone the repo, `git clone git://github.com/advancedrei/portablerest.git`, or [download the latest release](https://github.com/advancedrei/portablerest/zipball/master).
 
 If you are planning on redistributing your own PortableRest-based client, such as our http://gaug.es Client, you need to change your Portable Profile to .NET 4.5 and Windows Phone 7.5. Using .NET 4, .NET 4.0.3, or Windows Phone 7.0 will cause this package to fail to install. If you need support for those platforms, create an issue and we'll investigate.
 
