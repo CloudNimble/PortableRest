@@ -163,6 +163,7 @@ namespace PortableRest
         /// <param name="node"></param>
         /// <param name="dateFormat"></param>
         /// <returns></returns>
+        /// <remarks>Technique from http://blogs.msdn.com/b/ericwhite/archive/2009/07/20/a-tutorial-in-the-recursive-approach-to-pure-functional-transformations-of-xml.aspx</remarks>
         static object Transform(XNode node, string dateFormat)
         {
             XElement element = node as XElement;

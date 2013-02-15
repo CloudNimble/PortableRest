@@ -3,14 +3,23 @@
 
 PortableRest is a Portable Class Library for implementing REST API clients in other Portable Class Libraries. It leverages JSON.NET for rapid, customizable serialization, as well as the Microsoft.Bcl.Async library for awaitable execution on any platform. It is designed to be largely drop-in compatible with RestSharp, though you will need to make some changes and recompile.
 
-This initial release has limited support for simple JSON requests. More options (including XML and hopefully DataContract support) will be available in later releases. 
+This initial release has limited support for JSON & XML GET requests (JSON through JSON.NET, XML through the DataContractSerializer). PUT, POST, and DELETE support is coming very soon.
+
+Works on .NET 4.0.3, Silverlight 4 & 5, Windows Phone 7.5 & 8, and Windows 8.
+
+Design Goals
+----------
++ Be able to write one REST client wrapper that can be used on all current- and last-generation Microsoft platforms (without the techniques we have to use for [XamlEssentials](http://github.com/AdvancedREI/XamlEssentials)).
++ Have more control over serialization of property names (so you're not limited to the "remove all dashes" convention of RestSharp).
++ Be able to have objects be easily serializable to local storage using standard techniques, without jumping through a lot of hoops.
+
 
 Quick start
 -----------
 
-Install the NuGet package: `Install-Package PortableRest`, clone the repo, `git clone git://github.com/advancedrei/portablerest.git`, or [download the latest release](https://github.com/advancedrei/portablerest/zipball/master).
+Install the NuGet package: `Install-Package PortableRest -Pre`, clone the repo, `git clone git://github.com/advancedrei/portablerest.git`, or [download the latest release](https://github.com/advancedrei/portablerest/zipball/master).
 
-If you are planning on redistributing your own PortableRest-based client, such as our http://gaug.es Client, you need to change your Portable Profile to .NET 4.5 and Windows Phone 7.5. Using .NET 4, .NET 4.0.3, or Windows Phone 7.0 will cause this package to fail to install. If you need support for those platforms, create an issue and we'll investigate.
+If you are planning on redistributing your own PortableRest-based client, such as our http://gaug.es Client, you need to change your Portable Profile to .NET 4.0.3 and Windows Phone 7.5. Using .NET 4.0 or Windows Phone 7.0 will cause this package to fail to install. If you need support for those platforms, create an issue and we'll investigate.
 
 
 Bug tracker
