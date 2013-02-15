@@ -1,8 +1,14 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net;
+using System.Runtime.Serialization;
+using System.Text;
 using System.Threading.Tasks;
-
+using System.Xml;
+using System.Xml.Linq;
 
 namespace PortableRest
 {
@@ -19,6 +25,11 @@ namespace PortableRest
         /// The base URL for the resource this client will access.
         /// </summary>
         public string BaseUrl { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string DateFormat { get; set; }
 
         /// <summary>
         /// A list of KeyValuePairs that will be appended to the Headers collection for all requests.
@@ -53,10 +64,15 @@ namespace PortableRest
         /// <typeparam name="T">The type to deserialize to.</typeparam>
         /// <param name="restRequest">The RestRequest to execute.</param>
         /// <returns>An object of T.</returns>
-        public async Task<T> ExecuteAsync<T>(RestRequest restRequest)
+        public async Task<T> ExecuteAsync<T>(RestRequest restRequest) where T : class
         {
-            T result = default(T);
+            T result;
             var url = restRequest.GetFormattedResource(BaseUrl);
+
+            if (string.IsNullOrWhiteSpace(restRequest.DateFormat) && !string.IsNullOrWhiteSpace(DateFormat))
+            {
+                restRequest.DateFormat = DateFormat;
+            }
 
             var request = WebRequest.Create(url);
             request.Method = restRequest.Method;
@@ -67,15 +83,112 @@ namespace PortableRest
             }
 
             var response = await request.GetResponseAsync();
-            if (response.ContentLength > 0)
+
+            //TODO: Handle Error
+            if (response.ContentType.Substring(0, response.ContentType.IndexOf(";")) == "application/xml")
+            {
+                var xml = response.ReadResponseStream();
+
+                #region Original plan - don't delete yet
+                ////if (result is IEnumerable)
+                ////{
+                ////    xml.Replace("type=\"array\"", "xmlns:json=\"http://james.newtonking.com/projects/json\" json:Array=\"true\"");
+                ////}
+
+                //var originalXml = XElement.Parse(xml);
+                //XElement node;
+                //XNamespace jnk = "http://james.newtonking.com/projects/json";
+                //var ns = new XAttribute(XNamespace.Xmlns + "json", "http://james.newtonking.com/projects/json");
+
+                //if (restRequest.IgnoreRootElement)
+                //{
+                //    node = originalXml.Descendants().FirstOrDefault();
+                //    if (node != null)
+                //    {
+                //        node.Add(ns);
+                //    }
+                //}
+                //else
+                //{
+                //    node = originalXml;
+                //    node.Add(ns);
+                //}
+
+                //foreach (var node in root.DescendantsAndSelf())
+                //{
+                //    foreach (XAttribute att in node.Attributes())
+                //    {
+                //        node.Add(new XElement(att.Name, (string) att));
+                //    }
+                //    node.Attributes().Remove();
+                //}
+
+
+                #endregion
+
+                // RWM: IDEA - The DataContractSerializer doesn't like attributes, but will handle everything else.
+                // So instead of trying to mess with a double-conversion to JSON and then to the Object, we'll just turn the attributes
+                // into elements, and sort the elements into alphabetical order so the DataContracterializer doesn't crap itself.
+
+                // On post, use a C# attribute to specify if a property is an XML attribute, DataContractSerialize to XML, then
+                // query the object for [XmlAttribute] attributes and move them from elements to attributes using code similar to below.
+                // If the POST request requires the attributes in a certain order, oh well. Shouldn't have used PHP :P.
+
+                XElement root = XElement.Parse(xml);
+                var newRoot = (XElement)Transform(root, restRequest.DateFormat);
+
+                using (var memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(newRoot.ToString())))
+                {
+                    using (var reader = XmlReader.Create(memoryStream))
+                    {
+                        var serializer = new DataContractSerializer(typeof(T));
+                        return serializer.ReadObject(reader) as T;
+                    }
+                }
+            }
+            else
             {
                 result = JsonConvert.DeserializeObject<T>(response.ReadResponseStream());
             }
-            
+
+
             return result;
         }
 
         #endregion
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="dateFormat"></param>
+        /// <returns></returns>
+        static object Transform(XNode node, string dateFormat)
+        {
+            XElement element = node as XElement;
+            if (element != null)
+            {
+                foreach (var attrib in element.Attributes())
+                {
+                    element.Add(new XElement(attrib.Name, (string)attrib));
+                }
+                element.RemoveAttributes();
+
+                if (!string.IsNullOrWhiteSpace(dateFormat) && 
+                    (element.Name.LocalName.ToLower().Contains("date") ||
+                    element.Name.LocalName.ToLower().Contains("time")))
+                {
+                    var newValue = DateTime.ParseExact(element.Value, dateFormat, null);
+                    element.Value = XmlConvert.ToString(newValue);
+                }
+
+                return new XElement(element.Name,
+                    element.Nodes()
+                    .OrderBy(c => (c as XElement) != null ? (c as XElement).Name.LocalName : c.ToString())
+                    .Select(c => Transform(c, dateFormat)));
+            }
+            return node;
+        }
 
     }
 }

@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E43B39
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortableRest.Tests", "PortableRest.Tests\PortableRest.Tests.csproj", "{500BCEAB-8F93-4BDE-84DB-D21147323837}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{500BCEAB-8F93-4BDE-84DB-D21147323837}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{500BCEAB-8F93-4BDE-84DB-D21147323837}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{500BCEAB-8F93-4BDE-84DB-D21147323837}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{500BCEAB-8F93-4BDE-84DB-D21147323837}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
