@@ -26,6 +26,11 @@ namespace PortableRest
         /// <summary>
         /// 
         /// </summary>
+        public ContentTypes ContentType { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public string DateFormat { get; set; }
 
         /// <summary>
@@ -34,9 +39,14 @@ namespace PortableRest
         public bool IgnoreRootElement { get; set; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public bool IgnoreXmlAttributes { get; set; }
+
+        /// <summary>
         /// The HTTP method to use for the request.
         /// </summary>
-        public string Method { get; set; }
+        public HttpMethods Method { get; set; }
 
         /// <summary>
         /// A string representation of the specific resource to access, using ASP.NET MVC-like replaceable tokens.
@@ -56,7 +66,7 @@ namespace PortableRest
         {
             UrlSegments = new List<KeyValuePair<string, string>>();
             Parameters = new List<KeyValuePair<string, object>>();
-            Method = "GET";
+            Method = HttpMethods.Get;
         }
 
         /// <summary>
@@ -64,7 +74,7 @@ namespace PortableRest
         /// </summary>
         /// <param name="resource">The specific resource to access.</param>
         /// <param name="method">The HTTP method to use for the request.</param>
-        public RestRequest(string resource, string method) : this()
+        public RestRequest(string resource, HttpMethods method) : this()
         {
             Method = method;
             Resource = resource;
@@ -76,7 +86,7 @@ namespace PortableRest
         /// <param name="resource"></param>
         /// <param name="method"></param>
         /// <param name="ignoreRoot"></param>
-        public RestRequest(string resource, string method, bool ignoreRoot) : this(resource, method)
+        public RestRequest(string resource, HttpMethods method, bool ignoreRoot) : this(resource, method)
         {
             IgnoreRootElement = ignoreRoot;
         }
@@ -108,7 +118,7 @@ namespace PortableRest
         /// </summary>
         /// <param name="baseUrl"></param>
         /// <returns></returns>
-        public string GetFormattedResource(string baseUrl)
+        internal string GetFormattedResource(string baseUrl)
         {
             foreach (var segment in UrlSegments)
             {
@@ -126,6 +136,37 @@ namespace PortableRest
             }
 
             return Resource;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        internal string GetHttpMethod()
+        {
+            return Method.ToString().ToUpper();
+        }
+
+        internal string GetContentType()
+        {
+            switch (ContentType)
+            {
+                case ContentTypes.FormUrlEncoded:
+                    return "application/x-www-form-urlencoded";
+                case ContentTypes.Xml:
+                    return "application/xml";
+                default:
+                    return "application/json";
+            }
+        }
+
+        internal string GetRequestBody()
+        {
+            var parameters = Parameters.Aggregate("", (s, pair) =>
+                                                  s + string.Format("{0}{1}={2}", s.Length > 0 ? "&" : "",
+                                                                Uri.EscapeDataString(pair.Key),
+                                                                Uri.EscapeDataString(pair.Value.ToString())));
+            return parameters;
         }
 
         #endregion
