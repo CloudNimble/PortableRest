@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 
 namespace PortableRest
 {
@@ -46,12 +47,12 @@ namespace PortableRest
         /// <summary>
         /// The HTTP method to use for the request.
         /// </summary>
-        public HttpMethods Method { get; set; }
+        public HttpMethod Method { get; set; }
 
         /// <summary>
         /// A string representation of the specific resource to access, using ASP.NET MVC-like replaceable tokens.
         /// </summary>
-        public string Resource { private get; set; }
+        public string Resource { internal get; set; }
 
         #endregion
 
@@ -66,7 +67,7 @@ namespace PortableRest
         {
             UrlSegments = new List<KeyValuePair<string, string>>();
             Parameters = new List<KeyValuePair<string, object>>();
-            Method = HttpMethods.Get;
+            Method = HttpMethod.Get;
         }
 
         /// <summary>
@@ -74,7 +75,7 @@ namespace PortableRest
         /// </summary>
         /// <param name="resource">The specific resource to access.</param>
         /// <param name="method">The HTTP method to use for the request.</param>
-        public RestRequest(string resource, HttpMethods method) : this()
+        public RestRequest(string resource, HttpMethod method) : this()
         {
             Method = method;
             Resource = resource;
@@ -86,7 +87,7 @@ namespace PortableRest
         /// <param name="resource"></param>
         /// <param name="method"></param>
         /// <param name="ignoreRoot"></param>
-        public RestRequest(string resource, HttpMethods method, bool ignoreRoot) : this(resource, method)
+        public RestRequest(string resource, HttpMethod method, bool ignoreRoot) : this(resource, method)
         {
             IgnoreRootElement = ignoreRoot;
         }
@@ -136,15 +137,6 @@ namespace PortableRest
             }
 
             return Resource;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        internal string GetHttpMethod()
-        {
-            return Method.ToString().ToUpper();
         }
 
         internal string GetContentType()

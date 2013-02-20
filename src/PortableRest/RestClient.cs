@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +19,8 @@ namespace PortableRest
     public class RestClient
     {
 
+        private HttpClient _client;
+
         #region Properties
 
         /// <summary>
@@ -30,6 +32,11 @@ namespace PortableRest
         /// 
         /// </summary>
         public string DateFormat { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string UserAgent { get; set; }
 
         /// <summary>
         /// A list of KeyValuePairs that will be appended to the Headers collection for all requests.
@@ -74,28 +81,38 @@ namespace PortableRest
                 restRequest.DateFormat = DateFormat;
             }
 
-            var request = WebRequest.Create(url);
-            request.Method = restRequest.GetHttpMethod();
+            var handler = new HttpClientHandler {AllowAutoRedirect = true};
+
+            _client = new HttpClient(handler);
+
+            if (!string.IsNullOrWhiteSpace(UserAgent))
+            {
+                _client.DefaultRequestHeaders.Add("user-agent", UserAgent);
+            }
+
+            var message = new HttpRequestMessage(restRequest.Method, new Uri(restRequest.Resource, UriKind.RelativeOrAbsolute));
 
             foreach (var header in Headers)
             {
-                request.Headers[header.Key] = header.Value;
+                message.Headers.Add(header.Key, header.Value);
             }
-            request.ContentType = restRequest.GetContentType();
 
-            if (restRequest.Method == HttpMethods.Post || restRequest.Method == HttpMethods.Put)
+            if (restRequest.Method == HttpMethod.Post || restRequest.Method == HttpMethod.Put)
             {
-                var stream = await request.GetRequestStreamAsync();
-                stream.WriteString(restRequest.GetRequestBody());
+                var contentString = new StringContent(restRequest.GetRequestBody(), Encoding.UTF8, restRequest.GetContentType());
+                message.Content = contentString;
             }
 
-            var response = await request.GetResponseAsync();
+            HttpResponseMessage response = null;
+                response = await _client.SendAsync(message);
+                response.EnsureSuccessStatusCode();       
+
+            var responseContent = await response.Content.ReadAsStringAsync();
 
             //TODO: Handle Error
-            if (response.ContentType.Substring(0, response.ContentType.IndexOf(";")) == "application/xml")
-            {
-                var xml = response.ReadResponseStream();
+            if (response.Content.Headers.ContentType.MediaType == "application/xml")
 
+            {
                 #region Original plan - don't delete yet
                 ////if (result is IEnumerable)
                 ////{
@@ -141,7 +158,7 @@ namespace PortableRest
                 // query the object for [XmlAttribute] attributes and move them from elements to attributes using code similar to below.
                 // If the POST request requires the attributes in a certain order, oh well. Shouldn't have used PHP :P.
 
-                XElement root = XElement.Parse(xml);
+                XElement root = XElement.Parse(responseContent);
                 XElement newRoot = (XElement)Transform(restRequest.IgnoreRootElement ? root.Descendants().First() : root, restRequest);
                  
                 using (var memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(newRoot.ToString())))
@@ -163,7 +180,7 @@ namespace PortableRest
             }
             else
             {
-                result = JsonConvert.DeserializeObject<T>(response.ReadResponseStream());
+                result = JsonConvert.DeserializeObject<T>(responseContent);
             }
 
             return result;
