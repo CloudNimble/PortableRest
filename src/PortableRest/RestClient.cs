@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using Newtonsoft.Json;
 
 namespace PortableRest
 {
@@ -61,29 +61,49 @@ namespace PortableRest
         /// <summary>
         /// Executes an asynchronous request to the given resource and deserializes the response to an object of T.
         /// </summary>
+        /// <typeparam name="TReturn">The type to deserialize to.</typeparam>
+        /// <typeparam name="TBody">The type of the body.</typeparam>
+        /// <param name="restRequest">The RestRequest to execute.</param>
+        /// <returns>An object of T.</returns>
+        public async Task<TReturn> ExecuteAsync<TReturn, TBody>(RestPostRequest<TBody> restRequest) where TReturn : class where TBody : class
+        {
+            var request = InternalExecuteAsync1(restRequest);
+
+            if (request.Method == "POST")
+            {
+                request.ContentType = "application/json";
+                string body = JsonConvert.SerializeObject(restRequest.Body);
+                request.Headers[HttpRequestHeader.ContentLength] = body.Length.ToString();
+                Stream requestStream = await request.GetRequestStreamAsync();
+                using (StreamWriter streamWriter = new StreamWriter(requestStream))
+                {
+                    await streamWriter.WriteAsync(body);
+                    await streamWriter.FlushAsync();
+                }
+            }
+
+            var response = await InternalExecuteAsync2(request);
+
+            return InternalExecuteAsync3<TReturn>(restRequest, response);
+        }
+
+        /// <summary>
+        /// Executes an asynchronous request to the given resource and deserializes the response to an object of T.
+        /// </summary>
         /// <typeparam name="T">The type to deserialize to.</typeparam>
         /// <param name="restRequest">The RestRequest to execute.</param>
         /// <returns>An object of T.</returns>
         public async Task<T> ExecuteAsync<T>(RestRequest restRequest) where T : class
         {
-            T result;
-            var url = restRequest.GetFormattedResource(BaseUrl);
+            var request = InternalExecuteAsync1(restRequest);
 
-            if (string.IsNullOrWhiteSpace(restRequest.DateFormat) && !string.IsNullOrWhiteSpace(DateFormat))
-            {
-                restRequest.DateFormat = DateFormat;
-            }
+            var response = await InternalExecuteAsync2(request);
 
-            var request = WebRequest.Create(url);
-            request.Method = restRequest.Method;
+            return InternalExecuteAsync3<T>(restRequest, response);
+        }
 
-            foreach (var header in Headers)
-            {
-                request.Headers[header.Key] = header.Value;
-            }
-
-            var response = await request.GetResponseAsync();
-
+        private static T InternalExecuteAsync3<T>(RestRequest restRequest, WebResponse response) where T : class
+        {
             //TODO: Handle Error
             if (response.ContentType.Substring(0, response.ContentType.IndexOf(";")) == "application/xml")
             {
@@ -148,11 +168,33 @@ namespace PortableRest
             }
             else
             {
-                result = JsonConvert.DeserializeObject<T>(response.ReadResponseStream());
+                return JsonConvert.DeserializeObject<T>(response.ReadResponseStream());
+            }
+        }
+
+        private async Task<WebResponse> InternalExecuteAsync2(WebRequest request)
+        {
+            foreach (var header in Headers)
+            {
+                request.Headers[header.Key] = header.Value;
             }
 
+            var response = await request.GetResponseAsync();
+            return response;
+        }
 
-            return result;
+        private WebRequest InternalExecuteAsync1(RestRequest restRequest)
+        {
+            var url = restRequest.GetFormattedResource(BaseUrl);
+
+            if (string.IsNullOrWhiteSpace(restRequest.DateFormat) && !string.IsNullOrWhiteSpace(DateFormat))
+            {
+                restRequest.DateFormat = DateFormat;
+            }
+
+            var request = WebRequest.Create(url);
+            request.Method = restRequest.Method;
+            return request;
         }
 
         #endregion
