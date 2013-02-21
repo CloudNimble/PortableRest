@@ -68,6 +68,8 @@ local.properties
 
 ## TODO: If you have NuGet Package Restore enabled, uncomment this
 packages/
+#!src/packages/Microsoft*/
+
 
 # Visual C++ cache files
 ipch/
