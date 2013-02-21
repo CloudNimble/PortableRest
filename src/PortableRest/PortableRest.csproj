@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="RestClient.cs" />
+    <Compile Include="RestPostRequest.cs" />
     <Compile Include="RestRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebResponseExtensions.cs" />
@@ -53,7 +54,7 @@
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.14-rc\lib\portable-net40+sl4+win8+wp71\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.4.5.12-alpha\lib\portable-net403+sl4+wp71+win8\Newtonsoft.Json.dll</HintPath>
+	<HintPath>..\packages\Newtonsoft.Json.4.5.12-alpha\lib\portable-net403+sl4+wp71+win8\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime">
       <HintPath>..\packages\Microsoft.Bcl.1.0.16-rc\lib\portable-net40+sl4+win8+wp71\System.Runtime.dll</HintPath>
