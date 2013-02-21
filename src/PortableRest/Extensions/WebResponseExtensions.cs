@@ -12,14 +12,13 @@ namespace System.Net
         /// <returns></returns>
         public static string ReadResponseStream(this WebResponse response)
         {
-            using (var responseStream = response.GetResponseStream())
+            var responseStream = response.GetResponseStream();
+            using (var reader = new StreamReader(responseStream))
             {
-                using (var reader = new StreamReader(responseStream))
-                {
-                    return reader.ReadToEnd();
-                }
+                return reader.ReadToEnd();
             }
-        } 
+
+        }
 
     }
 }

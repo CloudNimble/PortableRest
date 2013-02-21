@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Net.Http.Compression;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -81,8 +82,7 @@ namespace PortableRest
                 restRequest.DateFormat = DateFormat;
             }
 
-            var handler = new HttpClientHandler {AllowAutoRedirect = true};
-
+            var handler = new CompressedHttpClientHandler {AllowAutoRedirect = true};
             _client = new HttpClient(handler);
 
             if (!string.IsNullOrWhiteSpace(UserAgent))
@@ -104,8 +104,8 @@ namespace PortableRest
             }
 
             HttpResponseMessage response = null;
-                response = await _client.SendAsync(message);
-                response.EnsureSuccessStatusCode();       
+            response = await _client.SendAsync(message);
+            response.EnsureSuccessStatusCode();       
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
