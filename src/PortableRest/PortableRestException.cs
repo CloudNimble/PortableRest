@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
 
 namespace PortableRest
 {
@@ -24,7 +20,7 @@ namespace PortableRest
 
         public PortableRestException(string message, string xmlReaderContents) : base(message)
         {
-            XmlReaderContents = message;
+            XmlReaderContents = xmlReaderContents;
         }
 
         public PortableRestException(string message, Exception inner) : base(message, inner)
@@ -35,7 +31,7 @@ namespace PortableRest
         public PortableRestException(string message, string xmlReaderContents, Exception inner)
             : base(message, inner)
         {
-            XmlReaderContents = message;
+            XmlReaderContents = xmlReaderContents;
         }
 
     }
