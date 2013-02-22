@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace PortableRest
 {
@@ -154,11 +155,24 @@ namespace PortableRest
 
         internal string GetRequestBody()
         {
-            var parameters = Parameters.Aggregate("", (s, pair) =>
+            switch (ContentType)
+            {
+                case ContentTypes.FormUrlEncoded:
+                    var parameters = Parameters.Aggregate("", (s, pair) =>
                                                   s + string.Format("{0}{1}={2}", s.Length > 0 ? "&" : "",
                                                                 Uri.EscapeDataString(pair.Key),
                                                                 Uri.EscapeDataString(pair.Value.ToString())));
-            return parameters;
+                    return parameters;
+
+                case ContentTypes.Xml:
+                    throw new NotImplementedException("Sending XML is not yet supported, but will be added in a future release.");
+                default:
+
+                    return Parameters.Count > 0 ? JsonConvert.SerializeObject(Parameters[0].Value) : "";
+            }
+
+
+
         }
 
         #endregion

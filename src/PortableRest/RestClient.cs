@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Compression;
+﻿using AdvancedREI.Net.Http.Compression;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -113,42 +113,6 @@ namespace PortableRest
             if (response.Content.Headers.ContentType.MediaType == "application/xml")
 
             {
-                #region Original plan - don't delete yet
-                ////if (result is IEnumerable)
-                ////{
-                ////    xml.Replace("type=\"array\"", "xmlns:json=\"http://james.newtonking.com/projects/json\" json:Array=\"true\"");
-                ////}
-
-                //var originalXml = XElement.Parse(xml);
-                //XElement node;
-                //XNamespace jnk = "http://james.newtonking.com/projects/json";
-                //var ns = new XAttribute(XNamespace.Xmlns + "json", "http://james.newtonking.com/projects/json");
-
-                //if (restRequest.IgnoreRootElement)
-                //{
-                //    node = originalXml.Descendants().FirstOrDefault();
-                //    if (node != null)
-                //    {
-                //        node.Add(ns);
-                //    }
-                //}
-                //else
-                //{
-                //    node = originalXml;
-                //    node.Add(ns);
-                //}
-
-                //foreach (var node in root.DescendantsAndSelf())
-                //{
-                //    foreach (XAttribute att in node.Attributes())
-                //    {
-                //        node.Add(new XElement(att.Name, (string) att));
-                //    }
-                //    node.Attributes().Remove();
-                //}
-
-
-                #endregion
 
                 // RWM: IDEA - The DataContractSerializer doesn't like attributes, but will handle everything else.
                 // So instead of trying to mess with a double-conversion to JSON and then to the Object, we'll just turn the attributes
