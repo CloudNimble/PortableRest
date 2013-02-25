@@ -87,9 +87,9 @@
             this.resource = this.resource.substr(1);
         }
 
-        if ((baseUrl !== null) && (baseUrl !== undefined))
+        if ((baseUrl !== null) && (baseUrl !== undefined) && (baseUrl !== ""))
         {
-            this.resource = ((this.resource !== null) && (this.resource !== undefined) && (this.resource !== "")) ? baseUrl : baseUrl + "/" + this.resource;
+            this.resource = ((this.resource === null) || (this.resource === undefined) || (this.resource === "")) ? baseUrl : baseUrl + "/" + this.resource;
         }
 
         return this.resource;
@@ -104,7 +104,7 @@
         {
             case window.PortableRest.ContentTypes.FormUrlEncoded:
                 return "application/x-www-form-urlencoded";
-            case window.PortableRest.ContentTypes.Json:
+            case window.PortableRest.ContentTypes.Xml:
                 return "application/xml";
             default:
                 return "application/json";
@@ -129,7 +129,6 @@
                 break;
             case window.PortableRest.ContentTypes.Xml:
                 throw new Error("Sending XML is not yet supported, but will be added in a future release.");
-                break;
             case window.PortableRest.ContentTypes.Json:
                 parameters = this._parameters.length > 0 ? JSON.stringify(this._parameters[0].value) : "";
                 break;
@@ -205,9 +204,11 @@
                     throw new Error($this._client.status);
                 }
 
-                if (($this._client.responseType.indexOf("application/xml") !== -1) && ($this._client.responseXML !== null) && ($this._client.responseXML !== undefined))
+                var type = $this._client.getResponseHeader("Content-Type");
+
+                if ((type.indexOf("application/xml") !== -1) && ($this._client.responseXML !== null) && ($this._client.responseXML !== undefined))
                 {
-                    callback($this._client.responseXML);
+                    callback($this._client.responseXML.firstChild);
                 }
                 else
                 {
