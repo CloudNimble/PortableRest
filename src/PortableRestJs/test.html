@@ -7,7 +7,7 @@
         function jsonTest()
         {
             document.getElementById("jsonResult").innerHTML = "Running";
-            var request = new PortableRest.RestRequest("test.aspx", PortableRest.HttpMethod.Post, false);
+            var request = new PortableRest.RestRequest("test.aspx", PortableRest.HttpMethod.Post);
             request.addParameter("json", { test: 1, string: "Hello World" });
             request.contentType = PortableRest.ContentTypes.Json;
             var client = new PortableRest.RestClient();
@@ -27,7 +27,7 @@
         function formTest()
         {
             document.getElementById("formResult").innerHTML = "Running";
-            var request = new PortableRest.RestRequest("test.aspx", PortableRest.HttpMethod.Post, false);
+            var request = new PortableRest.RestRequest("test.aspx", PortableRest.HttpMethod.Post);
             request.addParameter("test", 1);
             request.addParameter("string", "Hello World");
             request.contentType = PortableRest.ContentTypes.FormUrlEncoded;
@@ -48,7 +48,7 @@
         function xmlTest()
         {
             document.getElementById("xmlResult").innerHTML = "Running";
-            var request = new PortableRest.RestRequest("xmlTest.aspx", PortableRest.HttpMethod.Post, false);
+            var request = new PortableRest.RestRequest("xmlTest.aspx", PortableRest.HttpMethod.Post);
             request.addParameter("json", { root: { test: 1, string: "Hello World" } });
             request.contentType = PortableRest.ContentTypes.Json;
             var client = new PortableRest.RestClient();

@@ -27,12 +27,15 @@
             Trace: "TRACE"
         };
 
-    window.PortableRest.RestRequest = function (resource, method, ignoreRoot)
+    window.PortableRest.RestRequest = function (resource, method)
     {
         /// <summary>Creates a new RestRequest instance for a given Resource and Method.</summary>
         /// <param name="resource" type="String">The specific resource to access.</param>
-        /// <param name="method" type="PortableRest.HttpMethod">The HTTP method to use for the request.</param>
+        /// <param name="method" type="window.PortableRest.HttpMethod">The HTTP method to use for the request.</param>
         /// <param name="ignoreRoot" type="Boolean"></param>
+        /// <field name="contentType" type="window.PortableRest.ContentTypes" />
+        /// <field name="method" type="window.PortableRest.HttpMethod" />
+        /// <field name="resource" type="String" />
         /// <returns type="window.PortableRest.RestRequest" />
         
         if (!(this instanceof window.PortableRest.RestRequest))
@@ -44,9 +47,6 @@
         this._parameters = [];
 
         this.contentType = window.PortableRest.ContentTypes.FormUrlEncoded;
-        this.dateFormat = "";
-        this.ignoreRootElement = ignoreRoot || false;
-        this.ignoreXmlAttributes = false;
         this.method = method || window.PortableRest.HttpMethod.Get;
         this.resource = resource || "";
     };
@@ -140,6 +140,7 @@
     window.PortableRest.RestClient = function ()
     {
         /// <summary>Creates a new instance of the RestClient class.</summary>
+        /// <field name="baseUrl" type="String" />
         /// <returns type="window.PortableRest.RestClient" />
         
         if (!(this instanceof window.PortableRest.RestClient))
@@ -148,8 +149,6 @@
         }
 
         this.baseUrl = "";
-        this.dateFormat = "";
-        this.userAgent = "";
         this._headers = [];
     };
 
@@ -170,11 +169,6 @@
         /// <returns type="Object" />
 
         var url = restRequest._getFormattedResource(this.baseUrl);
-
-        if (((restRequest.dateFormat === null) || (restRequest.dateFormat === undefined) || (restRequest.dateFormat === "")) && (this.dateFormat !== null) && (this.dateFormat !== undefined) && (this.dateFormat !== ""))
-        {
-            restRequest.dateFormat = this.dateFormat;
-        }
 
         this._client = new XMLHttpRequest();
 
