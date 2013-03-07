@@ -98,9 +98,8 @@
     window.PortableRest.RestRequest = function (resource, method)
     {
         /// <summary>Creates a new RestRequest instance for a given Resource and Method.</summary>
-        /// <param name="resource" type="String">The specific resource to access.</param>
-        /// <param name="method" type="window.PortableRest.HttpMethod">The HTTP method to use for the request.</param>
-        /// <param name="ignoreRoot" type="Boolean"></param>
+        /// <param name="resource" type="String" optional="true">The specific resource to access.</param>
+        /// <param name="method" type="window.PortableRest.HttpMethod" optional="true">The HTTP method to use for the request.</param>
         /// <field name="contentType" type="window.PortableRest.ContentTypes" />
         /// <field name="method" type="window.PortableRest.HttpMethod" />
         /// <field name="resource" type="String" />
