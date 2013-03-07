@@ -293,7 +293,14 @@
                     }
                     else if ((type !== null) && (type.indexOf("json") !== -1) && ($this._client.responseText !== null))
                     {
-                        callback(JSON.parse($this._client.responseText), $this._client.status);
+                        try
+                        {
+                            callback(JSON.parse($this._client.responseText), $this._client.status);
+                        }
+                        catch (error)
+                        {
+                            callback($this._client.responseText, $this._client.status, error);
+                        }
                     }
                     else
                     {
