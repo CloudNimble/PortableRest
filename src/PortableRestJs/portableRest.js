@@ -140,6 +140,10 @@
 
     window.PortableRest.RestRequest.prototype.setCredentials = function (user, password)
     {
+        /// <summary></summary>
+        /// <param name="user" type="String"></param>
+        /// <param name="password" type="String"></param>
+
         this._credentials = { user: user, password: password };
     };
 
