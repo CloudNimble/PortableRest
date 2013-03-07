@@ -303,18 +303,18 @@
                 if ($this._client.readyState === 4)
                 {
                     var type = $this._client.getResponseHeader("Content-Type");
-
-                    if ((type.indexOf("application/xml") !== -1) && ($this._client.responseXML !== null) && ($this._client.responseXML !== undefined))
+                    
+                    if ((type !== null) && (type.indexOf("xml") !== -1) && ($this._client.responseXML !== null) && ($this._client.responseXML !== undefined))
                     {
                         callback($this._client.responseXML.firstChild, $this._client.status);
                     }
-                    else if ($this._client.responseText)
+                    else if ((type !== null) && (type.indexOf("json") !== -1) && ($this._client.responseText !== null))
                     {
                         callback(JSON.parse($this._client.responseText), $this._client.status);
                     }
                     else
                     {
-                        callback(null, $this._client.status);
+                        callback($this._client.responseText, $this._client.status);
                     }
                 }
             };
