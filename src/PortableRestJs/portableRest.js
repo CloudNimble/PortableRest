@@ -247,7 +247,12 @@
         /// <summary>Executes an asynchronous request to the given resource and deserializes the response</summary>
         /// <param name="restRequest" type="window.PortableRest.RestRequest">The RestRequest to execute.</param>
         /// <param name="callback" type="Function" optional="true"></param>
-        /// <returns type="Object" />
+        /// <remarks>
+        /// The callback function is passed either two or three parameters.
+        ///     1. The response. If the content type was XML or JSON and can be parsed then parsed version is here, otherwise just the response as received.
+        ///     2. The HTTP Status code. This is the code received from the server and can be compared to PortableRest.HttpStatusCode.
+        ///     3. In case the JSON parsing fails this is the error thrown the the parser. Otherwise not passed.
+        /// </remarks>
 
         var url = restRequest._getFormattedResource(this.baseUrl);
 
