@@ -189,27 +189,30 @@
         }
 
         var $this = this;
-        this._client.onreadystatechange = function ()
+        if ((callback !== undefined) && (callback !== null) && (typeof callback === "Function"))
         {
-            if ($this._client.readyState === 4)
+            this._client.onreadystatechange = function ()
             {
-                if ($this._client.status !== 200)
+                if ($this._client.readyState === 4)
                 {
-                    throw new Error($this._client.status);
-                }
+                    if ($this._client.status !== 200)
+                    {
+                        throw new Error($this._client.status);
+                    }
 
-                var type = $this._client.getResponseHeader("Content-Type");
+                    var type = $this._client.getResponseHeader("Content-Type");
 
-                if ((type.indexOf("application/xml") !== -1) && ($this._client.responseXML !== null) && ($this._client.responseXML !== undefined))
-                {
-                    callback($this._client.responseXML.firstChild);
+                    if ((type.indexOf("application/xml") !== -1) && ($this._client.responseXML !== null) && ($this._client.responseXML !== undefined))
+                    {
+                        callback($this._client.responseXML.firstChild);
+                    }
+                    else
+                    {
+                        callback(JSON.parse($this._client.responseText));
+                    }
                 }
-                else
-                {
-                    callback(JSON.parse($this._client.responseText));
-                }
-            }
-        };
+            };
+        }
 
         this._client.send(body);
     };
