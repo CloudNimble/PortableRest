@@ -165,13 +165,13 @@
             this.resource = this.resource.replace("{" + segment.key + "}", encodeURIComponent(segment.value));
         }
 
-        if ((this.resource !== null) && (this.resource !== undefined) && (this.resource !== "") && (this.resource.indexOf("/") === 0))
+        if ((baseUrl !== null) && (baseUrl !== undefined))
         {
-            this.resource = this.resource.substr(1);
-        }
+            if ((this.resource !== null) && (this.resource !== undefined) && (this.resource !== "") && (this.resource.indexOf("/") === 0))
+            {
+                this.resource = this.resource.substr(1);
+            }
 
-        if ((baseUrl !== null) && (baseUrl !== undefined) && (baseUrl !== ""))
-        {
             this.resource = ((this.resource === null) || (this.resource === undefined) || (this.resource === "")) ? baseUrl : baseUrl + "/" + this.resource;
         }
 
