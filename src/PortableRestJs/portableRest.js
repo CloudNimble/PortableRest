@@ -165,7 +165,7 @@
     {
         /// <summary>Executes an asynchronous request to the given resource and deserializes the response</summary>
         /// <param name="restRequest" type="window.PortableRest.RestRequest">The RestRequest to execute.</param>
-        /// <param name="callback" type="Function"></param>
+        /// <param name="callback" type="Function" optional="true"></param>
         /// <returns type="Object" />
 
         var url = restRequest._getFormattedResource(this.baseUrl);
