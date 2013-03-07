@@ -296,7 +296,7 @@
         }
 
         var $this = this;
-        if ((callback !== undefined) && (callback !== null) && (typeof callback === "Function"))
+        if ((callback !== undefined) && (callback !== null) && (typeof callback === "function"))
         {
             this._client.onreadystatechange = function ()
             {
