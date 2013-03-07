@@ -285,6 +285,10 @@
             {
                 if ($this._client.readyState === 4)
                 {
+                    if ($this._client.status === 1223)
+                    {
+                        $this._client.status = window.PortableRest.HttpStatusCode.NoContent;
+                    }
                     var type = $this._client.getResponseHeader("Content-Type");
                     
                     if ((type !== null) && (type.indexOf("xml") !== -1) && ($this._client.responseXML !== null) && ($this._client.responseXML !== undefined))
