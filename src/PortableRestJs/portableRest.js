@@ -281,20 +281,19 @@
             {
                 if ($this._client.readyState === 4)
                 {
-                    if ($this._client.status !== 200)
-                    {
-                        throw new Error($this._client.status);
-                    }
-
                     var type = $this._client.getResponseHeader("Content-Type");
 
                     if ((type.indexOf("application/xml") !== -1) && ($this._client.responseXML !== null) && ($this._client.responseXML !== undefined))
                     {
-                        callback($this._client.responseXML.firstChild);
+                        callback($this._client.responseXML.firstChild, $this._client.status);
+                    }
+                    else if ($this._client.responseText)
+                    {
+                        callback(JSON.parse($this._client.responseText), $this._client.status);
                     }
                     else
                     {
-                        callback(JSON.parse($this._client.responseText));
+                        callback(null, $this._client.status);
                     }
                 }
             };
