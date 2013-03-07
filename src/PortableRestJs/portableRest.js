@@ -45,6 +45,7 @@
 
         this._urlSegments = [];
         this._parameters = [];
+        this._credentials = null;
 
         this.contentType = window.PortableRest.ContentTypes.FormUrlEncoded;
         this.method = method || window.PortableRest.HttpMethod.Get;
@@ -67,6 +68,16 @@
         /// <param name="value" type="Object"></param>
         
         this._parameters.push({ key: key, value: value });
+    };
+
+    window.PortableRest.RestRequest.prototype.setCredentials = function (user, password)
+    {
+        this._credentials = { user: user, password: password };
+    };
+
+    window.PortableRest.RestRequest.prototype.clearCredentials = function ()
+    {
+        this._credentials = null;
     };
 
     window.PortableRest.RestRequest.prototype._getFormattedResource = function (baseUrl)
@@ -178,7 +189,14 @@
             this._client.setRequestHeader(header.key, header.value);
         }
 
-        this._client.open(restRequest.method, url, true);
+        if (restRequest._credentials === null)
+        {
+            this._client.open(restRequest.method, url, true);
+        }
+        else
+        {
+            this._client.open(restRequest.method, url, true, restRequest._credentials.user, restRequest._credentials.password);
+        }
 
         var body = null;
 
