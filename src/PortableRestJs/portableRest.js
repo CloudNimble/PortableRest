@@ -232,21 +232,21 @@
 
         this.baseUrl = "";
         this._headers = [];
-        this._credentials = null;
+        this._defaultCredentials = null;
     };
 
-    window.PortableRest.RestClient.prototype.setCredentials = function (user, password)
+    window.PortableRest.RestClient.prototype.setDefaultCredentials = function (user, password)
     {
         /// <summary></summary>
         /// <param name="user" type="String"></param>
         /// <param name="password" type="String"></param>
 
-        this._credentials = { user: user, password: password };
+        this._defaultCredentials = { user: user, password: password };
     };
 
-    window.PortableRest.RestClient.prototype.clearCredentials = function ()
+    window.PortableRest.RestClient.prototype.clearDefaultCredentials = function ()
     {
-        this._credentials = null;
+        this._defaultCredentials = null;
     };
 
     window.PortableRest.RestClient.prototype.addHeader = function (key, value)
@@ -275,7 +275,7 @@
             this._client.setRequestHeader(header.key, header.value);
         }
 
-        restRequest._credentials = restRequest._credentials || this._credentials;
+        restRequest._credentials = restRequest._credentials || this._defaultCredentials;
 
         if (restRequest._credentials === null)
         {
