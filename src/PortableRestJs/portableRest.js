@@ -233,6 +233,21 @@
 
         this.baseUrl = "";
         this._headers = [];
+        this._Credentials = null;
+    };
+
+    window.PortableRest.RestClient.prototype.setCredentials = function (user, password)
+    {
+        /// <summary></summary>
+        /// <param name="user" type="String"></param>
+        /// <param name="password" type="String"></param>
+
+        this._credentials = { user: user, password: password };
+    };
+
+    window.PortableRest.RestClient.prototype.clearCredentials = function ()
+    {
+        this._credentials = null;
     };
 
     window.PortableRest.RestClient.prototype.addHeader = function (key, value)
@@ -260,6 +275,8 @@
             var header = this._headers[headerIndex];
             this._client.setRequestHeader(header.key, header.value);
         }
+
+        restRequest._credentials = this._credentials || restRequest._credentials;
 
         if (restRequest._credentials === null)
         {
