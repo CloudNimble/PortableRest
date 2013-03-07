@@ -275,7 +275,7 @@
             this._client.setRequestHeader(header.key, header.value);
         }
 
-        restRequest._credentials = this._credentials || restRequest._credentials;
+        restRequest._credentials = restRequest._credentials || this._credentials;
 
         if (restRequest._credentials === null)
         {
