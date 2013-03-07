@@ -233,7 +233,7 @@
 
         this.baseUrl = "";
         this._headers = [];
-        this._Credentials = null;
+        this._credentials = null;
     };
 
     window.PortableRest.RestClient.prototype.setCredentials = function (user, password)
