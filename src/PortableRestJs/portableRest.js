@@ -11,9 +11,9 @@
     
     window.PortableRest.ContentTypes =
         {
-            FormUrlEncoded: 0,
-            Json: 1,
-            Xml: 2
+            FormUrlEncoded: "application/x-www-form-urlencoded",
+            Json: "application/json",
+            Xml: "application/xml"
         };
 
     window.PortableRest.HttpMethod =
@@ -177,22 +177,6 @@
         return this.resource;
     };
 
-    window.PortableRest.RestRequest.prototype._getContentType = function ()
-    {
-        /// <summary></summary>
-        /// <returns type="String" />
-        
-        switch (this.contentType)
-        {
-            case window.PortableRest.ContentTypes.FormUrlEncoded:
-                return "application/x-www-form-urlencoded";
-            case window.PortableRest.ContentTypes.Xml:
-                return "application/xml";
-            default:
-                return "application/json";
-        }
-    };
-
     window.PortableRest.RestRequest.prototype._getRequestBody = function ()
     {
         /// <summary></summary>
@@ -290,7 +274,7 @@
 
         if ((restRequest.method === window.PortableRest.HttpMethod.Post) || (restRequest.method === window.PortableRest.HttpMethod.Put))
         {
-            this._client.setRequestHeader("Content-Type", restRequest._getContentType());
+            this._client.setRequestHeader("Content-Type", restRequest.contentType);
             body = restRequest._getRequestBody();
         }
 
