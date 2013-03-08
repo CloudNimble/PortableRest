@@ -302,14 +302,17 @@
                     }
                     else if ((type !== null) && (type.indexOf("json") !== -1) && ($this._client.responseText !== null))
                     {
+                        var responseObject;
                         try
                         {
-                            callback(JSON.parse($this._client.responseText), $this._client.status);
+                            responseObject = JSON.parse($this._client.responseText);
                         }
                         catch (error)
                         {
                             callback($this._client.responseText, $this._client.status, error);
+                            return;
                         }
+                        callback(responseObject, $this._client.status);
                     }
                     else
                     {
