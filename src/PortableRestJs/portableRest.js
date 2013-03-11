@@ -256,73 +256,72 @@
 
         var url = restRequest._getFormattedResource(this.baseUrl);
 
-        this._client = new XMLHttpRequest();
+        var client = new XMLHttpRequest();
 
         for (var headerIndex = 0, headersLength = this._headers.length; headerIndex < headersLength; headerIndex++)
         {
             var header = this._headers[headerIndex];
-            this._client.setRequestHeader(header.key, header.value);
+            client.setRequestHeader(header.key, header.value);
         }
 
         restRequest._credentials = restRequest._credentials || this._defaultCredentials;
 
         if (restRequest._credentials === null)
         {
-            this._client.open(restRequest.method, url, true);
+            client.open(restRequest.method, url, true);
         }
         else
         {
-            this._client.open(restRequest.method, url, true, restRequest._credentials.user, restRequest._credentials.password);
+            client.open(restRequest.method, url, true, restRequest._credentials.user, restRequest._credentials.password);
         }
 
         var body = null;
 
         if ((restRequest.method === window.PortableRest.HttpMethod.Post) || (restRequest.method === window.PortableRest.HttpMethod.Put))
         {
-            this._client.setRequestHeader("Content-Type", restRequest.contentType);
+            client.setRequestHeader("Content-Type", restRequest.contentType);
             body = restRequest._getRequestBody();
         }
 
-        var $this = this;
         if ((callback !== undefined) && (callback !== null) && (typeof callback === "function"))
         {
-            this._client.onreadystatechange = function ()
+            client.onreadystatechange = function ()
             {
-                if ($this._client.readyState === 4)
+                if (client.readyState === 4)
                 {
-                    if ($this._client.status === 1223)
+                    if (client.status === 1223)
                     {
-                        $this._client.status = window.PortableRest.HttpStatusCode.NoContent;
+                        client.status = window.PortableRest.HttpStatusCode.NoContent;
                     }
-                    var type = $this._client.getResponseHeader("Content-Type");
+                    var type = client.getResponseHeader("Content-Type");
                     
-                    if ((type !== null) && (type.indexOf("xml") !== -1) && ($this._client.responseXML !== null) && ($this._client.responseXML !== undefined))
+                    if ((type !== null) && (type.indexOf("xml") !== -1) && (client.responseXML !== null) && (client.responseXML !== undefined))
                     {
-                        callback($this._client.responseXML.firstChild, $this._client.status);
+                        callback(client.responseXML.firstChild, client.status);
                     }
-                    else if ((type !== null) && (type.indexOf("json") !== -1) && ($this._client.responseText !== null))
+                    else if ((type !== null) && (type.indexOf("json") !== -1) && (client.responseText !== null))
                     {
                         var responseObject;
                         try
                         {
-                            responseObject = JSON.parse($this._client.responseText);
+                            responseObject = JSON.parse(client.responseText);
                         }
                         catch (error)
                         {
-                            callback($this._client.responseText, $this._client.status, error);
+                            callback(client.responseText, client.status, error);
                             return;
                         }
-                        callback(responseObject, $this._client.status);
+                        callback(responseObject, client.status);
                     }
                     else
                     {
-                        callback($this._client.responseText, $this._client.status);
+                        callback(client.responseText, client.status);
                     }
                 }
             };
         }
 
-        this._client.send(body);
+        client.send(body);
     };
 
 })(window);
