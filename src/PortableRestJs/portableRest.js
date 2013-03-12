@@ -108,7 +108,7 @@
         
         if (!(this instanceof window.PortableRest.RestRequest))
         {
-            return new window.PortableRest.RestRequest(resource, method, ignoreRoot);
+            return new window.PortableRest.RestRequest(resource, method);
         }
 
         this._urlSegments = [];
