@@ -13,7 +13,8 @@
         {
             FormUrlEncoded: "application/x-www-form-urlencoded",
             Json: "application/json",
-            Xml: "application/xml"
+            Xml: "application/xml",
+            MultipartFormData: "multipart/form-data"
         };
 
     window.PortableRest.HttpMethod =
@@ -180,7 +181,7 @@
     window.PortableRest.RestRequest.prototype._getRequestBody = function ()
     {
         /// <summary></summary>
-        /// <returns type="String" />
+        /// <returns type="Object" />
         
         var parameters = "";
 
@@ -197,6 +198,19 @@
                 throw new Error("Sending XML is not yet supported, but will be added in a future release.");
             case window.PortableRest.ContentTypes.Json:
                 parameters = this._parameters.length > 0 ? JSON.stringify(this._parameters[0].value) : "";
+                break;
+            case window.PortableRest.ContentTypes.MultipartFormData:
+                if (typeof FormData === "undefined")
+                {
+                    throw new Error("Multipart-FormData is only supported in newer browsers");
+                }
+
+                parameters = new FormData();
+                for (var parameterIndex = 0, parametersLength = this._parameters.length; parameterIndex < parametersLength; parameterIndex++)
+                {
+                    var parameter = this._parameters[parameterIndex];
+                    parameters.append(parameter.key, parameter.value);
+                }
                 break;
         }
 
@@ -279,7 +293,10 @@
 
         if ((restRequest.method === window.PortableRest.HttpMethod.Post) || (restRequest.method === window.PortableRest.HttpMethod.Put))
         {
-            client.setRequestHeader("Content-Type", restRequest.contentType);
+            if (restRequest.contentType !== window.PortableRest.ContentTypes.MultipartFormData)
+            {
+                client.setRequestHeader("Content-Type", restRequest.contentType);
+            }
             body = restRequest._getRequestBody();
         }
 
