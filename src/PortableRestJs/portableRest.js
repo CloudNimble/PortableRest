@@ -187,29 +187,34 @@
 
         switch (this.contentType)
         {
-            case window.PortableRest.ContentTypes.FormUrlEncoded:
-                for (var parameterIndex = 0, parametersLength = this._parameters.length; parameterIndex < parametersLength; parameterIndex++)
-                {
-                    var parameter = this._parameters[parameterIndex];
-                    parameters = parameters + (parameters.length > 0 ? "&" : "") + encodeURIComponent(parameter.key) + "=" + encodeURIComponent(parameter.value.toString());
-                }
-                break;
             case window.PortableRest.ContentTypes.Xml:
                 throw new Error("Sending XML is not yet supported, but will be added in a future release.");
             case window.PortableRest.ContentTypes.Json:
                 parameters = this._parameters.length > 0 ? JSON.stringify(this._parameters[0].value) : "";
                 break;
+            case window.PortableRest.ContentTypes.FormUrlEncoded:
             case window.PortableRest.ContentTypes.MultipartFormData:
-                if (typeof FormData === "undefined")
+                if (this.contentType === window.PortableRest.ContentTypes.MultipartFormData)
                 {
-                    throw new Error("Multipart-FormData is only supported in newer browsers");
-                }
+                    if (typeof FormData === "undefined")
+                    {
+                        throw new Error("Multipart-FormData is only supported in newer browsers");
+                    }
 
-                parameters = new FormData();
+                    parameters = new FormData();
+                }
+                
                 for (var parameterIndex = 0, parametersLength = this._parameters.length; parameterIndex < parametersLength; parameterIndex++)
                 {
                     var parameter = this._parameters[parameterIndex];
-                    parameters.append(parameter.key, parameter.value);
+                    if (this.contentType === window.PortableRest.ContentTypes.MultipartFormData)
+                    {
+                        parameters.append(parameter.key, parameter.value);
+                    }
+                    else
+                    {
+                        parameters = parameters + (parameters.length > 0 ? "&" : "") + encodeURIComponent(parameter.key) + "=" + encodeURIComponent(parameter.value.toString());
+                    }
                 }
                 break;
         }
