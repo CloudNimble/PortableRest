@@ -306,15 +306,16 @@
             {
                 if (client.readyState === 4)
                 {
-                    if (client.status === 1223)
+                    var status = client.status;
+                    if (status === 1223)
                     {
-                        client.status = window.PortableRest.HttpStatusCode.NoContent;
+                        status = window.PortableRest.HttpStatusCode.NoContent;
                     }
                     var type = client.getResponseHeader("Content-Type");
                     
                     if ((type !== null) && (type.indexOf("xml") !== -1) && (client.responseXML !== null) && (client.responseXML !== undefined))
                     {
-                        callback(client.responseXML.firstChild, client.status);
+                        callback(client.responseXML.firstChild, status);
                     }
                     else if ((type !== null) && (type.indexOf("json") !== -1) && (client.responseText !== null))
                     {
@@ -325,14 +326,14 @@
                         }
                         catch (error)
                         {
-                            callback(client.responseText, client.status, error);
+                            callback(client.responseText, status, error);
                             return;
                         }
-                        callback(responseObject, client.status);
+                        callback(responseObject, status);
                     }
                     else
                     {
-                        callback(client.responseText, client.status);
+                        callback(client.responseText, status);
                     }
                 }
             };
