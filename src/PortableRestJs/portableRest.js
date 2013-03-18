@@ -236,6 +236,46 @@
         this.baseUrl = "";
         this._headers = [];
         this._defaultCredentials = null;
+        this._callbackListeners = [];
+    };
+
+    window.PortableRest.RestClient.prototype.addCallbackListener = function (fn)
+    {
+        /// <summary>Note: Adding same function more than once does nothing.</summary>
+        /// <param name="fn" type="Function"></param>
+
+        if (this._callbackListeners.indexOf(fn) !== -1)
+        {
+            return;
+        }
+
+        this._callbackListeners.push(fn);
+    };
+
+    window.PortableRest.RestClient.prototype.removeCallbackListener = function (fn)
+    {
+        /// <summary></summary>
+        /// <param name="fn" type="Function"></param>
+
+        var itemIndex = this._callbackListeners.indexOf(fn);
+        if (itemIndex !== -1)
+        {
+            this._callbackListeners.splice(itemIndex, 1);
+        }
+    };
+
+    window.PortableRest.RestClient.prototype.fireCallbackListeners = function (response, status, error)
+    {
+        /// <summary></summary>
+        /// <param name="response" type="Object"></param>
+        /// <param name="status" type="window.PortableRest.HttpStatusCode"></param>
+        /// <param name="error" type="Error" optional="true"></param>
+        
+        for (var callbackIndex = 0, callbacksLength = this._callbackListeners.length; callbackIndex < callbacksLength; callbackIndex++)
+        {
+            var callback = this._callbackListeners[callbackIndex];
+            callback.call(this, response, status, error);
+        }
     };
 
     window.PortableRest.RestClient.prototype.setDefaultCredentials = function (user, password)
@@ -305,6 +345,7 @@
             body = restRequest._getRequestBody();
         }
 
+        var $this = this;
         if ((callback !== undefined) && (callback !== null) && (typeof callback === "function"))
         {
             client.onreadystatechange = function ()
@@ -321,6 +362,7 @@
                     if ((type !== null) && (type.indexOf("xml") !== -1) && (client.responseXML !== null) && (client.responseXML !== undefined))
                     {
                         callback(client.responseXML.firstChild, status);
+                        $this.fireCallbackListeners(client.responseXML.firstChild, status);
                     }
                     else if ((type !== null) && (type.indexOf("json") !== -1) && (client.responseText !== null))
                     {
@@ -332,13 +374,16 @@
                         catch (error)
                         {
                             callback(client.responseText, status, error);
+                            $this.fireCallbackListeners(client.responseText, status, error);
                             return;
                         }
                         callback(responseObject, status);
+                        $this.fireCallbackListeners(responseObject, status);
                     }
                     else
                     {
                         callback(client.responseText, status);
+                        $this.fireCallbackListeners(client.responseText, status);
                     }
                 }
             };
