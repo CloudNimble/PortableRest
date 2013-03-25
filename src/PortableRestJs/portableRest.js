@@ -274,13 +274,13 @@
         
         if ((requestCallback !== undefined) && (requestCallback !== null) && (typeof requestCallback === "function"))
         {
-            requestCallback.call(this, response, status, error);
+            requestCallback(response, status, error);
         }
 
         for (var callbackIndex = 0, callbacksLength = this._callbackListeners.length; callbackIndex < callbacksLength; callbackIndex++)
         {
             var callback = this._callbackListeners[callbackIndex];
-            callback.call(this, response, status, error);
+            callback(response, status, error);
         }
     };
 
