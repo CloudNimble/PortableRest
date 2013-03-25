@@ -264,7 +264,7 @@
         }
     };
 
-    window.PortableRest.RestClient.prototype.fireCallbackListeners = function (response, status, error)
+    window.PortableRest.RestClient.prototype._fireCallbackListeners = function (response, status, error)
     {
         /// <summary></summary>
         /// <param name="response" type="Object"></param>
@@ -362,7 +362,7 @@
                     if ((type !== null) && (type.indexOf("xml") !== -1) && (client.responseXML !== null) && (client.responseXML !== undefined))
                     {
                         callback(client.responseXML.firstChild, status);
-                        $this.fireCallbackListeners(client.responseXML.firstChild, status);
+                        $this._fireCallbackListeners(client.responseXML.firstChild, status);
                     }
                     else if ((type !== null) && (type.indexOf("json") !== -1) && (client.responseText !== null))
                     {
@@ -374,16 +374,16 @@
                         catch (error)
                         {
                             callback(client.responseText, status, error);
-                            $this.fireCallbackListeners(client.responseText, status, error);
+                            $this._fireCallbackListeners(client.responseText, status, error);
                             return;
                         }
                         callback(responseObject, status);
-                        $this.fireCallbackListeners(responseObject, status);
+                        $this._fireCallbackListeners(responseObject, status);
                     }
                     else
                     {
                         callback(client.responseText, status);
-                        $this.fireCallbackListeners(client.responseText, status);
+                        $this._fireCallbackListeners(client.responseText, status);
                     }
                 }
             };
