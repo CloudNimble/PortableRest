@@ -264,13 +264,19 @@
         }
     };
 
-    window.PortableRest.RestClient.prototype._fireCallbackListeners = function (response, status, error)
+    window.PortableRest.RestClient.prototype._fireCallbackListeners = function (requestCallback, response, status, error)
     {
         /// <summary></summary>
+        /// <param name="requestCallback" type="Function" mayBeNull="true"></param>
         /// <param name="response" type="Object"></param>
         /// <param name="status" type="window.PortableRest.HttpStatusCode"></param>
         /// <param name="error" type="Error" optional="true"></param>
         
+        if ((requestCallback !== undefined) && (requestCallback !== null) && (typeof requestCallback === "function"))
+        {
+            requestCallback.call(this, response, status, error);
+        }
+
         for (var callbackIndex = 0, callbacksLength = this._callbackListeners.length; callbackIndex < callbacksLength; callbackIndex++)
         {
             var callback = this._callbackListeners[callbackIndex];
@@ -346,7 +352,7 @@
         }
 
         var $this = this;
-        if ((callback !== undefined) && (callback !== null) && (typeof callback === "function"))
+        if (((callback !== undefined) && (callback !== null) && (typeof callback === "function")) || (this._callbackListeners.length > 0))
         {
             client.onreadystatechange = function ()
             {
@@ -361,8 +367,7 @@
                     
                     if ((type !== null) && (type.indexOf("xml") !== -1) && (client.responseXML !== null) && (client.responseXML !== undefined))
                     {
-                        callback(client.responseXML.firstChild, status);
-                        $this._fireCallbackListeners(client.responseXML.firstChild, status);
+                        $this._fireCallbackListeners(callback, client.responseXML.firstChild, status);
                     }
                     else if ((type !== null) && (type.indexOf("json") !== -1) && (client.responseText !== null))
                     {
@@ -373,17 +378,14 @@
                         }
                         catch (error)
                         {
-                            callback(client.responseText, status, error);
-                            $this._fireCallbackListeners(client.responseText, status, error);
+                            $this._fireCallbackListeners(callback, client.responseText, status, error);
                             return;
                         }
-                        callback(responseObject, status);
-                        $this._fireCallbackListeners(responseObject, status);
+                        $this._fireCallbackListeners(callback, responseObject, status);
                     }
                     else
                     {
-                        callback(client.responseText, status);
-                        $this._fireCallbackListeners(client.responseText, status);
+                        $this._fireCallbackListeners(callback, client.responseText, status);
                     }
                 }
             };
