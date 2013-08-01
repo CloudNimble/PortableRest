@@ -1,4 +1,4 @@
-﻿using AdvancedREI.Net.Http.Compression;
+﻿using System.Net;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -82,7 +82,13 @@ namespace PortableRest
                 restRequest.DateFormat = DateFormat;
             }
 
-            var handler = new CompressedHttpClientHandler {AllowAutoRedirect = true};
+            var handler = new HttpClientHandler {AllowAutoRedirect = true};
+            if (handler.SupportsAutomaticDecompression)
+            {
+                handler.AutomaticDecompression = DecompressionMethods.GZip |
+                                                 DecompressionMethods.Deflate;
+            }
+
             _client = new HttpClient(handler);
 
             if (!string.IsNullOrWhiteSpace(UserAgent))
@@ -189,10 +195,8 @@ namespace PortableRest
                     .OrderBy(c => (c as XElement) != null ? (c as XElement).Name.LocalName : c.ToString())
                     .Select(n =>
                     {
-                        XElement e = n as XElement;
-                        if (e != null)
-                            return Transform(e, request);
-                        return n;
+                        var e = n as XElement;
+                        return e != null ? Transform(e, request) : n;
                     }));
             }
             return node;
