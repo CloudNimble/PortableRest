@@ -20,7 +20,11 @@ namespace PortableRest
     public class RestClient
     {
 
+        #region Private Members
+
         private HttpClient _client;
+
+        #endregion
 
         #region Properties
 
@@ -35,7 +39,7 @@ namespace PortableRest
         public string DateFormat { get; set; }
 
         /// <summary>
-        /// 
+        /// The User Agent string to pass back to the API.
         /// </summary>
         public string UserAgent { get; set; }
 
@@ -75,7 +79,6 @@ namespace PortableRest
         public async Task<T> ExecuteAsync<T>(RestRequest restRequest) where T : class
         {
             T result = null;
-            var url = restRequest.GetFormattedResource(BaseUrl);
 
             if (string.IsNullOrWhiteSpace(restRequest.DateFormat) && !string.IsNullOrWhiteSpace(DateFormat))
             {
@@ -85,8 +88,7 @@ namespace PortableRest
             var handler = new HttpClientHandler {AllowAutoRedirect = true};
             if (handler.SupportsAutomaticDecompression)
             {
-                handler.AutomaticDecompression = DecompressionMethods.GZip |
-                                                 DecompressionMethods.Deflate;
+                handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             }
 
             _client = new HttpClient(handler);
@@ -96,14 +98,15 @@ namespace PortableRest
                 _client.DefaultRequestHeaders.Add("user-agent", UserAgent);
             }
 
-            var message = new HttpRequestMessage(restRequest.Method, new Uri(restRequest.Resource, UriKind.RelativeOrAbsolute));
+            var message = new HttpRequestMessage(restRequest.Method, restRequest.GetResourceUri(BaseUrl));
 
             foreach (var header in Headers)
             {
                 message.Headers.Add(header.Key, header.Value);
             }
 
-            if (restRequest.Method == HttpMethod.Post || restRequest.Method == HttpMethod.Put)
+            //RWM: Not sure if this is sufficient, or if HEAD supports a body, will need to check into the RFC.
+            if (restRequest.Method != HttpMethod.Get & restRequest.Method == HttpMethod.Head && restRequest.Method != HttpMethod.Trace)
             {
                 var contentString = new StringContent(restRequest.GetRequestBody(), Encoding.UTF8, restRequest.GetContentType());
                 message.Content = contentString;
@@ -115,9 +118,7 @@ namespace PortableRest
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            //TODO: Handle Error
             if (response.Content.Headers.ContentType.MediaType == "application/xml")
-
             {
 
                 // RWM: IDEA - The DataContractSerializer doesn't like attributes, but will handle everything else.
@@ -128,8 +129,8 @@ namespace PortableRest
                 // query the object for [XmlAttribute] attributes and move them from elements to attributes using code similar to below.
                 // If the POST request requires the attributes in a certain order, oh well. Shouldn't have used PHP :P.
 
-                XElement root = XElement.Parse(responseContent);
-                XElement newRoot = (XElement)Transform(restRequest.IgnoreRootElement ? root.Descendants().First() : root, restRequest);
+                var root = XElement.Parse(responseContent);
+                var newRoot = (XElement)Transform(restRequest.IgnoreRootElement ? root.Descendants().First() : root, restRequest);
                  
                 using (var memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(newRoot.ToString())))
                 {
@@ -158,6 +159,8 @@ namespace PortableRest
 
         #endregion
 
+        #region Helpers
+
         /// <summary>
         /// 
         /// </summary>
@@ -165,42 +168,42 @@ namespace PortableRest
         /// <param name="request"></param>
         /// <returns></returns>
         /// <remarks>Technique from http://blogs.msdn.com/b/ericwhite/archive/2009/07/20/a-tutorial-in-the-recursive-approach-to-pure-functional-transformations-of-xml.aspx</remarks>
-        static object Transform(XNode node, RestRequest request)
+        private static object Transform(XNode node, RestRequest request)
         {
-            XElement element = node as XElement;
-            if (element != null)
+            var element = node as XElement;
+            if (element == null) return node;
+
+            if (!request.IgnoreXmlAttributes)
             {
-                if (!request.IgnoreXmlAttributes)
+                foreach (var attrib in element.Attributes())
                 {
-                    foreach (var attrib in element.Attributes())
-                    {
-                        element.Add(new XElement(attrib.Name, (string)attrib));
-                    }
+                    element.Add(new XElement(attrib.Name, (string)attrib));
                 }
+            }
 
-                if (!string.IsNullOrWhiteSpace(request.DateFormat) && 
-                    (element.Name.LocalName.ToLower().Contains("date") ||
-                    element.Name.LocalName.ToLower().Contains("time")))
-                {
-                    var newValue = DateTime.ParseExact(element.Value, request.DateFormat, null);
-                    element.Value = XmlConvert.ToString(newValue);
-                }
+            if (!string.IsNullOrWhiteSpace(request.DateFormat) && 
+                (element.Name.LocalName.ToLower().Contains("date") ||
+                 element.Name.LocalName.ToLower().Contains("time")))
+            {
+                var newValue = DateTime.ParseExact(element.Value, request.DateFormat, null);
+                element.Value = XmlConvert.ToString(newValue);
+            }
 
-                //RWM: NOTE the DataContractSerializer does not like null nodes when parsing nullable numbers.
-                //However removing empty nodes seems to work.
-                if (!element.Nodes().Any()) return null;
+            //RWM: NOTE the DataContractSerializer does not like null nodes when parsing nullable numbers.
+            //However removing empty nodes seems to work.
+            if (!element.Nodes().Any()) return null;
 
-                return new XElement(element.Name,
-                    element.Nodes()
+            return new XElement(element.Name,
+                element.Nodes()
                     .OrderBy(c => (c as XElement) != null ? (c as XElement).Name.LocalName : c.ToString())
                     .Select(n =>
                     {
                         var e = n as XElement;
                         return e != null ? Transform(e, request) : n;
                     }));
-            }
-            return node;
         }
+
+        #endregion
 
     }
 }

@@ -73,9 +73,11 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="GoogleDiscovery\GoogleDiscovery.cs" />
+    <Compile Include="GoogleDiscovery\Api.cs" />
+    <Compile Include="GoogleDiscovery\ApisResult.cs" />
     <Compile Include="GoogleDiscovery\GoogleDiscoveryClient.cs" />
     <Compile Include="GoogleDiscoveryClientTest.cs" />
+    <Compile Include="GoogleDiscovery\Icons.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

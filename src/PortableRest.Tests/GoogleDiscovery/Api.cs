@@ -3,19 +3,6 @@ using System.Runtime.Serialization;
 
 namespace Google.Discovery
 {
-
-    [DataContract]
-    public class ApisResult
-    {
-        [DataMember]
-        public string Kind { get; set; }
-        [DataMember(Name = "discoveryVersion")]
-        public string Version { get; set; }
-
-        [DataMember(Name = "items")]
-        public List<Api> Apis { get; set; }
-    }
-
     [DataContract]
     public class Api
     {
@@ -44,14 +31,4 @@ namespace Google.Discovery
         [DataMember]
         public List<string> Labels { get; set; }
     }
-
-    [DataContract]
-    public class Icons
-    {
-        [DataMember]
-        public string X16 { get; set; }
-        [DataMember]
-        public string X32 { get; set; }
-    }
-
 }

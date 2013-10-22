@@ -21,6 +21,8 @@ namespace PortableRest
 
         private List<KeyValuePair<string, object>> Parameters { get; set; }
 
+        //private List<KeyValuePair<string, string>> QueryString { get; set; }
+
         #endregion
 
         #region Properties
@@ -36,7 +38,7 @@ namespace PortableRest
         public string DateFormat { get; set; }
 
         /// <summary>
-        /// 
+        /// Specifies whether or not the root 
         /// </summary>
         public bool IgnoreRootElement { get; set; }
 
@@ -57,18 +59,26 @@ namespace PortableRest
 
         #endregion
 
-        #region Methods
-
-        #region Constructor
+        #region Constructors
 
         /// <summary>
-        /// Creates a new RestRequest instance, specifying the request will be an HTTP GET.
+        /// Creates a new RestRequest instance, assuming the request will be an HTTP GET.
         /// </summary>
         public RestRequest()
         {
             UrlSegments = new List<KeyValuePair<string, string>>();
             Parameters = new List<KeyValuePair<string, object>>();
+            //QueryString = new List<KeyValuePair<string, string>>();
             Method = HttpMethod.Get;
+        }
+
+        /// <summary>
+        /// Creates a new RestRequest instance for a given Resource.
+        /// </summary>
+        /// <param name="resource"></param>
+        public RestRequest(string resource) : this()
+        {
+            Resource = resource;
         }
 
         /// <summary>
@@ -76,14 +86,13 @@ namespace PortableRest
         /// </summary>
         /// <param name="resource">The specific resource to access.</param>
         /// <param name="method">The HTTP method to use for the request.</param>
-        public RestRequest(string resource, HttpMethod method) : this()
+        public RestRequest(string resource, HttpMethod method) : this(resource)
         {
             Method = method;
-            Resource = resource;
         }
 
         /// <summary>
-        /// 
+        /// Creates a new RestRequest instance for a given Resource and Method, specifying whether or not to ignore the root object in the response.
         /// </summary>
         /// <param name="resource"></param>
         /// <param name="method"></param>
@@ -95,32 +104,52 @@ namespace PortableRest
 
         #endregion
 
+        #region Public Methods
+
         /// <summary>
-        /// 
+        /// Adds a parameter to the body of the request.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
+        /// <remarks>Note: If the ContentType is anything other than UrlFormEncoded, only the first Parameter will be serialzed to the request body.</remarks>
+        public void AddParameter(string key, object value)
+        {
+            Parameters.Add(new KeyValuePair<string, object>(key, value));
+        }
+
+        ///// <summary>
+        ///// Adds an item to the QueryString of the request.
+        ///// </summary>
+        ///// <param name="key"></param>
+        ///// <param name="value"></param>
+        //public void AddQueryString(string key, string value)
+        //{
+        //    QueryString.Add(new KeyValuePair<string, string>(key, value));
+        //}
+
+        /// <summary>
+        /// Adds segments 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <remarks>This can be used for QueryString parameters too.</remarks>
+        /// <example>Resource = "/Samples.aspx?Test1={test1}";</example>
         public void AddUrlSegment(string key, string value)
         {
             UrlSegments.Add(new KeyValuePair<string, string>(key, value));
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        public void AddParameter(string key, object value)
-        {
-            Parameters.Add(new KeyValuePair<string, object>(key, value));
-        }
+
+        #endregion
+
+        #region Internal Methods
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="baseUrl"></param>
         /// <returns></returns>
-        internal string GetFormattedResource(string baseUrl)
+        internal Uri GetResourceUri(string baseUrl)
         {
             foreach (var segment in UrlSegments)
             {
@@ -136,10 +165,13 @@ namespace PortableRest
             {
                 Resource = string.IsNullOrEmpty(Resource) ? baseUrl : string.Format("{0}/{1}", baseUrl, Resource);
             }
-
-            return Resource;
+            return new Uri(Resource, UriKind.RelativeOrAbsolute);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         internal string GetContentType()
         {
             switch (ContentType)
@@ -153,6 +185,10 @@ namespace PortableRest
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         internal string GetRequestBody()
         {
             switch (ContentType)
@@ -170,12 +206,10 @@ namespace PortableRest
 
                     return Parameters.Count > 0 ? JsonConvert.SerializeObject(Parameters[0].Value) : "";
             }
-
-
-
         }
 
         #endregion
+
 
     }
 }
