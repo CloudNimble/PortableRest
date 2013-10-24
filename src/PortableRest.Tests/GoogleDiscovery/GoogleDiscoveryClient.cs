@@ -4,6 +4,7 @@ using Google.Discovery;
 
 namespace PortableRest.Tests
 {
+
     public class GoogleDiscoveryClient : RestClient
     {
 
@@ -45,6 +46,6 @@ namespace PortableRest.Tests
             return await ExecuteAsync<ApisResult>(request);
         }
 
-
     }
+
 }
