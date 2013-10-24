@@ -106,7 +106,7 @@ namespace PortableRest
             }
 
             //RWM: Not sure if this is sufficient, or if HEAD supports a body, will need to check into the RFC.
-            if (restRequest.Method != HttpMethod.Get & restRequest.Method == HttpMethod.Head && restRequest.Method != HttpMethod.Trace)
+            if (restRequest.Method != HttpMethod.Get && restRequest.Method != HttpMethod.Head && restRequest.Method != HttpMethod.Trace)
             {
                 var contentString = new StringContent(restRequest.GetRequestBody(), Encoding.UTF8, restRequest.GetContentType());
                 message.Content = contentString;
