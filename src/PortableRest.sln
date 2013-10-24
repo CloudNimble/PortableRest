@@ -5,14 +5,14 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortableRest", "PortableRest\PortableRest.csproj", "{A3546D1A-CE87-49BB-800A-98018C1FCA00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortableRest.Tests", "PortableRest.Tests\PortableRest.Tests.csproj", "{500BCEAB-8F93-4BDE-84DB-D21147323837}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{84CCE4CB-2B65-4E36-85C8-57EF9549787E}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortableRest.Tests", "PortableRest.Tests\PortableRest.Tests.csproj", "{EE7DCA96-146F-496B-9C8E-5368487DEE82}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,10 +24,10 @@ Global
 		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release|Any CPU.Build.0 = Release|Any CPU
-		{500BCEAB-8F93-4BDE-84DB-D21147323837}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{500BCEAB-8F93-4BDE-84DB-D21147323837}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{500BCEAB-8F93-4BDE-84DB-D21147323837}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{500BCEAB-8F93-4BDE-84DB-D21147323837}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

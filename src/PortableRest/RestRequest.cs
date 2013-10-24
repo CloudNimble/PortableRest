@@ -1,7 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Net.Http;
+using System.Reflection;
+using System.Runtime.Serialization;
+using System.Text;
+using System.Xml.Linq;
+using System.Xml.Serialization;
 using Newtonsoft.Json;
+using System.Xml;
+using System.Linq;
 
 namespace PortableRest
 {
@@ -20,8 +29,6 @@ namespace PortableRest
         private List<KeyValuePair<string, string>> UrlSegments { get; set; }
 
         private List<KeyValuePair<string, object>> Parameters { get; set; }
-
-        //private List<KeyValuePair<string, string>> QueryString { get; set; }
 
         #endregion
 
@@ -105,6 +112,15 @@ namespace PortableRest
         #endregion
 
         #region Public Methods
+        /// <summary>
+        /// Adds an unnamed parameter to the body of the request.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <remarks>Use this method if you're not using UrlFormEncoded requests.</remarks>
+        public void AddParameter(object value)
+        {
+            Parameters.Add(new KeyValuePair<string, object>("", value));
+        }
 
         /// <summary>
         /// Adds a parameter to the body of the request.
@@ -117,16 +133,6 @@ namespace PortableRest
             Parameters.Add(new KeyValuePair<string, object>(key, value));
         }
 
-        ///// <summary>
-        ///// Adds an item to the QueryString of the request.
-        ///// </summary>
-        ///// <param name="key"></param>
-        ///// <param name="value"></param>
-        //public void AddQueryString(string key, string value)
-        //{
-        //    QueryString.Add(new KeyValuePair<string, string>(key, value));
-        //}
-
         /// <summary>
         /// Adds segments 
         /// </summary>
@@ -138,7 +144,6 @@ namespace PortableRest
         {
             UrlSegments.Add(new KeyValuePair<string, string>(key, value));
         }
-
 
         #endregion
 
@@ -201,11 +206,79 @@ namespace PortableRest
                     return parameters;
 
                 case ContentTypes.Xml:
-                    throw new NotImplementedException("Sending XML is not yet supported, but will be added in a future release.");
-                default:
+                    var result = "";
+                    if (Parameters.Count == 0) return result;
 
+                    var type = Parameters[0].Value.GetType();
+
+                    var serializer = new DataContractSerializer(type);
+                    using (var stream = new MemoryStream())
+                    {
+                        serializer.WriteObject(stream, Parameters[0].Value);
+                        result = Encoding.UTF8.GetString(stream.ToArray(), 0, (int)stream.Length);  
+                    }
+
+                    if (IgnoreXmlAttributes || string.IsNullOrWhiteSpace(result)) return result;
+
+                    var doc = XElement.Parse(result);
+                    //Clean all of the DataContract namespaces from the payload.
+                    doc.Attributes().Remove();
+                    Transform(IgnoreRootElement ? doc.Descendants().First() : doc, Parameters[0].Value.GetType());
+                    return doc.ToString();
+                default:
                     return Parameters.Count > 0 ? JsonConvert.SerializeObject(Parameters[0].Value) : "";
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        /// <remarks>Technique from http://blogs.msdn.com/b/ericwhite/archive/2009/07/20/a-tutorial-in-the-recursive-approach-to-pure-functional-transformations-of-xml.aspx </remarks>
+        private void Transform(XNode node, Type type)
+        {
+            var element = node as XElement;
+            if (element == null) return;
+            element.Attributes().Remove();
+
+            var t = type.GetTypeInfo();
+
+            //RWM: Do the recursion first, so matching elements in child objects don't accidentally get picked up early.
+
+            //TODO: Handle generic lists
+            foreach (var prop in t.DeclaredProperties.Where(c => !(c.PropertyType.GetTypeInfo().IsSimpleType())))
+            {
+                Debug.WriteLine(prop.Name);
+                var xnode = element.Descendants().FirstOrDefault(c => c.Name.ToString() == prop.Name);
+                if (xnode != null)
+                {
+                    Transform(xnode, prop.PropertyType);
+                }
+
+            }
+
+            foreach (var prop in t.DeclaredProperties.Where(c => c.GetCustomAttributes<XmlAttributeAttribute>().Any()))
+            {
+                var attribs = prop.GetCustomAttributes();
+                if (attribs.Any(c => c is IgnoreDataMemberAttribute || c is XmlIgnoreAttribute)) continue;
+
+                var xnode = element.Descendants().FirstOrDefault(c => c.Name.ToString() == prop.Name);
+                if (xnode == null) continue;
+                element.SetAttributeValue(xnode.Name, xnode.Value);
+                xnode.Remove();
+            }
+
+            //TODO: RWM: Handle time formats properly.
+            //foreach (var prop in t.DeclaredProperties.Where(c => c.PropertyType == typeof (DateTime)))
+            //{
+            //    var xnode = element.Descendants().FirstOrDefault(c => c.Name.ToString() == prop.Name);
+            //    if (xnode == null) continue;
+            //    var newValue = DateTime.ParseExact(element.Value, DateFormat, null);
+            //    element.Value = XmlConvert.ToString(newValue);
+            //}
+
         }
 
         #endregion

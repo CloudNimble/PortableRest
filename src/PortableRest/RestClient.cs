@@ -167,7 +167,7 @@ namespace PortableRest
         /// <param name="node"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        /// <remarks>Technique from http://blogs.msdn.com/b/ericwhite/archive/2009/07/20/a-tutorial-in-the-recursive-approach-to-pure-functional-transformations-of-xml.aspx</remarks>
+        /// <remarks>Technique from http://blogs.msdn.com/b/ericwhite/archive/2009/07/20/a-tutorial-in-the-recursive-approach-to-pure-functional-transformations-of-xml.aspx </remarks>
         private static object Transform(XNode node, RestRequest request)
         {
             var element = node as XElement;
