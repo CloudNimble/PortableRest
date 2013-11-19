@@ -19,5 +19,18 @@ namespace PortableRest.Tests
             Assert.IsInstanceOfType(result.Apis, typeof(List<Api>));
             Assert.IsNotNull(result.Apis[0]);
         }
+
+        [TestMethod]
+        public async Task GetApisWithNameTest()
+        {
+            var client = new GoogleDiscoveryClient();
+            var result = await client.GetApis("adexchangebuyer");
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result, typeof(ApisResult));
+            Assert.IsInstanceOfType(result.Apis, typeof(List<Api>));
+            Assert.IsNotNull(result.Apis[0]);
+        }
+
+
     }
 }

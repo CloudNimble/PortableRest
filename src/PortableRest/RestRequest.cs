@@ -26,7 +26,7 @@ namespace PortableRest
         /// <summary>
         /// 
         /// </summary>
-        private List<KeyValuePair<string, string>> UrlSegments { get; set; }
+        private List<UrlSegment> UrlSegments { get; set; }
 
         private List<KeyValuePair<string, object>> Parameters { get; set; }
 
@@ -73,9 +73,8 @@ namespace PortableRest
         /// </summary>
         public RestRequest()
         {
-            UrlSegments = new List<KeyValuePair<string, string>>();
+            UrlSegments = new List<UrlSegment>();
             Parameters = new List<KeyValuePair<string, object>>();
-            //QueryString = new List<KeyValuePair<string, string>>();
             Method = HttpMethod.Get;
         }
 
@@ -142,7 +141,17 @@ namespace PortableRest
         /// <example>Resource = "/Samples.aspx?Test1={test1}";</example>
         public void AddUrlSegment(string key, string value)
         {
-            UrlSegments.Add(new KeyValuePair<string, string>(key, value));
+            UrlSegments.Add(new UrlSegment(key, value));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void AddQueryString(string key, string value)
+        {
+            UrlSegments.Add(new UrlSegment(key, value, true));
         }
 
         #endregion
@@ -156,9 +165,20 @@ namespace PortableRest
         /// <returns></returns>
         internal Uri GetResourceUri(string baseUrl)
         {
-            foreach (var segment in UrlSegments)
+            foreach (var segment in UrlSegments.Where(c => !c.IsQueryString))
             {
                 Resource = Resource.Replace("{" + segment.Key + "}", Uri.EscapeUriString(segment.Value));
+            }
+
+            if (UrlSegments.Any(c => c.IsQueryString))
+            {
+                var queryString = UrlSegments.Where(c => c.IsQueryString)
+                    .Aggregate(new StringBuilder(),
+                        (current, next) =>
+                            current.Append(string.Format("&{0}={1}", next.Key, Uri.EscapeUriString(next.Value))))
+                    .ToString();
+
+                Resource = string.Format(Resource.Contains("?") ? "{0}{1}" : "{0}?{1}", Resource, queryString);
             }
 
             if (!string.IsNullOrEmpty(Resource) && Resource.StartsWith("/"))

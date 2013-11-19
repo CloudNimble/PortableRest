@@ -40,9 +40,13 @@ namespace PortableRest.Tests
         /// Gets a list of APIs that are available from Google to develop against.
         /// </summary>
         /// <returns>An ApiResult object containing the APIs available from Google.</returns>
-        public async Task<ApisResult> GetApis()
+        public async Task<ApisResult> GetApis(string name = "")
         {
             var request = new RestRequest("apis");
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                request.AddQueryString("name", name);
+            }
             return await ExecuteAsync<ApisResult>(request);
         }
 
