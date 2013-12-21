@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -35,7 +36,7 @@ namespace PortableRest
         #region Properties
 
         /// <summary>
-        /// 
+        /// The <see cref="ContentType"/> of the request.
         /// </summary>
         public ContentTypes ContentType { get; set; }
 
@@ -45,12 +46,12 @@ namespace PortableRest
         public string DateFormat { get; set; }
 
         /// <summary>
-        /// Specifies whether or not the root 
+        /// Specifies whether or not the root element in the response.
         /// </summary>
         public bool IgnoreRootElement { get; set; }
 
         /// <summary>
-        /// 
+        /// When <see cref="ContentTypes.Xml"/>, specifies whether or not attributes should be ignored.
         /// </summary>
         public bool IgnoreXmlAttributes { get; set; }
 
@@ -86,7 +87,7 @@ namespace PortableRest
         /// <summary>
         /// Creates a new RestRequest instance for a given Resource.
         /// </summary>
-        /// <param name="resource"></param>
+        /// <param name="resource">The specific resource to access.</param>
         public RestRequest(string resource) : this()
         {
             Resource = resource;
@@ -105,9 +106,9 @@ namespace PortableRest
         /// <summary>
         /// Creates a new RestRequest instance for a given Resource and Method, specifying whether or not to ignore the root object in the response.
         /// </summary>
-        /// <param name="resource"></param>
-        /// <param name="method"></param>
-        /// <param name="ignoreRoot"></param>
+        /// <param name="resource">The URL format string of the resource to request.</param>
+        /// <param name="method">The <see cref="HttpMethod"/> for the request.</param>
+        /// <param name="ignoreRoot">Whether or not the root object from the response should be ignored.</param>
         public RestRequest(string resource, HttpMethod method, bool ignoreRoot) : this(resource, method)
         {
             IgnoreRootElement = ignoreRoot;
@@ -139,32 +140,32 @@ namespace PortableRest
         }
 
         /// <summary>
-        /// Adds segments 
+        /// Replaces tokenized segments of the URL with a desired value.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        /// <remarks>This can be used for QueryString parameters too.</remarks>
-        /// <example>Resource = "/Samples.aspx?Test1={test1}";</example>
+        /// <example>If <code>Resource = "{entity}/Samples.aspx"</code> and <code>someVariable.Publisher = "Disney";</code>, then
+        /// <code>Resource.AddUrlSegment("entity", someVariable.Publisher);</code> becomes <code>Resource = "Disney/Samples.aspx";</code></example>
         public void AddUrlSegment(string key, string value)
         {
             UrlSegments.Add(new UrlSegment(key, value));
         }
 
         /// <summary>
-        /// 
+        /// Appends a key/value pair to the end of the existing QueryString in a URI.
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
+        /// <param name="key">The string key to append to the QueryString.</param>
+        /// <param name="value">The string value to append to the QueryString.</param>
         public void AddQueryString(string key, string value)
         {
             UrlSegments.Add(new UrlSegment(key, value, true));
         }
 
         /// <summary>
-        /// 
+        /// Appends a key/value pair to the end of the existing QueryString in a URI.
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
+        /// <param name="key">The string key to append to the QueryString.</param>
+        /// <param name="value">The value to append to the QueryString (we will call .ToString() for you).</param>
         public void AddQueryString(string key, object value)
         {
             AddQueryString(key, value.ToString());
@@ -191,7 +192,7 @@ namespace PortableRest
                 var queryString = UrlSegments.Where(c => c.IsQueryString)
                     .Aggregate(new StringBuilder(),
                         (current, next) =>
-                            current.Append(string.Format("&{0}={1}", next.Key, Uri.EscapeUriString(next.Value))))
+                            current.Append(string.Format("&{0}={1}", Uri.EscapeUriString(next.Key), Uri.EscapeDataString(next.Value))))
                     .ToString();
 
                 Resource = string.Format(Resource.Contains("?") ? "{0}{1}" : "{0}?{1}", Resource, queryString);
@@ -284,6 +285,7 @@ namespace PortableRest
             //RWM: Do the recursion first, so matching elements in child objects don't accidentally get picked up early.
 
             //TODO: Handle generic lists
+            //foreach (var prop in t.DeclaredProperties.Where(c => !(c.PropertyType.GetTypeInfo().IsSimpleType())))
             foreach (var prop in type.GetProperties().Where(c => !(c.PropertyType.IsSimpleType())))
             {
                 Debug.WriteLine(prop.Name);
@@ -294,6 +296,7 @@ namespace PortableRest
                 }
             }
 
+            //foreach (var prop in t.DeclaredProperties.Where(c => c.GetCustomAttributes(typeof(XmlAttributeAttribute), true).Any()))
             foreach (var prop in type.GetProperties().Where(c => c.GetCustomAttributes(typeof(XmlAttributeAttribute), true).Any()))
             {
                 var attribs = prop.GetCustomAttributes(true);
