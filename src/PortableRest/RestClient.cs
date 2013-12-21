@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.ServiceModel.Channels;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -118,7 +119,11 @@ namespace PortableRest
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            if (response.Content.Headers.ContentType.MediaType == "application/xml")
+            if (restRequest.ReturnRawString)
+            {
+                result = responseContent as T;
+            }
+            else if (response.Content.Headers.ContentType.MediaType == "application/xml")
             {
 
                 // RWM: IDEA - The DataContractSerializer doesn't like attributes, but will handle everything else.
@@ -131,7 +136,7 @@ namespace PortableRest
 
                 var root = XElement.Parse(responseContent);
                 var newRoot = (XElement)Transform(restRequest.IgnoreRootElement ? root.Descendants().First() : root, restRequest);
-                 
+
                 using (var memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(newRoot.ToString())))
                 {
                     var settings = new XmlReaderSettings {IgnoreWhitespace = true};

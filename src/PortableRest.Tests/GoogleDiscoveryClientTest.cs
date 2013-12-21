@@ -31,6 +31,13 @@ namespace PortableRest.Tests
             Assert.IsNotNull(result.Apis[0]);
         }
 
+        [TestMethod]
+        public async Task GetApisRawTest()
+        {
+            var client = new GoogleDiscoveryClient();
+            var result = await client.GetApisRaw("adexchangebuyer");
+            Assert.AreNotEqual(result, "");
+        }
 
     }
 }

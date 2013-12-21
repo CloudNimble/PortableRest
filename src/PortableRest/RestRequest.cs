@@ -64,6 +64,11 @@ namespace PortableRest
         /// </summary>
         public string Resource { internal get; set; }
 
+        /// <summary>
+        /// Tells the RestClient to skip deserialization and return the raw result.
+        /// </summary>
+        public bool ReturnRawString { get; set; }
+
         #endregion
 
         #region Constructors
@@ -111,6 +116,7 @@ namespace PortableRest
         #endregion
 
         #region Public Methods
+
         /// <summary>
         /// Adds an unnamed parameter to the body of the request.
         /// </summary>
@@ -152,6 +158,16 @@ namespace PortableRest
         public void AddQueryString(string key, string value)
         {
             UrlSegments.Add(new UrlSegment(key, value, true));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void AddQueryString(string key, object value)
+        {
+            AddQueryString(key, value.ToString());
         }
 
         #endregion
@@ -263,12 +279,12 @@ namespace PortableRest
             if (element == null) return;
             element.Attributes().Remove();
 
-            var t = type.GetTypeInfo();
+            //var t = type.GetTypeInfo();
 
             //RWM: Do the recursion first, so matching elements in child objects don't accidentally get picked up early.
 
             //TODO: Handle generic lists
-            foreach (var prop in t.DeclaredProperties.Where(c => !(c.PropertyType.GetTypeInfo().IsSimpleType())))
+            foreach (var prop in type.GetProperties().Where(c => !(c.PropertyType.IsSimpleType())))
             {
                 Debug.WriteLine(prop.Name);
                 var xnode = element.Descendants().FirstOrDefault(c => c.Name.ToString() == prop.Name);
@@ -276,12 +292,11 @@ namespace PortableRest
                 {
                     Transform(xnode, prop.PropertyType);
                 }
-
             }
 
-            foreach (var prop in t.DeclaredProperties.Where(c => c.GetCustomAttributes<XmlAttributeAttribute>().Any()))
+            foreach (var prop in type.GetProperties().Where(c => c.GetCustomAttributes(typeof(XmlAttributeAttribute), true).Any()))
             {
-                var attribs = prop.GetCustomAttributes();
+                var attribs = prop.GetCustomAttributes(true);
                 if (attribs.Any(c => c is IgnoreDataMemberAttribute || c is XmlIgnoreAttribute)) continue;
 
                 var xnode = element.Descendants().FirstOrDefault(c => c.Name.ToString() == prop.Name);
