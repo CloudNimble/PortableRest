@@ -71,7 +71,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContentTypes.cs" />
+    <Compile Include="EncodedParameter.cs" />
+    <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
+    <Compile Include="ParameterEncoding.cs" />
     <Compile Include="PortableRestException.cs" />
     <Compile Include="RestClient.cs" />
     <Compile Include="RestRequest.cs" />

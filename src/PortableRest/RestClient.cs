@@ -101,16 +101,31 @@ namespace PortableRest
 
             var message = new HttpRequestMessage(restRequest.Method, restRequest.GetResourceUri(BaseUrl));
 
+            //RWM: Add the global headers for all requests.
             foreach (var header in Headers)
             {
                 message.Headers.Add(header.Key, header.Value);
             }
 
+            //RWM: Add request-specific headers.
+            foreach (var header in restRequest.Headers)
+            {
+                message.Headers.Add(header.Key, header.Value.ToString());
+            }
+
             //RWM: Not sure if this is sufficient, or if HEAD supports a body, will need to check into the RFC.
             if (restRequest.Method != HttpMethod.Get && restRequest.Method != HttpMethod.Head && restRequest.Method != HttpMethod.Trace)
             {
-                var contentString = new StringContent(restRequest.GetRequestBody(), Encoding.UTF8, restRequest.GetContentType());
-                message.Content = contentString;
+                //REM: This feels hacky. May need some tweaking.
+                if (restRequest.ContentType == ContentTypes.ByteArray)
+                {
+                    message.Content = new ByteArrayContent(restRequest.Parameters[0].GetEncodedValue() as byte[]);
+                }
+                else
+                {
+                    var contentString = new StringContent(restRequest.GetRequestBody(), Encoding.UTF8, restRequest.GetContentType());
+                    message.Content = contentString;
+                }
             }
 
             HttpResponseMessage response = null;

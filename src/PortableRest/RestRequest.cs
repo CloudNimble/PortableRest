@@ -12,6 +12,7 @@ using System.Xml.Serialization;
 using Newtonsoft.Json;
 using System.Xml;
 using System.Linq;
+using PortableRest.Extensions;
 
 namespace PortableRest
 {
@@ -29,7 +30,10 @@ namespace PortableRest
         /// </summary>
         private List<UrlSegment> UrlSegments { get; set; }
 
-        private List<KeyValuePair<string, object>> Parameters { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        internal List<EncodedParameter> Parameters { get; set; }
 
         #endregion
 
@@ -44,6 +48,11 @@ namespace PortableRest
         /// 
         /// </summary>
         public string DateFormat { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public Dictionary<string, object> Headers { get; set; }
 
         /// <summary>
         /// Specifies whether or not the root element in the response.
@@ -80,7 +89,8 @@ namespace PortableRest
         public RestRequest()
         {
             UrlSegments = new List<UrlSegment>();
-            Parameters = new List<KeyValuePair<string, object>>();
+            Parameters = new List<EncodedParameter>();
+            Headers = new Dictionary<string, object>();
             Method = HttpMethod.Get;
         }
 
@@ -119,25 +129,40 @@ namespace PortableRest
         #region Public Methods
 
         /// <summary>
+        /// Adds an Header to only this specific request.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <remarks>Use this if you have an authentication token that times out on a regular basis.</remarks>
+        public void AddHeader(string key, object value)
+        {
+            Headers.Add(key, value);
+        }
+
+        /// <summary>
         /// Adds an unnamed parameter to the body of the request.
         /// </summary>
         /// <param name="value"></param>
         /// <remarks>Use this method if you're not using UrlFormEncoded requests.</remarks>
         public void AddParameter(object value)
         {
-            Parameters.Add(new KeyValuePair<string, object>("", value));
+            AddParameter("", value);
         }
 
         /// <summary>
-        /// Adds a parameter to the body of the request.
+        /// Adds a parameter to the body of the request, to be encoded with the specified format.
         /// </summary>
         /// <param name="key"></param>
-        /// <param name="value"></param>
+        /// <param name="value">
+        /// For ByteArrays or Base64, this needs to be a Stream, or an exception will be thrown when the request is executed.
+        /// </param>
+        /// <param name="encoding"></param>
         /// <remarks>Note: If the ContentType is anything other than UrlFormEncoded, only the first Parameter will be serialzed to the request body.</remarks>
-        public void AddParameter(string key, object value)
+        public void AddParameter(string key, object value, ParameterEncoding encoding = ParameterEncoding.UriEncoded)
         {
-            Parameters.Add(new KeyValuePair<string, object>(key, value));
+            Parameters.Add(new EncodedParameter(key, value, encoding));
         }
+
 
         /// <summary>
         /// Replaces tokenized segments of the URL with a desired value.
@@ -236,11 +261,12 @@ namespace PortableRest
             switch (ContentType)
             {
                 case ContentTypes.FormUrlEncoded:
-                    var parameters = Parameters.Aggregate("", (s, pair) =>
-                                                  s + string.Format("{0}{1}={2}", s.Length > 0 ? "&" : "",
-                                                                Uri.EscapeDataString(pair.Key),
-                                                                Uri.EscapeDataString(pair.Value.ToString())));
-                    return parameters;
+                    var parameters = Parameters.Aggregate(new StringBuilder(), 
+                        (current, next) =>
+                            current.Append(string.Format("{0}{1}={2}", current.Length > 0 ? "&" : "",
+                                Uri.EscapeDataString(next.Key),
+                                next.GetEncodedValue())));
+                    return parameters.ToString();
 
                 case ContentTypes.Xml:
                     var result = "";
@@ -252,7 +278,7 @@ namespace PortableRest
                     using (var stream = new MemoryStream())
                     {
                         serializer.WriteObject(stream, Parameters[0].Value);
-                        result = Encoding.UTF8.GetString(stream.ToArray(), 0, (int)stream.Length);  
+                        result = Encoding.UTF8.GetString(stream.ToArray(), 0, (int)stream.Length);
                     }
 
                     if (IgnoreXmlAttributes || string.IsNullOrWhiteSpace(result)) return result;
@@ -320,7 +346,5 @@ namespace PortableRest
         }
 
         #endregion
-
-
     }
 }

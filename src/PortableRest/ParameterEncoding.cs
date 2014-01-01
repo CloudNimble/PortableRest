@@ -5,8 +5,18 @@ using System.Text;
 
 namespace PortableRest
 {
-    public enum ContentTypes
+
+    /// <summary>
+    /// Specifies how a body paremeter should be encoded before transmission.
+    /// </summary>
+    public enum ParameterEncoding
     {
+
+        /// <summary>
+        /// 
+        /// </summary>
+        Base64,
+
         /// <summary>
         /// 
         /// </summary>
@@ -15,16 +25,11 @@ namespace PortableRest
         /// <summary>
         /// 
         /// </summary>
-        FormUrlEncoded,
+        UriEncoded,
 
         /// <summary>
         /// 
         /// </summary>
-        Json,
-
-        /// <summary>
-        /// 
-        /// </summary>
-        Xml,
+        Unencoded
     }
 }
