@@ -122,7 +122,7 @@
 
     window.PortableRest.RestRequest.prototype.addUrlSegment = function (key, value)
     {
-        /// <summary></summary>
+        /// <summary>Replaces tokenized segments of the URL with a desired value.</summary>
         /// <param name="key" type="String"></param>
         /// <param name="value" type="String"></param>
         
@@ -131,7 +131,7 @@
 
     window.PortableRest.RestRequest.prototype.addParameter = function (key, value)
     {
-        /// <summary></summary>
+        /// <summary>Adds an unnamed parameter to the body of the request.</summary>
         /// <param name="key" type="String"></param>
         /// <param name="value" type="Object"></param>
         
