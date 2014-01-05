@@ -137,13 +137,16 @@
         this._urlSegments.push({ key: key, value: value });
     };
 
-    window.PortableRest.RestRequest.prototype.addParameter = function (key, value)
+    window.PortableRest.RestRequest.prototype.addParameter = function (key, value, encoding)
     {
         /// <summary>Adds an unnamed parameter to the body of the request.</summary>
         /// <param name="key" type="String"></param>
         /// <param name="value" type="Object"></param>
+        /// <param name="encoding" type"window.PortableRest.ParameterEncoding"></param>
+
+        encoding = encoding || window.PortableRest.ParameterEncoding.UriEncoded;
         
-        this._parameters.push({ key: key, value: value });
+        this._parameters.push({ key: key, value: value, encoding: encoding });
     };
 
     window.PortableRest.RestRequest.prototype.setCredentials = function (user, password)
