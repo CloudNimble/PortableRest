@@ -4,20 +4,34 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace System.IO
+namespace PortableRest.Extensions
 {
+
+    /// <summary>
+    /// 
+    /// </summary>
     public static class StreamExtensions
     {
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="toWrite"></param>
-        public static void WriteString(this Stream stream, string toWrite)
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static byte[] ToArray(this Stream input)
         {
-            var bytes = Encoding.UTF8.GetBytes(toWrite);
-            stream.Write(bytes, 0, bytes.Length);
+            var buffer = new byte[16 * 1024];
+            using (var ms = new MemoryStream())
+            {
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+
+                return ms.ToArray();
+            }
         }
+
     }
 }
