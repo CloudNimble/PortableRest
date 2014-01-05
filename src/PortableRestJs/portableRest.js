@@ -96,6 +96,14 @@
             NetworkAuthenticationRequired: 511
         };
 
+    window.PortableRest.ParameterEncoding =
+        {
+            Base64: 0,
+            ByteArray: 1,
+            UriEncoded: 2,
+            Unencoded: 3
+        };
+
     window.PortableRest.RestRequest = function (resource, method)
     {
         /// <summary>Creates a new RestRequest instance for a given Resource and Method.</summary>
