@@ -14,7 +14,7 @@
             FormUrlEncoded: "application/x-www-form-urlencoded",
             Json: "application/json",
             Xml: "application/xml",
-            MultipartFormData: "multipart/form-data"
+            MultipartFormData: "multipart/form-data",
         };
 
     window.PortableRest.HttpMethod =
@@ -353,7 +353,7 @@
 
         var body = null;
 
-        if ((restRequest.method === window.PortableRest.HttpMethod.Post) || (restRequest.method === window.PortableRest.HttpMethod.Put))
+        if ((restRequest.method !== window.PortableRest.HttpMethod.Get) && (restRequest.method !== window.PortableRest.HttpMethod.Head) && (restRequest.method !== window.PortableRest.HttpMethod.Trace))
         {
             if (restRequest.contentType !== window.PortableRest.ContentTypes.MultipartFormData)
             {
