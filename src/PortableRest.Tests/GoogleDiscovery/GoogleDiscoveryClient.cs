@@ -27,11 +27,11 @@ namespace PortableRest.Tests
         public GoogleDiscoveryClient()
         {
             // The new PCL + .NET 4.5 way to get the assembly through Reflection/
-            var assembly = typeof(ApisResult).GetTypeInfo().Assembly;
-            var assemblyName = new AssemblyName(assembly.FullName);
-            var version = assemblyName.Version;
+            //var assembly = typeof(ApisResult).GetTypeInfo().Assembly;
+            //var assemblyName = new AssemblyName(assembly.FullName);
+            //var version = assemblyName.Version;
 
-            UserAgent = "PortableRest Unit Test Client v" + version;
+            SetUserAgent<ApisResult>("PortableRest Unit Test Client");
             ApiVersion = "v1";
             BaseUrl = "https://www.googleapis.com/discovery/" + ApiVersion;
         }

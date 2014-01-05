@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Reflection;
 using System.ServiceModel.Channels;
 using Newtonsoft.Json;
 using System;
@@ -16,7 +17,7 @@ namespace PortableRest
 {
 
     /// <summary>
-    /// Base client to create REST requests and process REST responses.
+    /// Base client to create REST requests and process REST responses. Uses <see cref="HttpClient"/> as the underlying transport.
     /// </summary>
     public class RestClient
     {
@@ -35,7 +36,7 @@ namespace PortableRest
         public string BaseUrl { get; set; }
 
         /// <summary>
-        /// 
+        /// The format to be used when serializing and deserializing dates.
         /// </summary>
         public string DateFormat { get; set; }
 
@@ -51,7 +52,7 @@ namespace PortableRest
 
         #endregion
 
-        #region Methods
+        #region Public Methods
 
         /// <summary>
         /// Creates a new instance of the RestClient class.
@@ -69,6 +70,37 @@ namespace PortableRest
         public void AddHeader(string key, string value)
         {
             Headers.Add(new KeyValuePair<string, string>(key, value));
+        }
+
+        /// <summary>
+        /// Sets the <see cref="UserAgent"/> for this client in a standardized format using a Type from your client library.
+        /// </summary>
+        /// <param name="displayName">
+        /// Optional. The name you want displayed for this Client. If left blank, it will default to the AssemblyTitleAttribute value from the AssemblyInfo file.
+        /// </param>
+        /// <typeparam name="T">A type from your Client Library that can be used to get the assembly information.</typeparam>
+        /// <remarks>This will set the <see cref="UserAgent"/> to "YourAssemblyName Major.Minor.Revision (PortableRest Major.Minor.Revision)</remarks>
+        public void SetUserAgent<T>(string displayName = null)
+        {
+            var thisAssembly = typeof (T).Assembly;
+            var thisAssemblyName = new AssemblyName(thisAssembly.FullName);
+            var thisVersion = thisAssemblyName.Version;
+
+            if (displayName == null)
+            {
+                var attributes = thisAssembly.GetCustomAttributes(typeof (AssemblyTitleAttribute), false);
+                if (attributes.Length == 0) 
+                {
+                    throw new Exception("The assembly containing the class inheriting from PortableRest.RestClient must have an AssemblyTitle attribute specified.");
+                }
+                displayName = ((AssemblyTitleAttribute)attributes[0]).Title;
+            }
+
+            var prAssembly = typeof(RestRequest).Assembly;
+            var prAssemblyName = new AssemblyName(prAssembly.FullName);
+            var prVersion = prAssemblyName.Version;
+
+            UserAgent = string.Format("{0} {1} (PortableRest {2})", displayName, thisVersion.ToString(3), prVersion.ToString(3));
         }
 
         /// <summary>
@@ -94,10 +126,11 @@ namespace PortableRest
 
             _client = new HttpClient(handler);
 
-            if (!string.IsNullOrWhiteSpace(UserAgent))
+            if (string.IsNullOrWhiteSpace(UserAgent))
             {
-                _client.DefaultRequestHeaders.Add("user-agent", UserAgent);
+                SetUserAgent<T>();
             }
+            _client.DefaultRequestHeaders.Add("user-agent", UserAgent);
 
             var message = new HttpRequestMessage(restRequest.Method, restRequest.GetResourceUri(BaseUrl));
 
@@ -179,10 +212,10 @@ namespace PortableRest
 
         #endregion
 
-        #region Helpers
+        #region Private Methods
 
         /// <summary>
-        /// 
+        /// Helps deal with the fact that the XmlSerializer is not supported, and the DataContractSerializer hates XmlAttributes.
         /// </summary>
         /// <param name="node"></param>
         /// <param name="request"></param>

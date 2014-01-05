@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
         <id>PortableRest</id>
-        <version>2.4.0-Beta2</version>
+        <version>2.4.0</version>
         <title>PortableRest</title>
         <authors>AdvancedREI</authors>
         <owners>AdvancedREI</owners>
@@ -10,18 +10,15 @@
         <projectUrl>http://github.com/AdvancedREI/PortableRest</projectUrl>
         <iconUrl>https://advancedrei.blob.core.windows.net/nuget/PortableRest.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>A library for consuming REST APIs from Portable Class Libraries (.NET 4.5, SL5, Windows Phone 8, and Windows 8.x). Designed to be partially drop-in compatible with RestSharp.</description>
-        <releaseNotes>2.4: Ability to set encoding on individual parameters, plus request-specific headers.
+        <description>A library for consuming REST APIs from Portable Class Libraries (.NET 4.5, Silverlight 5, Windows Phone 8, and Windows 8.x). Designed to be partially drop-in compatible with RestSharp.</description>
+        <releaseNotes>2.4: Added ability to set encoding on individual parameters. Added request-specific headers for OAuth compatibility. Added RestClient.SetUserAgent()to set the UserAgent for you.
 2.3: Triumphant return of SL5 support. Better documentation. RestClient.ExecuteAsync can return the raw string. Bug fixes.
 2.1.2: Adds missing XML documentation file.
 2.1: Adds RestRequest.AddQueryString. Updated minimum package references for Mono-compatible licenses.
 2.0: Removed support for Silverlight due to Microsoft's new Reflection framework on .NET 4.5. Added initial support for submitting XML payloads. Strong-name signed the assembly so it can be used in strong-name signed projects.
 1.2: Updated to latest packages, include Microsoft.Bcl.Build directly to help with app.config issues.
-
 1.1: Compiled to HttpClient 2.2.
-
 1.0.8: Compile to new dependencies.
-
 1.0.6: Update based on changes to HttpClient.Compression.
 1.0.5: Added Compression support.
 1.0.4-alpha: Added basic POST support, &amp; updated XML deserialization.

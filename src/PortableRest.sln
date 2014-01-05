@@ -14,6 +14,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{84CCE4
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortableRest.Tests", "PortableRest.Tests\PortableRest.Tests.csproj", "{EE7DCA96-146F-496B-9C8E-5368487DEE82}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{336F7F6F-8380-4C7C-9EE1-5AC824B58342}"
+	ProjectSection(SolutionItems) = preProject
+		PortableRest.nuspec = PortableRest.nuspec
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
