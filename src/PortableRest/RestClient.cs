@@ -46,6 +46,11 @@ namespace PortableRest
         public string UserAgent { get; set; }
 
         /// <summary>
+        /// Will use a shared cookie container for all requests.
+        /// </summary>
+        public CookieContainer CookieContainer { get; set; }
+
+        /// <summary>
         /// A list of KeyValuePairs that will be appended to the Headers collection for all requests.
         /// </summary>
         private List<KeyValuePair<string, string>> Headers { get; set; }
@@ -122,6 +127,10 @@ namespace PortableRest
             if (handler.SupportsAutomaticDecompression)
             {
                 handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            }
+            if (CookieContainer != null)
+            {
+                handler.CookieContainer = CookieContainer;
             }
 
             _client = new HttpClient(handler);
