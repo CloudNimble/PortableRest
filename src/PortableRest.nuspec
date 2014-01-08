@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
         <id>PortableRest</id>
-        <version>2.4.0</version>
+        <version>2.4.1</version>
         <title>PortableRest</title>
         <authors>AdvancedREI</authors>
         <owners>AdvancedREI</owners>
@@ -11,7 +11,8 @@
         <iconUrl>https://advancedrei.blob.core.windows.net/nuget/PortableRest.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>A library for consuming REST APIs from Portable Class Libraries (.NET 4.5, Silverlight 5, Windows Phone 8, and Windows 8.x). Designed to be partially drop-in compatible with RestSharp.</description>
-        <releaseNotes>2.4: Added ability to set encoding on individual parameters. Added request-specific headers for OAuth compatibility. Added RestClient.SetUserAgent()to set the UserAgent for you.
+        <releaseNotes>2.4.1: RestClient.CookieContainer property to share cookies between requests.
+2.4: Added ability to set encoding on individual parameters. Added request-specific headers for OAuth compatibility. Added RestClient.SetUserAgent()to set the UserAgent for you.
 2.3: Triumphant return of SL5 support. Better documentation. RestClient.ExecuteAsync can return the raw string. Bug fixes.
 2.1.2: Adds missing XML documentation file.
 2.1: Adds RestRequest.AddQueryString. Updated minimum package references for Mono-compatible licenses.
@@ -37,9 +38,9 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="PortableRest\bin\Release\PortableRest.dll" target="lib\portable-net45+sl5+wp8+win8\PortableRest.dll" />
-        <file src="PortableRest\bin\Release\PortableRest.pdb" target="lib\portable-net45+sl5+wp8+win8\PortableRest.pdb" />
-        <file src="PortableRest\bin\Release\PortableRest.xml" target="lib\portable-net45+sl5+wp8+win8\PortableRest.xml" />
+        <file src="PortableRest\bin\Release\PortableRest.dll" target="lib\portable-net45+sl5+wp8+win8\" />
+        <file src="PortableRest\bin\Release\PortableRest.pdb" target="lib\portable-net45+sl5+wp8+win8\" />
+        <file src="PortableRest\bin\Release\PortableRest.xml" target="lib\portable-net45+sl5+wp8+win8\" />
         <file src="PortableRest\**\*.cs" exclude="**\obj\**\*.*" target="src" />
     </files>
 </package>

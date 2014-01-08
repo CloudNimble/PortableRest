@@ -1,17 +1,16 @@
-﻿using System.Net;
-using System.Reflection;
-using System.ServiceModel.Channels;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using Newtonsoft.Json;
 
 namespace PortableRest
 {
@@ -46,7 +45,7 @@ namespace PortableRest
         public string UserAgent { get; set; }
 
         /// <summary>
-        /// Will use a shared cookie container for all requests.
+        /// A shared <see cref="CookieContainer"/> that will be used for all requests.
         /// </summary>
         public CookieContainer CookieContainer { get; set; }
 
@@ -65,6 +64,7 @@ namespace PortableRest
         public RestClient()
         {
             Headers = new List<KeyValuePair<string, string>>();
+            CookieContainer = new CookieContainer();
         }
 
         /// <summary>
@@ -128,6 +128,7 @@ namespace PortableRest
             {
                 handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             }
+
             if (CookieContainer != null)
             {
                 handler.CookieContainer = CookieContainer;
@@ -172,7 +173,7 @@ namespace PortableRest
 
             HttpResponseMessage response = null;
             response = await _client.SendAsync(message);
-            response.EnsureSuccessStatusCode();       
+            response.EnsureSuccessStatusCode();
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
