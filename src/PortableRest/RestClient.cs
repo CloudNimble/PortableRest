@@ -14,7 +14,6 @@ using Newtonsoft.Json;
 
 namespace PortableRest
 {
-
     /// <summary>
     /// Base client to create REST requests and process REST responses. Uses <see cref="HttpClient"/> as the underlying transport.
     /// </summary>
@@ -173,8 +172,9 @@ namespace PortableRest
 
             HttpResponseMessage response = null;
             response = await _client.SendAsync(message);
-            response.EnsureSuccessStatusCode();
-
+            if(! response.IsSuccessStatusCode)
+                throw new HttpResponseException(response);
+            
             var responseContent = await response.Content.ReadAsStringAsync();
 
             if (restRequest.ReturnRawString)
