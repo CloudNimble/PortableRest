@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="portableRest.js"></script>
+    <script>
+        function jsonTest()
+        {
+            document.getElementById("jsonResult").innerHTML = "Running";
+            var request = new PortableRest.RestRequest("test.aspx", PortableRest.HttpMethod.Post);
+            request.addParameter("json", { test: 1, string: "Hello World" });
+            request.contentType = PortableRest.ContentTypes.Json;
+            var client = new PortableRest.RestClient();
+            client.execute(request, function (data)
+            {
+                if ((data.test !== undefined) && (data.test === 1) && (data.string !== undefined) && (data.string === "Hello World"))
+                {
+                    document.getElementById("jsonResult").innerHTML = "Pass";
+                }
+                else
+                {
+                    document.getElementById("jsonResult").innerHTML = "Fail";
+                }
+            });
+        }
+
+        function formTest()
+        {
+            document.getElementById("formResult").innerHTML = "Running";
+            var request = new PortableRest.RestRequest("test.aspx", PortableRest.HttpMethod.Post);
+            request.addParameter("test", 1);
+            request.addParameter("string", "Hello World");
+            request.contentType = PortableRest.ContentTypes.FormUrlEncoded;
+            var client = new PortableRest.RestClient();
+            client.execute(request, function (data)
+            {
+                if ((data.test !== undefined) && (data.test === "1") && (data.string !== undefined) && (data.string === "Hello World"))
+                {
+                    document.getElementById("formResult").innerHTML = "Pass";
+                }
+                else
+                {
+                    document.getElementById("formResult").innerHTML = "Fail";
+                }
+            });
+        }
+
+        function xmlTest()
+        {
+            document.getElementById("xmlResult").innerHTML = "Running";
+            var request = new PortableRest.RestRequest("xmlTest.aspx", PortableRest.HttpMethod.Post);
+            request.addParameter("json", { root: { test: 1, string: "Hello World" } });
+            request.contentType = PortableRest.ContentTypes.Json;
+            var client = new PortableRest.RestClient();
+            client.execute(request, function (data)
+            {
+                if ((data.childNodes[0].tagName === "test") && (data.childNodes[1].tagName === "string") && (data.childNodes[0].textContent === "1") && (data.childNodes[1].textContent === "Hello World"))
+                {
+                    document.getElementById("xmlResult").innerHTML = "Pass";
+                }
+                else
+                {
+                    document.getElementById("xmlResult").innerHTML = "Fail";
+                }
+            });
+        }
+
+        function test()
+        {
+            jsonTest();
+            formTest();
+            xmlTest();
+        }
+    </script>
+</head>
+<body>
+    <button onclick="test()">TEST</button>
+    <div>
+        <ul>
+            <li>JSON Test: <span id="jsonResult"></span></li>
+            <li>Form Test: <span id="formResult"></span></li>
+            <li>Xml Test: <span id="xmlResult"></span></li>
+        </ul>
+    </div>
+</body>
+</html>
