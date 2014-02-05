@@ -4,23 +4,19 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
-using System.Xml;
 using System.Linq;
-using PortableRest.Extensions;
 
 namespace PortableRest
 {
-
     /// <summary>
     /// Specifies the parameters for the HTTP request that will be executed against a given resource.
     /// </summary>
-    public class RestRequest
+    public class RestRequest : IRestRequest
     {
 
         #region Private Members
@@ -34,6 +30,11 @@ namespace PortableRest
         /// 
         /// </summary>
         internal List<EncodedParameter> Parameters { get; set; }
+
+        /// <summary>
+        /// In general you would not need to set this directly. Used by the NtlmAuthenticator. 
+        /// </summary>
+        internal ICredentials Credentials { get; set; }
 
         #endregion
 
@@ -52,7 +53,7 @@ namespace PortableRest
         /// <summary>
         /// 
         /// </summary>
-        public Dictionary<string, object> Headers { get; set; }
+        internal List<KeyValuePair<string, object>> Headers { get; set; }
 
         /// <summary>
         /// Specifies whether or not the root element in the response.
@@ -90,7 +91,7 @@ namespace PortableRest
         {
             UrlSegments = new List<UrlSegment>();
             Parameters = new List<EncodedParameter>();
-            Headers = new Dictionary<string, object>();
+            Headers = new List<KeyValuePair<string, object>>();
             Method = HttpMethod.Get;
         }
 
@@ -136,7 +137,7 @@ namespace PortableRest
         /// <remarks>Use this if you have an authentication token that times out on a regular basis.</remarks>
         public void AddHeader(string key, object value)
         {
-            Headers.Add(key, value);
+            Headers.Add(new KeyValuePair<string, object>(key, value));
         }
 
         /// <summary>

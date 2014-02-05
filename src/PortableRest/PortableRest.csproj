@@ -70,10 +70,20 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Authentication\BasicAuthenticator.cs" />
     <Compile Include="ContentTypes.cs" />
     <Compile Include="EncodedParameter.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
+    <Compile Include="Authentication\IAuthenticator.cs" />
+    <Compile Include="Authentication\NtlmAuthenticator.cs" />
+    <Compile Include="InternalHttpClient.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IRestClient.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IRestRequest.cs" />
     <Compile Include="ParameterEncoding.cs" />
     <Compile Include="PortableRestException.cs" />
     <Compile Include="RestClient.cs" />
@@ -110,6 +120,7 @@
       <HintPath>..\packages\Microsoft.Bcl.1.1.6\lib\portable-net40+sl5+win8+wp8\System.Threading.Tasks.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.13\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.13\tools\Microsoft.Bcl.Build.targets')" />

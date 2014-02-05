@@ -11,22 +11,15 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using Newtonsoft.Json;
+using PortableRest.Authentication;
 
 namespace PortableRest
 {
-
     /// <summary>
     /// Base client to create REST requests and process REST responses. Uses <see cref="HttpClient"/> as the underlying transport.
     /// </summary>
-    public class RestClient
+    public class RestClient : IRestClient
     {
-
-        #region Private Members
-
-        private HttpClient _client;
-
-        #endregion
-
         #region Properties
 
         /// <summary>
@@ -52,7 +45,15 @@ namespace PortableRest
         /// <summary>
         /// A list of KeyValuePairs that will be appended to the Headers collection for all requests.
         /// </summary>
-        private List<KeyValuePair<string, string>> Headers { get; set; }
+        internal List<KeyValuePair<string, string>> Headers { get; set; }
+
+        /// <summary>
+        ///     The authenticator used for authenticating the request.
+        ///     <remarks>
+        ///         Can be null.
+        ///     </remarks>
+        /// </summary>
+        public IAuthenticator Authenticator { get; set; }
 
         #endregion
 
@@ -87,14 +88,14 @@ namespace PortableRest
         /// <remarks>This will set the <see cref="UserAgent"/> to "YourAssemblyName Major.Minor.Revision (PortableRest Major.Minor.Revision)</remarks>
         public void SetUserAgent<T>(string displayName = null)
         {
-            var thisAssembly = typeof (T).Assembly;
+            var thisAssembly = typeof(T).Assembly;
             var thisAssemblyName = new AssemblyName(thisAssembly.FullName);
             var thisVersion = thisAssemblyName.Version;
 
             if (displayName == null)
             {
-                var attributes = thisAssembly.GetCustomAttributes(typeof (AssemblyTitleAttribute), false);
-                if (attributes.Length == 0) 
+                var attributes = thisAssembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
+                if (attributes.Length == 0)
                 {
                     throw new Exception("The assembly containing the class inheriting from PortableRest.RestClient must have an AssemblyTitle attribute specified.");
                 }
@@ -123,7 +124,7 @@ namespace PortableRest
                 restRequest.DateFormat = DateFormat;
             }
 
-            var handler = new HttpClientHandler {AllowAutoRedirect = true};
+            var handler = CreateHttpClientHandler();
             if (handler.SupportsAutomaticDecompression)
             {
                 handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
@@ -134,90 +135,116 @@ namespace PortableRest
                 handler.CookieContainer = CookieContainer;
             }
 
-            _client = new HttpClient(handler);
-
-            if (string.IsNullOrWhiteSpace(UserAgent))
+            // Authentication Logic
+            if (Authenticator != null)
             {
-                SetUserAgent<T>();
-            }
-            _client.DefaultRequestHeaders.Add("user-agent", UserAgent);
-
-            var message = new HttpRequestMessage(restRequest.Method, restRequest.GetResourceUri(BaseUrl));
-
-            //RWM: Add the global headers for all requests.
-            foreach (var header in Headers)
-            {
-                message.Headers.Add(header.Key, header.Value);
+                Authenticator.Authenticate(this, restRequest, handler);
             }
 
-            //RWM: Add request-specific headers.
-            foreach (var header in restRequest.Headers)
+            using (var client = CreateHttpClient(handler))
             {
-                message.Headers.Add(header.Key, header.Value.ToString());
-            }
-
-            //RWM: Not sure if this is sufficient, or if HEAD supports a body, will need to check into the RFC.
-            if (restRequest.Method != HttpMethod.Get && restRequest.Method != HttpMethod.Head && restRequest.Method != HttpMethod.Trace)
-            {
-                //REM: This feels hacky. May need some tweaking.
-                if (restRequest.ContentType == ContentTypes.ByteArray)
+                if (string.IsNullOrWhiteSpace(UserAgent))
                 {
-                    message.Content = new ByteArrayContent(restRequest.Parameters[0].GetEncodedValue() as byte[]);
+                    SetUserAgent<T>();
                 }
-                else
+
+                client.DefaultRequestHeaders.Add("user-agent", UserAgent);
+
+                using (var message = new HttpRequestMessage(restRequest.Method, restRequest.GetResourceUri(BaseUrl)))
                 {
-                    var contentString = new StringContent(restRequest.GetRequestBody(), Encoding.UTF8, restRequest.GetContentType());
-                    message.Content = contentString;
-                }
-            }
-
-            HttpResponseMessage response = null;
-            response = await _client.SendAsync(message);
-            response.EnsureSuccessStatusCode();
-
-            var responseContent = await response.Content.ReadAsStringAsync();
-
-            if (restRequest.ReturnRawString)
-            {
-                result = responseContent as T;
-            }
-            else if (response.Content.Headers.ContentType.MediaType == "application/xml")
-            {
-
-                // RWM: IDEA - The DataContractSerializer doesn't like attributes, but will handle everything else.
-                // So instead of trying to mess with a double-conversion to JSON and then to the Object, we'll just turn the attributes
-                // into elements, and sort the elements into alphabetical order so the DataContracterializer doesn't crap itself.
-
-                // On post, use a C# attribute to specify if a property is an XML attribute, DataContractSerialize to XML, then
-                // query the object for [XmlAttribute] attributes and move them from elements to attributes using code similar to below.
-                // If the POST request requires the attributes in a certain order, oh well. Shouldn't have used PHP :P.
-
-                var root = XElement.Parse(responseContent);
-                var newRoot = (XElement)Transform(restRequest.IgnoreRootElement ? root.Descendants().First() : root, restRequest);
-
-                using (var memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(newRoot.ToString())))
-                {
-                    var settings = new XmlReaderSettings {IgnoreWhitespace = true};
-                    using (var reader = XmlReader.Create(memoryStream, settings))
+                    //RWM: Add the global headers for all requests.
+                    foreach (var header in Headers)
                     {
-                        try
+                        message.Headers.Add(header.Key, header.Value);
+                    }
+
+                    //RWM: Add request-specific headers.
+                    foreach (var header in restRequest.Headers)
+                    {
+                        message.Headers.Add(header.Key, header.Value.ToString());
+                    }
+
+                    //RWM: Not sure if this is sufficient, or if HEAD supports a body, will need to check into the RFC.
+                    if (restRequest.Method != HttpMethod.Get && restRequest.Method != HttpMethod.Head && restRequest.Method != HttpMethod.Trace)
+                    {
+                        //REM: This feels hacky. May need some tweaking.
+                        if (restRequest.ContentType == ContentTypes.ByteArray)
                         {
-                            var serializer = new DataContractSerializer(typeof (T));
-                            result = serializer.ReadObject(reader) as T;
+                            message.Content = new ByteArrayContent(restRequest.Parameters[0].GetEncodedValue() as byte[]);
                         }
-                        catch (SerializationException ex)
+                        else
                         {
-                            throw new PortableRestException(string.Format("The serializer failed on node '{0}'", reader.Name), reader.Name, ex);
+                            var contentString = new StringContent(restRequest.GetRequestBody(), Encoding.UTF8, restRequest.GetContentType());
+                            message.Content = contentString;
                         }
+                    }
+
+                    HttpResponseMessage response = null;
+                    response = await client.SendAsync(message);
+                    response.EnsureSuccessStatusCode();
+
+                    var responseContent = await response.Content.ReadAsStringAsync();
+
+                    if (restRequest.ReturnRawString)
+                    {
+                        result = responseContent as T;
+                    }
+                    else if (response.Content.Headers.ContentType.MediaType == "application/xml")
+                    {
+
+                        // RWM: IDEA - The DataContractSerializer doesn't like attributes, but will handle everything else.
+                        // So instead of trying to mess with a double-conversion to JSON and then to the Object, we'll just turn the attributes
+                        // into elements, and sort the elements into alphabetical order so the DataContractSerializer doesn't crap itself.
+
+                        // On post, use a C# attribute to specify if a property is an XML attribute, DataContractSerialize to XML, then
+                        // query the object for [XmlAttribute] attributes and move them from elements to attributes using code similar to below.
+                        // If the POST request requires the attributes in a certain order, oh well. Shouldn't have used PHP :P.
+
+                        var root = XElement.Parse(responseContent);
+                        var newRoot = (XElement)Transform(restRequest.IgnoreRootElement ? root.Descendants().First() : root, restRequest);
+
+                        using (var memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(newRoot.ToString())))
+                        {
+                            var settings = new XmlReaderSettings { IgnoreWhitespace = true };
+                            using (var reader = XmlReader.Create(memoryStream, settings))
+                            {
+                                try
+                                {
+                                    var serializer = new DataContractSerializer(typeof(T));
+                                    result = serializer.ReadObject(reader) as T;
+                                }
+                                catch (SerializationException ex)
+                                {
+                                    throw new PortableRestException(string.Format("The serializer failed on node '{0}'", reader.Name), reader.Name, ex);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        result = JsonConvert.DeserializeObject<T>(responseContent);
                     }
                 }
             }
-            else
-            {
-                result = JsonConvert.DeserializeObject<T>(responseContent);
-            }
 
             return result;
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="System.Net.Http.HttpClientHandler" />.
+        /// </summary>
+        /// <returns>The created Handler.</returns>
+        protected virtual HttpClientHandler CreateHttpClientHandler()
+        {
+            return new HttpClientHandler { AllowAutoRedirect = true };
+        }
+
+        /// <summary>
+        ///     This method allows easy mocking, needed for test purposes only.
+        /// </summary>
+        internal virtual IInternalHttpClient CreateHttpClient(HttpClientHandler handler)
+        {
+            return new InternalHttpClient(handler);
         }
 
         #endregion
@@ -244,7 +271,7 @@ namespace PortableRest
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(request.DateFormat) && 
+            if (!string.IsNullOrWhiteSpace(request.DateFormat) &&
                 (element.Name.LocalName.ToLower().Contains("date") ||
                  element.Name.LocalName.ToLower().Contains("time")))
             {

@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace PortableRest
+﻿namespace PortableRest
 {
 
     /// <summary>
-    /// Specifies how a body paremeter should be encoded before transmission.
+    /// Specifies how a body parameter should be encoded before transmission.
     /// </summary>
     public enum ParameterEncoding
     {
