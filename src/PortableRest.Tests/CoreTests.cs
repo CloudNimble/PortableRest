@@ -8,15 +8,6 @@ namespace PortableRest.Tests
     [TestClass]
     public class CoreTests
     {
-
-        [TestMethod]
-        public void QueryStringReplacement()
-        {
-            var request = new RestRequest("/test?test1={test1}");
-            request.AddUrlSegment("test1", "myValue");
-            Assert.AreEqual("test?test1=myValue", request.GetResourceUri("").ToString());
-        }
-
         /// <summary>
         /// Check the XML return from an object with attributes with all simple properties.
         /// </summary>
@@ -61,7 +52,6 @@ namespace PortableRest.Tests
             Assert.IsNotNull(body);
             Assert.AreEqual("<PhoneNumber ID=\"1\">\r\n  <Calls />\r\n  <Number>514-9700</Number>\r\n</PhoneNumber>", body);
         }
-
     }
 
 }
