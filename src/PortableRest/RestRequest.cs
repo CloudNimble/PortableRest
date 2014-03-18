@@ -73,6 +73,7 @@ namespace PortableRest
         /// <summary>
         /// Tells the RestClient to skip deserialization and return the raw result.
         /// </summary>
+        [Obsolete("ReturnRawString is deprecated, please just specify RestClient.ExecuteAsync<string> instead.")]
         public bool ReturnRawString { get; set; }
 
         #endregion

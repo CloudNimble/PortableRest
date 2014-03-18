@@ -109,21 +109,96 @@ namespace PortableRest
         }
 
         /// <summary>
-        /// Executes an asynchronous request to the given resource and deserializes the response to an object of T.
+        /// Executes an asynchronous request to the given resource and deserializes the response content to an object of T.
         /// </summary>
         /// <typeparam name="T">The type to deserialize to.</typeparam>
         /// <param name="restRequest">The RestRequest to execute.</param>
-        /// <returns>An object of T.</returns>
+        /// <returns>
+        /// An object of T.
+        /// </returns>
+        /// <exception cref="HttpRequestException">Throws an exception if the <see cref="HttpResponseMessage.IsSuccessStatusCode"/> property for the HTTP response is false.</exception>
         public async Task<T> ExecuteAsync<T>(RestRequest restRequest) where T : class
         {
-            T result = null;
+            var httpResponseMessage = await GetHttpResponseMessage<T>(restRequest);
 
+            httpResponseMessage.EnsureSuccessStatusCode();
+
+            return await GetResponseContent<T>(restRequest, httpResponseMessage);
+        }
+
+        /// <summary>
+        /// Executes an asynchronous request to the given resource and returns a RestResponse
+        /// which contains the <see cref="HttpResponseMessage"/> and the response content of T.
+        /// </summary>
+        /// <typeparam name="T">The type to deserialize from the content.</typeparam>
+        /// <param name="restRequest">The RestRequest to execute.</param>
+        public async Task<RestResponse<T>> SendAsync<T>(RestRequest restRequest) where T : class
+        {
+            var httpResponseMessage = await GetHttpResponseMessage<T>(restRequest);
+
+            var content = await GetResponseContent<T>(restRequest, httpResponseMessage);
+
+            return new RestResponse<T>(httpResponseMessage, content);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Helps deal with the fact that the XmlSerializer is not supported, and the DataContractSerializer hates XmlAttributes.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        /// <remarks>Technique from http://blogs.msdn.com/b/ericwhite/archive/2009/07/20/a-tutorial-in-the-recursive-approach-to-pure-functional-transformations-of-xml.aspx </remarks>
+        private static object Transform(XNode node, RestRequest request)
+        {
+            var element = node as XElement;
+            if (element == null) return node;
+
+            if (!request.IgnoreXmlAttributes)
+            {
+                foreach (var attrib in element.Attributes())
+                {
+                    element.Add(new XElement(attrib.Name, (string)attrib));
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.DateFormat) && 
+                (element.Name.LocalName.ToLower().Contains("date") ||
+                 element.Name.LocalName.ToLower().Contains("time")))
+            {
+                var newValue = DateTime.ParseExact(element.Value, request.DateFormat, null);
+                element.Value = XmlConvert.ToString(newValue);
+            }
+
+            //RWM: NOTE the DataContractSerializer does not like null nodes when parsing nullable numbers.
+            //However removing empty nodes seems to work.
+            if (!element.Nodes().Any()) return null;
+
+            return new XElement(element.Name,
+                element.Nodes()
+                    .OrderBy(c => (c as XElement) != null ? (c as XElement).Name.LocalName : c.ToString())
+                    .Select(n =>
+                    {
+                        var e = n as XElement;
+                        return e != null ? Transform(e, request) : n;
+                    }));
+        }
+
+        private async Task<HttpResponseMessage> GetHttpResponseMessage<T>(RestRequest restRequest)
+        {
             if (string.IsNullOrWhiteSpace(restRequest.DateFormat) && !string.IsNullOrWhiteSpace(DateFormat))
             {
                 restRequest.DateFormat = DateFormat;
             }
 
-            var handler = new HttpClientHandler {AllowAutoRedirect = true};
+            var handler = new HttpClientHandler
+            {
+                AllowAutoRedirect = true
+            };
+
             if (handler.SupportsAutomaticDecompression)
             {
                 handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
@@ -171,99 +246,76 @@ namespace PortableRest
                 }
             }
 
-            HttpResponseMessage response = null;
-            response = await _client.SendAsync(message);
-            response.EnsureSuccessStatusCode();
+            return await _client.SendAsync(message);
+        }
 
-            var responseContent = await response.Content.ReadAsStringAsync();
+        private static async Task<T> GetResponseContent<T>(RestRequest restRequest, HttpResponseMessage httpResponseMessage) where T : class
+        {
+            var rawResponseContent = await GetRawResponseContent(httpResponseMessage);
 
-            if (restRequest.ReturnRawString)
+            // ReSharper disable once CSharpWarnings::CS0618
+            if (typeof (T) == typeof (string) || restRequest.ReturnRawString)
             {
-                result = responseContent as T;
+                return rawResponseContent as T;
             }
-            else if (response.Content.Headers.ContentType.MediaType == "application/xml")
+
+            return DeserializeResponseContent<T>(restRequest, httpResponseMessage, rawResponseContent);
+        }
+
+        private static async Task<string> GetRawResponseContent(HttpResponseMessage response)
+        {
+            if (response.IsSuccessStatusCode)
             {
+                return await response.Content.ReadAsStringAsync();
+            }
 
-                // RWM: IDEA - The DataContractSerializer doesn't like attributes, but will handle everything else.
-                // So instead of trying to mess with a double-conversion to JSON and then to the Object, we'll just turn the attributes
-                // into elements, and sort the elements into alphabetical order so the DataContracterializer doesn't crap itself.
+            return null;
+        }
 
-                // On post, use a C# attribute to specify if a property is an XML attribute, DataContractSerialize to XML, then
-                // query the object for [XmlAttribute] attributes and move them from elements to attributes using code similar to below.
-                // If the POST request requires the attributes in a certain order, oh well. Shouldn't have used PHP :P.
+        private static T DeserializeResponseContent<T>(RestRequest restRequest, HttpResponseMessage response, string responseContent) where T : class
+        {
+            if (response.Content.Headers.ContentType.MediaType == "application/xml")
+            {
+                return DeserializeApplicationXml<T>(restRequest, responseContent);
+            }
 
-                var root = XElement.Parse(responseContent);
-                var newRoot = (XElement)Transform(restRequest.IgnoreRootElement ? root.Descendants().First() : root, restRequest);
+            return JsonConvert.DeserializeObject<T>(responseContent);
+        }
 
-                using (var memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(newRoot.ToString())))
+        private static T DeserializeApplicationXml<T>(RestRequest restRequest, string responseContent) where T : class
+        {
+            T result;
+            // RWM: IDEA - The DataContractSerializer doesn't like attributes, but will handle everything else.
+            // So instead of trying to mess with a double-conversion to JSON and then to the Object, we'll just turn the attributes
+            // into elements, and sort the elements into alphabetical order so the DataContracterializer doesn't crap itself.
+
+            // On post, use a C# attribute to specify if a property is an XML attribute, DataContractSerialize to XML, then
+            // query the object for [XmlAttribute] attributes and move them from elements to attributes using code similar to below.
+            // If the POST request requires the attributes in a certain order, oh well. Shouldn't have used PHP :P.
+
+            var root = XElement.Parse(responseContent);
+            var newRoot = (XElement) Transform(restRequest.IgnoreRootElement ? root.Descendants().First() : root, restRequest);
+
+            using (var memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(newRoot.ToString())))
+            {
+                var settings = new XmlReaderSettings
                 {
-                    var settings = new XmlReaderSettings {IgnoreWhitespace = true};
-                    using (var reader = XmlReader.Create(memoryStream, settings))
+                    IgnoreWhitespace = true
+                };
+                using (var reader = XmlReader.Create(memoryStream, settings))
+                {
+                    try
                     {
-                        try
-                        {
-                            var serializer = new DataContractSerializer(typeof (T));
-                            result = serializer.ReadObject(reader) as T;
-                        }
-                        catch (SerializationException ex)
-                        {
-                            throw new PortableRestException(string.Format("The serializer failed on node '{0}'", reader.Name), reader.Name, ex);
-                        }
+                        var serializer = new DataContractSerializer(typeof (T));
+                        result = serializer.ReadObject(reader) as T;
+                    }
+                    catch (SerializationException ex)
+                    {
+                        throw new PortableRestException(string.Format("The serializer failed on node '{0}'", reader.Name), reader.Name, ex);
                     }
                 }
             }
-            else
-            {
-                result = JsonConvert.DeserializeObject<T>(responseContent);
-            }
-
             return result;
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        /// <summary>
-        /// Helps deal with the fact that the XmlSerializer is not supported, and the DataContractSerializer hates XmlAttributes.
-        /// </summary>
-        /// <param name="node"></param>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        /// <remarks>Technique from http://blogs.msdn.com/b/ericwhite/archive/2009/07/20/a-tutorial-in-the-recursive-approach-to-pure-functional-transformations-of-xml.aspx </remarks>
-        private static object Transform(XNode node, RestRequest request)
-        {
-            var element = node as XElement;
-            if (element == null) return node;
-
-            if (!request.IgnoreXmlAttributes)
-            {
-                foreach (var attrib in element.Attributes())
-                {
-                    element.Add(new XElement(attrib.Name, (string)attrib));
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(request.DateFormat) && 
-                (element.Name.LocalName.ToLower().Contains("date") ||
-                 element.Name.LocalName.ToLower().Contains("time")))
-            {
-                var newValue = DateTime.ParseExact(element.Value, request.DateFormat, null);
-                element.Value = XmlConvert.ToString(newValue);
-            }
-
-            //RWM: NOTE the DataContractSerializer does not like null nodes when parsing nullable numbers.
-            //However removing empty nodes seems to work.
-            if (!element.Nodes().Any()) return null;
-
-            return new XElement(element.Name,
-                element.Nodes()
-                    .OrderBy(c => (c as XElement) != null ? (c as XElement).Name.LocalName : c.ToString())
-                    .Select(n =>
-                    {
-                        var e = n as XElement;
-                        return e != null ? Transform(e, request) : n;
-                    }));
         }
 
         #endregion
