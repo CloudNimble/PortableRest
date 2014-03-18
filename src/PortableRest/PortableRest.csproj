@@ -74,6 +74,7 @@
     <Compile Include="EncodedParameter.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
+    <Compile Include="RestResponse.cs" />
     <Compile Include="ParameterEncoding.cs" />
     <Compile Include="PortableRestException.cs" />
     <Compile Include="RestClient.cs" />
