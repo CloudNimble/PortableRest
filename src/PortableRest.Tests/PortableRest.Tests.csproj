@@ -92,6 +92,7 @@
     <Compile Include="GoogleDiscovery\GoogleDiscoveryClient.cs" />
     <Compile Include="GoogleDiscovery\Icons.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResourceUriTests.cs" />
     <Compile Include="XmlTest\PhoneCall.cs" />
     <Compile Include="XmlTest\PhoneNumber.cs" />
   </ItemGroup>
