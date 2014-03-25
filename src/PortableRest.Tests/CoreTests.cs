@@ -23,11 +23,18 @@ namespace PortableRest.Tests
         [TestMethod]
         public void CheckMessageBodyXmlWithAttributes()
         {
+						var expected = @"
+							<PhoneNumber ID=""1"">
+								 <Call />
+								 <Calls />
+								 <Number>514-9700</Number>
+							</PhoneNumber>
+						";
             var request = new RestRequest("/test?test1={test1}", HttpMethod.Get) {ContentType = ContentTypes.Xml};
             request.AddParameter(new PhoneNumber("1", "514-9700"));
             var body = request.GetRequestBody();
             Assert.IsNotNull(body);
-            Assert.AreEqual("<PhoneNumber ID=\"1\">\r\n  <Call />\r\n  <Calls />\r\n  <Number>514-9700</Number>\r\n</PhoneNumber>", body);
+            Assert.AreEqual(expected.AsXmlSanitized(), body.AsXmlSanitized());
         }
 
         /// <summary>
@@ -36,6 +43,16 @@ namespace PortableRest.Tests
         [TestMethod]
         public void CheckMessageBodyXmlWithAttributes2()
         {
+						var expected = @"
+							<PhoneNumber ID=""1"">
+								 <Call ID=""1"">
+										<Number>864-5789</Number>
+										<Time>0001-01-01T00:00:00</Time>
+								 </Call>
+								 <Calls />
+								 <Number>514-9700</Number>
+							</PhoneNumber>
+						";
             var request = new RestRequest("/test?test1={test1}", HttpMethod.Get) { ContentType = ContentTypes.Xml };
             var pn = new PhoneNumber("1", "514-9700") { Call = new PhoneCall
             {
@@ -44,7 +61,7 @@ namespace PortableRest.Tests
             request.AddParameter(pn);
             var body = request.GetRequestBody();
             Assert.IsNotNull(body);
-            Assert.AreEqual("<PhoneNumber ID=\"1\">\r\n  <Call ID=\"1\">\r\n    <Number>864-5789</Number>\r\n    <Time>0001-01-01T00:00:00</Time>\r\n  </Call>\r\n  <Calls />\r\n  <Number>514-9700</Number>\r\n</PhoneNumber>", body);
+            Assert.AreEqual(expected.AsXmlSanitized(), body.AsXmlSanitized());
         }
 
         /// <summary>
@@ -53,13 +70,27 @@ namespace PortableRest.Tests
         [TestMethod]
         public void CheckMessageBodyXmlWithAttributes3()
         {
-            var request = new RestRequest("/test?test1={test1}", HttpMethod.Get) { ContentType = ContentTypes.Xml };
-            var pn = new PhoneNumber("1", "514-9700");
-            pn.Calls.Add(new PhoneCall{ID = "1", Number = "864-5789"});
-            request.AddParameter(pn);
-            var body = request.GetRequestBody();
-            Assert.IsNotNull(body);
-            Assert.AreEqual("<PhoneNumber ID=\"1\">\r\n  <Calls />\r\n  <Number>514-9700</Number>\r\n</PhoneNumber>", body);
+					var expected = @"
+              <PhoneNumber ID=""1"">
+                 <Call />
+                 <Calls>
+                    <PhoneCall>
+                       <Number>864-5789</Number>
+                       <Time>0001-01-01T00:00:00</Time>
+                    </PhoneCall>
+                 </Calls>
+                 <ID>1</ID>
+                 <Number>514-9700</Number>
+              </PhoneNumber>
+            ";
+					var request = new RestRequest("/test?test1={test1}", HttpMethod.Get) { ContentType = ContentTypes.Xml };
+					var pn = new PhoneNumber("1", "514-9700");
+					pn.Calls.Add(new PhoneCall { ID = "1", Number = "864-5789" });
+					request.AddParameter(pn);
+					var body = request.GetRequestBody();
+					Assert.IsNotNull(body);
+
+					Assert.AreEqual(expected.AsXmlSanitized(), body.AsXmlSanitized());
         }
 
     }
