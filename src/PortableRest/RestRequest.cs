@@ -2,17 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
-using System.Xml;
 using System.Linq;
-using PortableRest.Extensions;
 
 namespace PortableRest
 {
@@ -98,7 +94,8 @@ namespace PortableRest
         /// Creates a new RestRequest instance for a given Resource.
         /// </summary>
         /// <param name="resource">The specific resource to access.</param>
-        public RestRequest(string resource) : this()
+        public RestRequest(string resource)
+            : this()
         {
             Resource = resource;
         }
@@ -108,7 +105,8 @@ namespace PortableRest
         /// </summary>
         /// <param name="resource">The specific resource to access.</param>
         /// <param name="method">The HTTP method to use for the request.</param>
-        public RestRequest(string resource, HttpMethod method) : this(resource)
+        public RestRequest(string resource, HttpMethod method)
+            : this(resource)
         {
             Method = method;
         }
@@ -119,7 +117,8 @@ namespace PortableRest
         /// <param name="resource">The URL format string of the resource to request.</param>
         /// <param name="method">The <see cref="HttpMethod"/> for the request.</param>
         /// <param name="ignoreRoot">Whether or not the root object from the response should be ignored.</param>
-        public RestRequest(string resource, HttpMethod method, bool ignoreRoot) : this(resource, method)
+        public RestRequest(string resource, HttpMethod method, bool ignoreRoot)
+            : this(resource, method)
         {
             IgnoreRootElement = ignoreRoot;
         }
@@ -223,16 +222,29 @@ namespace PortableRest
                 Resource = string.Format(Resource.Contains("?") ? "{0}{1}" : "{0}?{1}", Resource, queryString);
             }
 
-            if (!string.IsNullOrEmpty(Resource) && Resource.StartsWith("/"))
-            {
-                Resource = Resource.Substring(1);
-            }
+            Resource = CombineUriParts(baseUrl, Resource);
 
-            if (!string.IsNullOrEmpty(baseUrl))
-            {
-                Resource = string.IsNullOrEmpty(Resource) ? baseUrl : string.Format("{0}/{1}", baseUrl, Resource);
-            }
             return new Uri(Resource, UriKind.RelativeOrAbsolute);
+        }
+
+        /// <summary>
+        /// Combines URI parts, taking care of trailing and starting slashes.
+        /// See http://stackoverflow.com/a/6704287
+        /// </summary>
+        /// <param name="uriParts">The URI parts to combine.</param>
+        private static string CombineUriParts(params string[] uriParts)
+        {
+            var uri = string.Empty;
+            if (uriParts != null && uriParts.Any())
+            {
+                char[] trimChars = { '\\', '/' };
+                uri = (uriParts[0] ?? string.Empty).TrimEnd(trimChars);
+                for (var i = 1; i < uriParts.Count(); i++)
+                {
+                    uri = string.Format("{0}/{1}", uri.TrimEnd(trimChars), (uriParts[i] ?? string.Empty).TrimStart(trimChars));
+                }
+            }
+            return uri;
         }
 
         /// <summary>
@@ -261,7 +273,7 @@ namespace PortableRest
             switch (ContentType)
             {
                 case ContentTypes.FormUrlEncoded:
-                    var parameters = Parameters.Aggregate(new StringBuilder(), 
+                    var parameters = Parameters.Aggregate(new StringBuilder(),
                         (current, next) =>
                             current.Append(string.Format("{0}{1}={2}", current.Length > 0 ? "&" : "",
                                 Uri.EscapeDataString(next.Key),
@@ -300,7 +312,7 @@ namespace PortableRest
         /// <param name="type"></param>
         /// <returns></returns>
         /// <remarks>Technique from http://blogs.msdn.com/b/ericwhite/archive/2009/07/20/a-tutorial-in-the-recursive-approach-to-pure-functional-transformations-of-xml.aspx </remarks>
-        private void Transform(XNode node, Type type)
+        private static void Transform(XNode node, Type type)
         {
             var element = node as XElement;
             if (element == null) return;
