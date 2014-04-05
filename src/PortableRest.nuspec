@@ -29,7 +29,7 @@
         <tags>HttpClient, REST, Portable Class Library, PCL, RestSharp, HTTP, API, JSON, XML</tags>
         <dependencies>
             <group targetFramework=".NETPortable0.0-net45+sl5+wp8+win8">
-                <dependency id="Newtonsoft.Json" version="6.0.1" />
+                <dependency id="Newtonsoft.Json" version="5.0.8" />
                 <dependency id="Microsoft.Bcl" version="1.1.6" />
                 <dependency id="Microsoft.Bcl.Async" version="1.0.165" />
                 <dependency id="Microsoft.Bcl.Build" version="1.0.13" />
