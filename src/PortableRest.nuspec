@@ -2,33 +2,56 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
         <id>PortableRest</id>
-        <version>2.4.1</version>
+        <version>2.5.0-Beta1a</version>
         <title>PortableRest</title>
-        <authors>AdvancedREI</authors>
+        <authors>Robert McLaws, Richard Beauchamp, </authors>
         <owners>AdvancedREI</owners>
         <licenseUrl>http://choosealicense.com/licenses/mit/</licenseUrl>
         <projectUrl>http://github.com/AdvancedREI/PortableRest</projectUrl>
         <iconUrl>https://advancedrei.blob.core.windows.net/nuget/PortableRest.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>A library for consuming REST APIs from Portable Class Libraries (.NET 4.5, Silverlight 5, Windows Phone 8, and Windows 8.x). Designed to be partially drop-in compatible with RestSharp.</description>
-        <releaseNotes>2.4.1: RestClient.CookieContainer property to share cookies between requests.
-2.4: Added ability to set encoding on individual parameters. Added request-specific headers for OAuth compatibility. Added RestClient.SetUserAgent()to set the UserAgent for you.
-2.3: Triumphant return of SL5 support. Better documentation. RestClient.ExecuteAsync can return the raw string. Bug fixes.
-2.1.2: Adds missing XML documentation file.
-2.1: Adds RestRequest.AddQueryString. Updated minimum package references for Mono-compatible licenses.
-2.0: Removed support for Silverlight due to Microsoft's new Reflection framework on .NET 4.5. Added initial support for submitting XML payloads. Strong-name signed the assembly so it can be used in strong-name signed projects.
-1.2: Updated to latest packages, include Microsoft.Bcl.Build directly to help with app.config issues.
-1.1: Compiled to HttpClient 2.2.
-1.0.8: Compile to new dependencies.
-1.0.6: Update based on changes to HttpClient.Compression.
-1.0.5: Added Compression support.
-1.0.4-alpha: Added basic POST support, &amp; updated XML deserialization.
-1.0.3: Added XML deserialization with DataContracts.
-1.0.0: First release.</releaseNotes>
+        <releaseNotes>2.5
+  • New generic and non-generic SendAsync() methods that return a RestResponse with more detailed information.
+  • Windows Phone 8.1 support.
+
+2.4.1
+  • RestClient.CookieContainer property to share cookies between requests.
+  • (Breaking) Reorganized namespaces.
+  • Added more documentation.
+
+2.4
+  • Added ability to set encoding on individual parameters.
+  • Added request-specific headers for OAuth compatibility.
+  • Added RestClient.SetUserAgent()to set the UserAgent for you.
+
+2.3
+  • Triumphant return of SL5 support.
+  • Better documentation.
+  • RestClient.ExecuteAsync can return the raw string.
+  • Misc. bug fixes.
+
+2.1
+  • Adds RestRequest.AddQueryString().
+  • Updated minimum package references for Mono-compatible licenses.
+
+2.0
+  • Removed support for Silverlight due to Microsoft's new Reflection framework on .NET 4.5.
+  • Added initial support for submitting XML payloads.
+  • Strong-name signed the assembly so it can be used in strong-name signed projects.
+
+  1.2: Updated to latest packages, include Microsoft.Bcl.Build directly to help with app.config issues.
+  1.1: Compiled to HttpClient 2.2.
+  1.0.8: Compile to new dependencies.
+  1.0.6: Update based on changes to HttpClient.Compression.
+  1.0.5: Added Compression support.
+  1.0.4-alpha: Added basic POST support, &amp; updated XML deserialization.
+  1.0.3: Added XML deserialization with DataContracts.
+  1.0.0: First release.</releaseNotes>
         <copyright>Copyright © 2013-2014 AdvancedREI, LLC.</copyright>
         <tags>HttpClient, REST, Portable Class Library, PCL, RestSharp, HTTP, API, JSON, XML</tags>
         <dependencies>
-            <group targetFramework=".NETPortable0.0-net45+sl5+wp8+win8">
+            <group targetFramework=".NETPortable0.0-net45+sl5+wp8+win8+wpa81">
                 <dependency id="Newtonsoft.Json" version="5.0.8" />
                 <dependency id="Microsoft.Bcl" version="1.1.6" />
                 <dependency id="Microsoft.Bcl.Async" version="1.0.165" />
@@ -38,9 +61,9 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="PortableRest\bin\Release\PortableRest.dll" target="lib\portable-net45+sl5+wp8+win8\" />
-        <file src="PortableRest\bin\Release\PortableRest.pdb" target="lib\portable-net45+sl5+wp8+win8\" />
-        <file src="PortableRest\bin\Release\PortableRest.xml" target="lib\portable-net45+sl5+wp8+win8\" />
+        <file src="PortableRest\bin\Release\PortableRest.dll" target="lib\portable-net45+sl5+wp8+win8+wpa81\" />
+        <file src="PortableRest\bin\Release\PortableRest.pdb" target="lib\portable-net45+sl5+wp8+win8+wpa81\" />
+        <file src="PortableRest\bin\Release\PortableRest.xml" target="lib\portable-net45+sl5+wp8+win8+wpa81\" />
         <file src="PortableRest\**\*.cs" exclude="**\obj\**\*.*" target="src" />
     </files>
 </package>
