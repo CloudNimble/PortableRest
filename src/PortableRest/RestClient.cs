@@ -87,14 +87,14 @@ namespace PortableRest
         /// <remarks>This will set the <see cref="UserAgent"/> to "YourAssemblyName Major.Minor.Revision (PortableRest Major.Minor.Revision)</remarks>
         public void SetUserAgent<T>(string displayName = null)
         {
-            var thisAssembly = typeof (T).Assembly;
+            var thisAssembly = typeof(T).Assembly;
             var thisAssemblyName = new AssemblyName(thisAssembly.FullName);
             var thisVersion = thisAssemblyName.Version;
 
             if (displayName == null)
             {
-                var attributes = thisAssembly.GetCustomAttributes(typeof (AssemblyTitleAttribute), false);
-                if (attributes.Length == 0) 
+                var attributes = thisAssembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
+                if (attributes.Length == 0)
                 {
                     throw new Exception("The assembly containing the class inheriting from PortableRest.RestClient must have an AssemblyTitle attribute specified.");
                 }
@@ -169,7 +169,7 @@ namespace PortableRest
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(request.DateFormat) && 
+            if (!string.IsNullOrWhiteSpace(request.DateFormat) &&
                 (element.Name.LocalName.ToLower().Contains("date") ||
                  element.Name.LocalName.ToLower().Contains("time")))
             {
@@ -270,13 +270,17 @@ namespace PortableRest
         {
             var rawResponseContent = await GetRawResponseContent(httpResponseMessage);
 
-            // ReSharper disable once CSharpWarnings::CS0618
-            if (typeof (T) == typeof (string) || restRequest.ReturnRawString)
+            if (rawResponseContent != null)
             {
-                return rawResponseContent as T;
-            }
+                // ReSharper disable once CSharpWarnings::CS0618
+                if (typeof(T) == typeof(string) || restRequest.ReturnRawString)
+                {
+                    return rawResponseContent as T;
+                }
 
-            return DeserializeResponseContent<T>(restRequest, httpResponseMessage, rawResponseContent);
+                return DeserializeResponseContent<T>(restRequest, httpResponseMessage, rawResponseContent);
+            }
+            return null;
         }
 
         /// <summary>
@@ -331,7 +335,7 @@ namespace PortableRest
             // If the POST request requires the attributes in a certain order, oh well. Shouldn't have used PHP :P.
 
             var root = XElement.Parse(responseContent);
-            var newRoot = (XElement) Transform(restRequest.IgnoreRootElement ? root.Descendants().First() : root, restRequest);
+            var newRoot = (XElement)Transform(restRequest.IgnoreRootElement ? root.Descendants().First() : root, restRequest);
 
             using (var memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(newRoot.ToString())))
             {
@@ -343,7 +347,7 @@ namespace PortableRest
                 {
                     try
                     {
-                        var serializer = new DataContractSerializer(typeof (T));
+                        var serializer = new DataContractSerializer(typeof(T));
                         result = serializer.ReadObject(reader) as T;
                     }
                     catch (SerializationException ex)

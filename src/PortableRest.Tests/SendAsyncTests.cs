@@ -72,5 +72,24 @@ namespace PortableRest.Tests
             response.Content.Should().NotBeNull();
             response.Content.Count().Should().Be(5);
         }
+
+        [TestMethod]
+        public async Task GracefullyHandleNullContentWithNonStringType()
+        {
+            // Setup
+            var client = new RestClient { BaseUrl = BaseAddress };
+            var request = new RestRequest("notsuccess/notfound");
+            RestResponse<IEnumerable<Book>> response;
+
+            // Execute
+            using (WebApp.Start<WebApiStartup>(BaseAddress))
+            {
+                response = await client.SendAsync<IEnumerable<Book>>(request);
+            }
+
+            // Validate
+            response.HttpResponseMessage.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response.Content.Should().BeNull();
+        }
     }
 }
