@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
         <id>PortableRest</id>
-        <version>2.5.0-Beta1a</version>
+        <version>2.5.0</version>
         <title>PortableRest</title>
         <authors>Robert McLaws, Richard Beauchamp, </authors>
         <owners>AdvancedREI</owners>
@@ -13,6 +13,7 @@
         <description>A library for consuming REST APIs from Portable Class Libraries (.NET 4.5, Silverlight 5, Windows Phone 8, and Windows 8.x). Designed to be partially drop-in compatible with RestSharp.</description>
         <releaseNotes>2.5
   • New generic and non-generic SendAsync() methods that return a RestResponse with more detailed information.
+  • Fixed an issue where the Async call can deadlock in certain situations.
   • Windows Phone 8.1 support.
 
 2.4.1
