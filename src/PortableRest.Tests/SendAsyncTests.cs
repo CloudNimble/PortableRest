@@ -74,6 +74,28 @@ namespace PortableRest.Tests
             response.Content.Count().Should().Be(5);
         }
 
+        [TestMethod]
+        public async Task GracefullyHandleNullContentWithNonStringType()
+        {
+            // Setup
+            var client = new RestClient { BaseUrl = BaseAddress };
+            var request = new RestRequest("notsuccess/notfound");
+            RestResponse<IEnumerable<Book>> response;
+
+
+            // Execute
+            using (WebApp.Start<WebApiStartup>(BaseAddress))
+            {
+                response = await client.SendAsync<IEnumerable<Book>>(request);
+            }
+
+
+            // Validate
+            response.HttpResponseMessage.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response.Content.Should().BeNull();
+        }
+
+
         /// <summary>
         /// For more info, please watch the video for correctly building asynchronous libraries in .NET
         //  at http://channel9.msdn.com/Events/TechEd/Europe/2013/DEV-B318#fbid=
@@ -85,14 +107,6 @@ namespace PortableRest.Tests
             var client = new RestClient { BaseUrl = BaseAddress };
             var request = new RestRequest("api/books");
             RestResponse<List<Book>> response = null;
-
-        [TestMethod]
-        public async Task GracefullyHandleNullContentWithNonStringType()
-        {
-            // Setup
-            var client = new RestClient { BaseUrl = BaseAddress };
-            var request = new RestRequest("notsuccess/notfound");
-            RestResponse<IEnumerable<Book>> response;
 
             // Execute
             using (WebApp.Start<WebApiStartup>(BaseAddress))
@@ -110,12 +124,8 @@ namespace PortableRest.Tests
             response.Content.Should().NotBeNull();
             response.Content.Count().Should().Be(5);
 
-                response = await client.SendAsync<IEnumerable<Book>>(request);
-            }
-
-            // Validate
-            response.HttpResponseMessage.StatusCode.Should().Be(HttpStatusCode.NotFound);
-            response.Content.Should().BeNull();
         }
+
     }
+
 }
