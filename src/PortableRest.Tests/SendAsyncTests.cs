@@ -79,12 +79,20 @@ namespace PortableRest.Tests
         //  at http://channel9.msdn.com/Events/TechEd/Europe/2013/DEV-B318#fbid=
         /// </summary>
         [TestMethod]
-        public void async_libraries_like_portable_rest_should_not_deadlock_on_task_result()
+        public void AsyncLibrariesLikePortableRestShouldNotDeadlockOnTaskResult()
         {
             // Setup
             var client = new RestClient { BaseUrl = BaseAddress };
             var request = new RestRequest("api/books");
             RestResponse<List<Book>> response = null;
+
+        [TestMethod]
+        public async Task GracefullyHandleNullContentWithNonStringType()
+        {
+            // Setup
+            var client = new RestClient { BaseUrl = BaseAddress };
+            var request = new RestRequest("notsuccess/notfound");
+            RestResponse<IEnumerable<Book>> response;
 
             // Execute
             using (WebApp.Start<WebApiStartup>(BaseAddress))
@@ -101,6 +109,13 @@ namespace PortableRest.Tests
             Assert.IsTrue(true, "If we got to this assertion, then we didn't deadlock on the call to SendAsync.");
             response.Content.Should().NotBeNull();
             response.Content.Count().Should().Be(5);
+
+                response = await client.SendAsync<IEnumerable<Book>>(request);
+            }
+
+            // Validate
+            response.HttpResponseMessage.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response.Content.Should().BeNull();
         }
     }
 }
