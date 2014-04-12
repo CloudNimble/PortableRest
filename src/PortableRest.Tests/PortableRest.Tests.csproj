@@ -98,6 +98,7 @@
     <Reference Include="System.Web.Http.Owin">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Owin.5.1.2\lib\net45\System.Web.Http.Owin.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -114,6 +115,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="AsyncTestUtilities\TaskExtensions.cs" />
+    <Compile Include="AsyncTestUtilities\WindowsFormsContext.cs" />
     <Compile Include="CoreTests.cs" />
     <Compile Include="ExecuteAsyncTests.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
