@@ -119,11 +119,11 @@ namespace PortableRest
         /// </exception>
         public async Task<T> ExecuteAsync<T>(RestRequest restRequest) where T : class
         {
-            var httpResponseMessage = await GetHttpResponseMessage<T>(restRequest);
+            var httpResponseMessage = await GetHttpResponseMessage<T>(restRequest).ConfigureAwait(false);
 
             httpResponseMessage.EnsureSuccessStatusCode();
 
-            return await GetResponseContent<T>(restRequest, httpResponseMessage);
+            return await GetResponseContent<T>(restRequest, httpResponseMessage).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -138,9 +138,9 @@ namespace PortableRest
         /// </exception>
         public async Task<RestResponse<T>> SendAsync<T>(RestRequest restRequest) where T : class
         {
-            var httpResponseMessage = await GetHttpResponseMessage<T>(restRequest);
+            var httpResponseMessage = await GetHttpResponseMessage<T>(restRequest).ConfigureAwait(false);
 
-            var content = await GetResponseContent<T>(restRequest, httpResponseMessage);
+            var content = await GetResponseContent<T>(restRequest, httpResponseMessage).ConfigureAwait(false);
 
             return new RestResponse<T>(httpResponseMessage, content);
         }
@@ -256,7 +256,7 @@ namespace PortableRest
                 }
             }
 
-            return await _client.SendAsync(message);
+            return await _client.SendAsync(message).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -268,7 +268,7 @@ namespace PortableRest
         /// <returns></returns>
         private static async Task<T> GetResponseContent<T>(RestRequest restRequest, HttpResponseMessage httpResponseMessage) where T : class
         {
-            var rawResponseContent = await GetRawResponseContent(httpResponseMessage);
+            var rawResponseContent = await GetRawResponseContent(httpResponseMessage).ConfigureAwait(false);
 
             // ReSharper disable once CSharpWarnings::CS0618
             if (typeof (T) == typeof (string) || restRequest.ReturnRawString)
@@ -288,7 +288,7 @@ namespace PortableRest
         {
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadAsStringAsync();
+                return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
 
             return null;
