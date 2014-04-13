@@ -4,7 +4,7 @@
         <id>PortableRest</id>
         <version>2.5.0</version>
         <title>PortableRest</title>
-        <authors>Robert McLaws, Richard Beauchamp, </authors>
+        <authors>Robert McLaws, Richard Beauchamp</authors>
         <owners>AdvancedREI</owners>
         <licenseUrl>http://choosealicense.com/licenses/mit/</licenseUrl>
         <projectUrl>http://github.com/AdvancedREI/PortableRest</projectUrl>
