@@ -142,7 +142,7 @@
         /// <summary>Adds an unnamed parameter to the body of the request.</summary>
         /// <param name="key" type="String"></param>
         /// <param name="value" type="Object"></param>
-        /// <param name="encoding" type"window.PortableRest.ParameterEncoding"></param>
+        /// <param name="encoding" type"window.PortableRest.ParameterEncoding" optional="true"></param>
 
         encoding = encoding || window.PortableRest.ParameterEncoding.UriEncoded;
         
