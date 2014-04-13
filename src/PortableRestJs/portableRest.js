@@ -183,11 +183,35 @@
         /// <param name="baseUrl" type="String"></param>
         /// <returns type="String" />
 
-
+        var hasQueryString = false;
         for (var urlSegmentsIndex = 0, urlSegmentsLength = this._urlSegments.length; urlSegmentsIndex < urlSegmentsLength; urlSegmentsIndex++)
         {
             var segment = this._urlSegments[urlSegmentsIndex];
+            if (segment.isQueryString)
+            {
+                hasQueryString = true;
+                continue;
+            }
             this.resource = this.resource.replace("{" + segment.key + "}", encodeURIComponent(segment.value));
+        }
+
+        if (hasQueryString)
+        {
+            var queryString = "";
+            for (var urlSegmentsIndex = 0, urlSegmentsLength = this._urlSegments.length; urlSegmentsIndex < urlSegmentsLength; urlSegmentsIndex++)
+            {
+                var segment = this._urlSegments[urlSegmentsIndex];
+                if (!segment.isQueryString)
+                {
+                    continue;
+                }
+                if (queryString)
+                {
+                    queryString += "&";
+                }
+                queryString += segment.key + "=" + segment.value;
+            }
+            this.resource = this.resource + (this.resource.indexOf("?") !== -1 ? "&" + queryString : "?" + queryString);
         }
 
         if ((baseUrl !== null) && (baseUrl !== undefined))
