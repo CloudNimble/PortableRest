@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
@@ -113,13 +114,14 @@ namespace PortableRest
         /// </summary>
         /// <typeparam name="T">The type to deserialize to.</typeparam>
         /// <param name="restRequest">The RestRequest to execute.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>An object of T.</returns>
         /// <exception cref="HttpRequestException">
         /// Throws an exception if the <see cref="HttpResponseMessage.IsSuccessStatusCode"/> property for the HTTP response is false.
         /// </exception>
-        public async Task<T> ExecuteAsync<T>(RestRequest restRequest) where T : class
+        public async Task<T> ExecuteAsync<T>(RestRequest restRequest, CancellationToken cancellationToken = default(CancellationToken)) where T : class
         {
-            var httpResponseMessage = await GetHttpResponseMessage<T>(restRequest).ConfigureAwait(false);
+            var httpResponseMessage = await GetHttpResponseMessage<T>(restRequest, cancellationToken).ConfigureAwait(false);
 
             httpResponseMessage.EnsureSuccessStatusCode();
 
@@ -128,17 +130,17 @@ namespace PortableRest
 
         /// <summary>
         /// Executes an asynchronous request to the given resource and returns a RestResponse
-        /// which contains the <see cref="HttpResponseMessage"/> and the response content of T.
+        /// which contains the <see cref="HttpResponseMessage" /> and the response content of T.
         /// </summary>
         /// <typeparam name="T">The type to deserialize from the content.</typeparam>
         /// <param name="restRequest">The RestRequest to execute.</param>
-        /// <exception cref="PortableRestException">
-        /// This type of exception is thrown when an error happens either before a request has started, 
-        /// or after it has finished and the result is being processed.
-        /// </exception>
-        public async Task<RestResponse<T>> SendAsync<T>(RestRequest restRequest) where T : class
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="PortableRestException">This type of exception is thrown when an error happens either before a request has started,
+        /// or after it has finished and the result is being processed.</exception>
+        public async Task<RestResponse<T>> SendAsync<T>(RestRequest restRequest, CancellationToken cancellationToken = default(CancellationToken)) where T : class
         {
-            var httpResponseMessage = await GetHttpResponseMessage<T>(restRequest).ConfigureAwait(false);
+            var httpResponseMessage = await GetHttpResponseMessage<T>(restRequest, cancellationToken).ConfigureAwait(false);
 
             var content = await GetResponseContent<T>(restRequest, httpResponseMessage).ConfigureAwait(false);
 
@@ -196,8 +198,9 @@ namespace PortableRest
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="restRequest"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private async Task<HttpResponseMessage> GetHttpResponseMessage<T>(RestRequest restRequest)
+        private async Task<HttpResponseMessage> GetHttpResponseMessage<T>(RestRequest restRequest, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(restRequest.DateFormat) && !string.IsNullOrWhiteSpace(DateFormat))
             {
@@ -256,7 +259,7 @@ namespace PortableRest
                 }
             }
 
-            return await _client.SendAsync(message).ConfigureAwait(false);
+            return await _client.SendAsync(message, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
