@@ -149,6 +149,20 @@
         this._parameters.push({ key: key, value: value, encoding: encoding });
     };
 
+    window.PortableRest.RestRequest.prototype.addQueryString = function (key, value)
+    {
+        /// <summary>Appends a key/value pair to the end of the existing QueryString in a URI.</summary>
+        /// <param name="key" type="String"></param>
+        /// <param name="value" type="Object"></param>
+
+        if (typeof value !== "string")
+        {
+            value = value.toString();
+        }
+
+        this._urlSegments.push({ key: key, value: value, isQueryString: true });
+    };
+
     window.PortableRest.RestRequest.prototype.setCredentials = function (user, password)
     {
         /// <summary></summary>
