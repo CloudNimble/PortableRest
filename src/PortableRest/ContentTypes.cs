@@ -5,6 +5,10 @@ using System.Text;
 
 namespace PortableRest
 {
+
+    /// <summary>
+    /// The types of content supported in PortableRest requests and responses.
+    /// </summary>
     public enum ContentTypes
     {
         /// <summary>

@@ -3,6 +3,9 @@
 namespace PortableRest
 {
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class PortableRestException : Exception
     {
 

@@ -43,6 +43,7 @@ namespace PortableRest
         /// <summary>
         /// The User Agent string to pass back to the API.
         /// </summary>
+        /// <remarks>If you do not set this value, it will be set for you by calling SetUserAgent() before the request is executed.</remarks>
         public string UserAgent { get; set; }
 
         /// <summary>
@@ -51,13 +52,23 @@ namespace PortableRest
         public CookieContainer CookieContainer { get; set; }
 
         /// <summary>
+        /// The internal HttpMessageHandler to use for the request. 
+        /// </summary>
+        public HttpMessageHandler HttpHandler { get; set; }
+
+        /// <summary>
+        /// Allows you to have more control over how JSON content is serialized to the request body.
+        /// </summary>
+        public JsonSerializerSettings JsonSerializerSettings { get; set; }
+
+        /// <summary>
         /// A list of KeyValuePairs that will be appended to the Headers collection for all requests.
         /// </summary>
         private List<KeyValuePair<string, string>> Headers { get; set; }
 
         #endregion
 
-        #region Public Methods
+        #region Constructors
 
         /// <summary>
         /// Creates a new instance of the RestClient class.
@@ -66,7 +77,26 @@ namespace PortableRest
         {
             Headers = new List<KeyValuePair<string, string>>();
             CookieContainer = new CookieContainer();
+            HttpHandler = new HttpClientHandler
+            {
+                AllowAutoRedirect = true
+            };
         }
+
+        /// <summary>
+        /// Creates a new instance of the RestClient class.
+        /// </summary>
+        /// <param name="handler">The HttpMessageHandler instance to use for all requests with this RestClient.</param>
+        public RestClient(HttpMessageHandler handler)
+        {
+            Headers = new List<KeyValuePair<string, string>>();
+            CookieContainer = new CookieContainer();
+            HttpHandler = handler;
+        }
+
+        #endregion
+
+        #region Public Methods
 
         /// <summary>
         /// Adds a header for a given string key and string value.
@@ -152,6 +182,39 @@ namespace PortableRest
         #region Private Methods
 
         /// <summary>
+        /// Configures the HttpMessageHandler to ensure requests can be compressed and use the specified CookieContainer.
+        /// </summary>
+        /// <param name="handler">The HttpMessageHandler to configure.</param>
+        private void ConfigureHandler(HttpMessageHandler handler)
+        {
+            if (handler == null)
+            {
+                throw new PortableRestException("Could not find an HttpClientHandler instance to configure. Please check to make sure that any custom HttpMessageHandler " +
+                                                "passed into the RestClient constructor create a new instace of HttpClientHandler at the base of its DelegatingHandler chain.");
+            }
+            //RWM: This Handler could be a part of a chain of handlers. Recursion!
+            if (handler is DelegatingHandler)
+            {
+                ConfigureHandler((handler as DelegatingHandler).InnerHandler);
+            }
+
+            //RWM: We can't do anything if we get down the chain and we don't have an HttpClientHandler, so bail.
+            if (!(handler is HttpClientHandler)) return;
+
+            var clientHandler = (handler as HttpClientHandler);
+            clientHandler.AllowAutoRedirect = true;
+            if (clientHandler.SupportsAutomaticDecompression)
+            {
+                clientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            }
+
+            if (CookieContainer != null)
+            {
+                clientHandler.CookieContainer = CookieContainer;
+            }
+        }
+
+        /// <summary>
         /// Helps deal with the fact that the XmlSerializer is not supported, and the DataContractSerializer hates XmlAttributes.
         /// </summary>
         /// <param name="node"></param>
@@ -202,27 +265,20 @@ namespace PortableRest
         /// <returns></returns>
         private async Task<HttpResponseMessage> GetHttpResponseMessage<T>(RestRequest restRequest, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (string.IsNullOrWhiteSpace(restRequest.DateFormat) && !string.IsNullOrWhiteSpace(DateFormat))
+            //RWM If we've specified a DateFormat for the Client, but not not the Request, pass it down.
+            if (!string.IsNullOrWhiteSpace(DateFormat) && string.IsNullOrWhiteSpace(restRequest.DateFormat))
             {
                 restRequest.DateFormat = DateFormat;
             }
 
-            var handler = new HttpClientHandler
+            //RWM If we've specified JsonSerializerSettings for the Client, but not not the Request, pass it down.
+            if (JsonSerializerSettings != null && restRequest.JsonSerializerSettings == null)
             {
-                AllowAutoRedirect = true
-            };
-
-            if (handler.SupportsAutomaticDecompression)
-            {
-                handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                restRequest.JsonSerializerSettings = JsonSerializerSettings;
             }
 
-            if (CookieContainer != null)
-            {
-                handler.CookieContainer = CookieContainer;
-            }
-
-            _client = new HttpClient(handler);
+            ConfigureHandler(HttpHandler);
+            _client = new HttpClient(HttpHandler);
 
             if (string.IsNullOrWhiteSpace(UserAgent))
             {

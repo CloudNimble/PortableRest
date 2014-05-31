@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata minClientVersion="2.8.1">
-        <id>PortableRest</id>
+        <id>PortableRest.Signed</id>
         <version>3.0.0-beta1</version>
         <title>PortableRest</title>
         <authors>Robert McLaws, Richard Beauchamp</authors>
@@ -10,12 +10,9 @@
         <projectUrl>http://github.com/AdvancedREI/PortableRest</projectUrl>
         <iconUrl>https://advancedrei.blob.core.windows.net/nuget/PortableRest.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>A library for consuming REST APIs from Portable Class Libraries (.NET 4.5, Silverlight 5, Windows Phone 8, and Windows 8.x). Designed to be partially drop-in compatible with RestSharp.</description>
+        <description>A *SIGNED* library for consuming REST APIs from Portable Class Libraries (.NET 4.5, Silverlight 5, Windows Phone 8, and Windows 8.x). Designed to be partially drop-in compatible with RestSharp.</description>
         <releaseNotes>3.0.0-beta1
   • Added constructor overload that accepts a custom HttpMessageHandler for all requests the HttpClient makes.
-  • Added support for using the AsyncOAuth library for leveraging OAuth in your requests.
-  • Added support for specifying the JsonSerializerSettings on a client-wide or per-request basis, with request-specific settings taking precedence.
-  • WARNING: Strong name signing is removed in this version. Will publish a PortableRest.Signed package for those needing SNK support (but you will not be able to use AsyncOAuth).
 
 2.5
   • New generic and non-generic SendAsync() methods that return a RestResponse with more detailed information.
@@ -69,9 +66,9 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="PortableRest\bin\Release\PortableRest.dll" target="lib\portable-net45+sl5+wp8+win8+wpa81\" />
-        <file src="PortableRest\bin\Release\PortableRest.pdb" target="lib\portable-net45+sl5+wp8+win8+wpa81\" />
-        <file src="PortableRest\bin\Release\PortableRest.xml" target="lib\portable-net45+sl5+wp8+win8+wpa81\" />
+        <file src="PortableRest\bin\Release-Signed\PortableRest.dll" target="lib\portable-net45+sl5+wp8+win8+wpa81\" />
+        <file src="PortableRest\bin\Release-Signed\PortableRest.pdb" target="lib\portable-net45+sl5+wp8+win8+wpa81\" />
+        <file src="PortableRest\bin\Release-Signed\PortableRest.xml" target="lib\portable-net45+sl5+wp8+win8+wpa81\" />
         <file src="PortableRest\**\*.cs" exclude="**\obj\**\*.*" target="src" />
     </files>
 </package>

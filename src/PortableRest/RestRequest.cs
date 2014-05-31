@@ -61,6 +61,11 @@ namespace PortableRest
         public bool IgnoreXmlAttributes { get; set; }
 
         /// <summary>
+        /// Allows you to have more control over how JSON content is serialized to the request body.
+        /// </summary>
+        public JsonSerializerSettings JsonSerializerSettings { get; set; }
+
+        /// <summary>
         /// The HTTP method to use for the request.
         /// </summary>
         public HttpMethod Method { get; set; }
@@ -303,7 +308,7 @@ namespace PortableRest
                     Transform(IgnoreRootElement ? doc.Descendants().First() : doc, Parameters[0].Value.GetType());
                     return doc.ToString();
                 default:
-                    return Parameters.Count > 0 ? JsonConvert.SerializeObject(Parameters[0].Value) : "";
+                    return Parameters.Count > 0 ? JsonConvert.SerializeObject(Parameters[0].Value, JsonSerializerSettings) : "";
             }
         }
 

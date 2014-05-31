@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30324.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortableRest", "PortableRest\PortableRest.csproj", "{A3546D1A-CE87-49BB-800A-98018C1FCA00}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{336F7F6F-8380-4C7C-9EE1-5AC824B58342}"
 	ProjectSection(SolutionItems) = preProject
 		PortableRest.nuspec = PortableRest.nuspec
+		PortableRest.Signed.nuspec = PortableRest.Signed.nuspec
+		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{155D3255-6321-4241-8357-162D6A883535}"
@@ -21,16 +23,21 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Release-Signed|Any CPU = Release-Signed|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release-Signed|Any CPU.ActiveCfg = Release-Signed|Any CPU
+		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release-Signed|Any CPU.Build.0 = Release-Signed|Any CPU
 		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|Any CPU.ActiveCfg = Release-Signed|Any CPU
+		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|Any CPU.Build.0 = Release-Signed|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

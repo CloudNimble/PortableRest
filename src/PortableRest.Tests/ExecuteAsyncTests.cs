@@ -38,7 +38,7 @@ namespace PortableRest.Tests
         //  at http://channel9.msdn.com/Events/TechEd/Europe/2013/DEV-B318#fbid=
         /// </summary>
         [TestMethod]
-        public void async_libraries_like_portable_rest_should_not_deadlock_on_task_result()
+        public void AsyncLibrariesShouldNotDeadlockOnTaskResult()
         {
             // Setup
             var client = new RestClient { BaseUrl = BaseAddress };

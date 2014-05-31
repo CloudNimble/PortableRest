@@ -1,19 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PortableRest
 {
+
+    /// <summary>
+    /// Extension methods on System.Type to make deserializing XML a tad easier.
+    /// </summary>
     public static class TypeExtensions
     {
         /// <summary>
         /// Determine whether a type is simple (String, Decimal, DateTime, etc) 
         /// or complex (i.e. custom class with public properties and methods).
         /// </summary>
-        /// <see cref="http://stackoverflow.com/questions/2442534/how-to-test-if-type-is-primitive"/>
+        /// <see href="http://stackoverflow.com/questions/2442534/how-to-test-if-type-is-primitive"/>
         //public static bool IsSimpleType(this TypeInfo type)
         public static bool IsSimpleType(this Type type)
         {
