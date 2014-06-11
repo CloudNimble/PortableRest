@@ -9,6 +9,7 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace PortableRest
 {
@@ -308,7 +309,13 @@ namespace PortableRest
                     Transform(IgnoreRootElement ? doc.Descendants().First() : doc, Parameters[0].Value.GetType());
                     return doc.ToString();
                 default:
-                    return Parameters.Count > 0 ? JsonConvert.SerializeObject(Parameters[0].Value, JsonSerializerSettings) : "";
+                    if (Parameters.Count == 0) return "";
+                    var body = new JObject();
+                    foreach (var parameter in Parameters)
+                    {
+                        body.Add(parameter.Key, new JValue(parameter.Value));
+                    }
+                    return JsonConvert.SerializeObject(body, JsonSerializerSettings);
             }
         }
 
