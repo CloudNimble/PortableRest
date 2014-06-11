@@ -25,6 +25,7 @@ namespace PortableRest
         #region Private Members
 
         private HttpClient _client;
+        private HttpMessageHandler _httpHandler;
 
         #endregion
 
@@ -54,7 +55,18 @@ namespace PortableRest
         /// <summary>
         /// The internal HttpMessageHandler to use for the request. 
         /// </summary>
-        public HttpMessageHandler HttpHandler { get; set; }
+        /// <remarks>
+        /// The HttpMessageHandler will be configured for our purposes immediately after being set.
+        /// </remarks>
+        public HttpMessageHandler HttpHandler
+        {
+            get { return _httpHandler; }
+            set
+            {
+                _httpHandler = value; 
+                ConfigureHandler(_httpHandler);
+            }
+        }
 
         /// <summary>
         /// Allows you to have more control over how JSON content is serialized to the request body.
@@ -271,13 +283,14 @@ namespace PortableRest
                 restRequest.DateFormat = DateFormat;
             }
 
-            //RWM If we've specified JsonSerializerSettings for the Client, but not not the Request, pass it down.
+            //RWM: If we've specified JsonSerializerSettings for the Client, but not not the Request, pass it down.
             if (JsonSerializerSettings != null && restRequest.JsonSerializerSettings == null)
             {
                 restRequest.JsonSerializerSettings = JsonSerializerSettings;
             }
 
-            ConfigureHandler(HttpHandler);
+            //RWM: We've moved this call to inside the HttpHandler setter... let's see if that solves our Mono problems.
+            //ConfigureHandler(HttpHandler);
             _client = new HttpClient(HttpHandler);
 
             if (string.IsNullOrWhiteSpace(UserAgent))

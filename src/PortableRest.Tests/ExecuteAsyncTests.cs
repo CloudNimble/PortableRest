@@ -33,6 +33,38 @@ namespace PortableRest.Tests
             response.Count().Should().Be(5);
         }
 
+        [TestMethod]
+        public async Task MultipleRequestsFromSameClientShouldNotFail()
+        {
+            // Setup
+            var client = new RestClient { BaseUrl = BaseAddress };
+            var request = new RestRequest("api/books");
+            List<Book> response;
+
+            // Execute
+            using (WebApp.Start<WebApiStartup>(BaseAddress))
+            {
+                response = await client.ExecuteAsync<List<Book>>(request);
+            }
+
+            // Validate
+            response.Should().NotBeNull();
+            response.Count().Should().Be(5);
+
+            var request2 = new RestRequest("api/books");
+            List<Book> response2;
+
+            // Execute
+            using (WebApp.Start<WebApiStartup>(BaseAddress))
+            {
+                response2 = await client.ExecuteAsync<List<Book>>(request2);
+            }
+
+            // Validate
+            response2.Should().NotBeNull();
+            response2.Count().Should().Be(5);
+        }
+
         /// <summary>
         /// For more info, please watch the video for correctly building asynchronous libraries in .NET
         //  at http://channel9.msdn.com/Events/TechEd/Europe/2013/DEV-B318#fbid=

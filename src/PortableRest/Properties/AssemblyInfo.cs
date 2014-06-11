@@ -3,7 +3,7 @@ using System.Resources;
 using System.Runtime.CompilerServices;
 
 [assembly: AssemblyTitle("PortableRest")]
-[assembly: AssemblyDescription("A Mono-compatible Portable Class Library for building REST Frameworks.")]
+[assembly: AssemblyDescription("A Mono/Xamarin-compatible Portable Class Library for building REST Frameworks.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("AdvancedREI, LLC.")]
 [assembly: AssemblyProduct("PortableRest")]
