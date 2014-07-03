@@ -184,9 +184,15 @@ namespace PortableRest
         {
             var httpResponseMessage = await GetHttpResponseMessage<T>(restRequest, cancellationToken).ConfigureAwait(false);
 
-            var content = await GetResponseContent<T>(restRequest, httpResponseMessage).ConfigureAwait(false);
-
-            return new RestResponse<T>(httpResponseMessage, content);
+            try
+            {
+                var content = await GetResponseContent<T>(restRequest, httpResponseMessage).ConfigureAwait(false);
+                return new RestResponse<T>(httpResponseMessage, content);
+            }
+            catch (Exception ex)
+            {
+                return new RestResponse<T>(httpResponseMessage, null, ex);
+            }
         }
 
         #endregion
