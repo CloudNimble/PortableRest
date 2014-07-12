@@ -310,6 +310,8 @@ namespace PortableRest
                     return doc.ToString();
                 default:
                     if (Parameters.Count == 0) return "";
+                    if(Parameters.Count == 1 && string.IsNullOrEmpty(Parameters[0].Key))
+                        return JsonConvert.SerializeObject(Parameters[0].Value, JsonSerializerSettings);
                     var body = new JObject();
                     foreach (var parameter in Parameters)
                     {
