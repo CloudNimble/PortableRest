@@ -60,8 +60,10 @@
         <copyright>Copyright © 2013-2014 AdvancedREI, LLC.</copyright>
         <tags>HttpClient, REST, Portable Class Library, PCL, RestSharp, HTTP, API, JSON, XML</tags>
         <dependencies>
-            <group targetFramework=".NETPortable0.0-net45+sl5+wp8+win8+wpa81">
+            <group>
                 <dependency id="Newtonsoft.Json" version="6.0.2" />
+            </group>
+            <group targetFramework=".NETPortable0.0-net45+sl5+wp8+win8+wpa81">
                 <dependency id="Microsoft.Bcl" version="1.1.9" />
                 <dependency id="Microsoft.Bcl.Async" version="1.0.168" />
                 <dependency id="Microsoft.Bcl.Build" version="1.0.14" />
@@ -70,9 +72,9 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="PortableRest\bin\Release\PortableRest.dll" target="lib\portable-net45+sl5+wp8+win8+wpa81\" />
-        <file src="PortableRest\bin\Release\PortableRest.pdb" target="lib\portable-net45+sl5+wp8+win8+wpa81\" />
-        <file src="PortableRest\bin\Release\PortableRest.xml" target="lib\portable-net45+sl5+wp8+win8+wpa81\" />
+        <file src="PortableRest\bin\Release\PortableRest.dll" target="lib\portable-net45+sl5+wp8+win8+wpa81+MonoAndroid1+MonoTouch1\" />
+        <file src="PortableRest\bin\Release\PortableRest.pdb" target="lib\portable-net45+sl5+wp8+win8+wpa81+MonoAndroid1+MonoTouch1\" />
+        <file src="PortableRest\bin\Release\PortableRest.xml" target="lib\portable-net45+sl5+wp8+win8+wpa81+MonoAndroid1+MonoTouch1\" />
         <file src="PortableRest\**\*.cs" exclude="**\obj\**\*.*" target="src" />
     </files>
 </package>
