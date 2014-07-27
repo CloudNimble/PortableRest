@@ -309,13 +309,20 @@ namespace PortableRest
                     Transform(IgnoreRootElement ? doc.Descendants().First() : doc, Parameters[0].Value.GetType());
                     return doc.ToString();
                 default:
-                    if (Parameters.Count == 0) return "";
-                    var body = new JObject();
-                    foreach (var parameter in Parameters)
+                    switch (Parameters.Count)
                     {
-                        body.Add(parameter.Key, new JValue(parameter.Value));
+                        case 0:
+                            return "";
+                        case 1:
+                            return JsonConvert.SerializeObject(Parameters[0].Value, JsonSerializerSettings);
+                        default:
+                            var body = new JObject();
+                            foreach (var parameter in Parameters)
+                            {
+                                body.Add(parameter.Key, new JObject(parameter.Value));
+                            }
+                            return JsonConvert.SerializeObject(body, JsonSerializerSettings);
                     }
-                    return JsonConvert.SerializeObject(body, JsonSerializerSettings);
             }
         }
 

@@ -264,7 +264,7 @@ namespace PortableRest
             //However removing empty nodes seems to work.
             if (!element.Nodes().Any()) return null;
 
-            return new XElement(element.Name,
+            return new XElement(XNamespace.None.GetName(element.Name.LocalName),
                 element.Nodes()
                     .OrderBy(c => (c as XElement) != null ? (c as XElement).Name.LocalName : c.ToString())
                     .Select(n =>
@@ -322,10 +322,14 @@ namespace PortableRest
             //RWM: Not sure if this is sufficient, or if HEAD supports a body, will need to check into the RFC.
             if (restRequest.Method != HttpMethod.Get && restRequest.Method != HttpMethod.Head && restRequest.Method != HttpMethod.Trace)
             {
-                //REM: This feels hacky. May need some tweaking.
+                //RWM: This feels hacky. May need some tweaking.
                 if (restRequest.ContentType == ContentTypes.ByteArray)
                 {
-                    message.Content = new ByteArrayContent(restRequest.Parameters[0].GetEncodedValue() as byte[]);
+                    //RWM: A fix for an issue uncovered by @scottisafool.
+                    if (restRequest.Parameters.Count > 0)
+                    {
+                        message.Content = new ByteArrayContent(restRequest.Parameters[0].GetEncodedValue() as byte[]);
+                    }
                 }
                 else
                 {
@@ -386,12 +390,15 @@ namespace PortableRest
         /// <returns></returns>
         private static T DeserializeResponseContent<T>(RestRequest restRequest, HttpResponseMessage response, string responseContent) where T : class
         {
-            if (response.Content.Headers.ContentType.MediaType == "application/xml")
+            switch (response.Content.Headers.ContentType.MediaType)
             {
-                return DeserializeApplicationXml<T>(restRequest, responseContent);
+                case "application/xml":
+                case "text/xml":
+                    return DeserializeApplicationXml<T>(restRequest, responseContent);
+                    //TODO: Handle more response types... like files.
+                default:
+                    return JsonConvert.DeserializeObject<T>(responseContent);
             }
-            //TODO: Handle more response types... like files.
-            return JsonConvert.DeserializeObject<T>(responseContent);
         }
 
         /// <summary>
@@ -419,7 +426,8 @@ namespace PortableRest
             {
                 var settings = new XmlReaderSettings
                 {
-                    IgnoreWhitespace = true
+                    IgnoreWhitespace = true,
+                    
                 };
                 using (var reader = XmlReader.Create(memoryStream, settings))
                 {

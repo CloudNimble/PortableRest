@@ -139,6 +139,8 @@
   <ItemGroup>
     <Compile Include="AsyncTestUtilities\TaskExtensions.cs" />
     <Compile Include="AsyncTestUtilities\WindowsFormsContext.cs" />
+    <Compile Include="Bricks\Bricks.cs" />
+    <Compile Include="Bricks\BrickSetClient.cs" />
     <Compile Include="CoreTests.cs" />
     <Compile Include="ExecuteAsyncTests.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
@@ -155,6 +157,7 @@
     <Compile Include="OwinSelfHostServer\BooksController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResourceUriTests.cs" />
+    <Compile Include="BrickSetClientTests.cs" />
     <Compile Include="XmlTest\PhoneCall.cs" />
     <Compile Include="XmlTest\PhoneNumber.cs" />
   </ItemGroup>
