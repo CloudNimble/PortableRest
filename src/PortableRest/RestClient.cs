@@ -182,10 +182,10 @@ namespace PortableRest
         /// or after it has finished and the result is being processed.</exception>
         public async Task<RestResponse<T>> SendAsync<T>(RestRequest restRequest, CancellationToken cancellationToken = default(CancellationToken)) where T : class
         {
-            var httpResponseMessage = await GetHttpResponseMessage<T>(restRequest, cancellationToken).ConfigureAwait(false);
-
+            HttpResponseMessage httpResponseMessage = null;
             try
             {
+                httpResponseMessage = await GetHttpResponseMessage<T>(restRequest, cancellationToken).ConfigureAwait(false);
                 var content = await GetResponseContent<T>(restRequest, httpResponseMessage).ConfigureAwait(false);
                 return new RestResponse<T>(httpResponseMessage, content);
             }
@@ -427,7 +427,6 @@ namespace PortableRest
                 var settings = new XmlReaderSettings
                 {
                     IgnoreWhitespace = true,
-                    
                 };
                 using (var reader = XmlReader.Create(memoryStream, settings))
                 {
