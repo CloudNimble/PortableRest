@@ -31,7 +31,7 @@ namespace PortableRest
         /// <summary>
         /// The exception that was thrown during object de-serializtion.
         /// </summary>
-        public Exception SerializationException { get; private set; }
+        public Exception Exception { get; private set; }
 
         #endregion
 
@@ -61,7 +61,7 @@ namespace PortableRest
         /// <param name="serializationException">The exception that was thrown during object de-serializtion.</param>
         public RestResponse(HttpResponseMessage httpResponseMessage, T content, Exception serializationException) : this(httpResponseMessage, content)
         {
-            SerializationException = serializationException;
+            Exception = serializationException;
         }
 
         #endregion
