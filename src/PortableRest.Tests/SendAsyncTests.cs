@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Owin.Hosting;
@@ -50,6 +51,25 @@ namespace PortableRest.Tests
 
             // Validate
             response.HttpResponseMessage.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+            response.Content.Should().BeNull();
+        }
+
+        [TestMethod]
+        public async Task DeleteShouldReturn204WithNoContent()
+        {
+            // Setup
+            var client = new RestClient { BaseUrl = BaseAddress };
+            var request = new RestRequest("api/books", HttpMethod.Delete);
+            RestResponse<string> response;
+
+            // Execute
+            using (WebApp.Start<WebApiStartup>(BaseAddress))
+            {
+                response = await client.SendAsync<string>(request);
+            }
+
+            // Validate
+            response.HttpResponseMessage.StatusCode.Should().Be(HttpStatusCode.NoContent);
             response.Content.Should().BeNull();
         }
 

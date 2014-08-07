@@ -108,6 +108,17 @@ namespace PortableRest
         }
 
         /// <summary>
+        /// Creates a new RestRequest instance for a given Resource and Method, specifying whether or not to ignore the root object in the response.
+        /// </summary>
+        /// <param name="resource">The URL format string of the resource to request.</param>
+        /// <param name="contentType">The <see cref="ContentTypes">Content Type</see> for the request.</param>
+        public RestRequest(string resource, ContentTypes contentType)
+            : this(resource)
+        {
+            ContentType = contentType;
+        }
+
+        /// <summary>
         /// Creates a new RestRequest instance for a given Resource and Method.
         /// </summary>
         /// <param name="resource">The specific resource to access.</param>
@@ -128,6 +139,18 @@ namespace PortableRest
             : this(resource, method)
         {
             IgnoreRootElement = ignoreRoot;
+        }
+
+        /// <summary>
+        /// Creates a new RestRequest instance for a given Resource and Method, specifying whether or not to ignore the root object in the response.
+        /// </summary>
+        /// <param name="resource">The URL format string of the resource to request.</param>
+        /// <param name="method">The <see cref="HttpMethod"/> for the request.</param>
+        /// <param name="contentType">The <see cref="ContentTypes">Content Type</see> for the request.</param>
+        public RestRequest(string resource, HttpMethod method, ContentTypes contentType)
+            : this(resource, method)
+        {
+            ContentType = contentType;
         }
 
         #endregion

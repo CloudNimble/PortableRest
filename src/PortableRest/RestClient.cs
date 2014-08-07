@@ -350,18 +350,14 @@ namespace PortableRest
         private static async Task<T> GetResponseContent<T>(RestRequest restRequest, HttpResponseMessage httpResponseMessage) where T : class
         {
             var rawResponseContent = await GetRawResponseContent(httpResponseMessage).ConfigureAwait(false);
-
-            if (rawResponseContent != null)
+            if (rawResponseContent == null) return null;
+            // ReSharper disable once CSharpWarnings::CS0618
+            if (typeof(T) == typeof(string) || restRequest.ReturnRawString)
             {
-                // ReSharper disable once CSharpWarnings::CS0618
-                if (typeof(T) == typeof(string) || restRequest.ReturnRawString)
-                {
-                    return rawResponseContent as T;
-                }
-
-                return DeserializeResponseContent<T>(restRequest, httpResponseMessage, rawResponseContent);
+                return rawResponseContent as T;
             }
-            return null;
+
+            return DeserializeResponseContent<T>(restRequest, httpResponseMessage, rawResponseContent);
         }
 
         /// <summary>
@@ -371,11 +367,11 @@ namespace PortableRest
         /// <returns></returns>
         private static async Task<string> GetRawResponseContent(HttpResponseMessage response)
         {
-            if (response.IsSuccessStatusCode)
+            //RWM: Explicitly check for NoContent... because the request was successful but there is nothing to do.
+            if (response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.NoContent)
             {
                 return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
-
             return null;
         }
 

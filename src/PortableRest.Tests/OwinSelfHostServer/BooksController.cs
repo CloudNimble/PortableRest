@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace PortableRest.Tests.OwinSelfHostServer
@@ -11,6 +13,13 @@ namespace PortableRest.Tests.OwinSelfHostServer
         public IEnumerable<Book> Get()
         {
             return GetBookList();
+        }
+
+        [Route("")]
+        [HttpDelete]
+        public IHttpActionResult Delete()
+        {
+            return StatusCode(HttpStatusCode.NoContent);
         }
 
         private static IEnumerable<Book> GetBookList()
