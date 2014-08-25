@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
@@ -328,7 +329,31 @@ namespace PortableRest
                     if (restRequest.Parameters.Count > 0)
                     {
                         message.Content = new ByteArrayContent(restRequest.Parameters[0].GetEncodedValue() as byte[]);
-                    }
+					}
+					else if (restRequest.ContentType == ContentTypes.MultipartFormData)
+					{
+						var multipartPartFormDataContent = new MultipartFormDataContent();
+						var contentJson = new StringContent(restRequest.GetRequestBody());
+						multipartPartFormDataContent.Add(contentJson);
+						message.Content = contentJson;
+
+						if (restRequest.Files.Any())
+						{
+							foreach (var fileParameter in restRequest.Files)
+							{
+								var streamContent = new StreamContent(new MemoryStream(fileParameter.Data, 0, fileParameter.Data.Length));
+								streamContent.Headers.ContentDisposition = ContentDispositionHeaderValue.Parse("form-data");
+								streamContent.Headers.ContentDisposition.Parameters.Add(
+									new NameValueHeaderValue("name", string.Format("\"{0}\"", fileParameter.Name)));
+								streamContent.Headers.ContentDisposition.Parameters.Add(
+									new NameValueHeaderValue("filename", string.Format("\"{0}\"", fileParameter.FileName)));
+
+								multipartPartFormDataContent.Add(streamContent);
+							}
+
+							message.Content = multipartPartFormDataContent;
+						}
+					}
                 }
                 else
                 {

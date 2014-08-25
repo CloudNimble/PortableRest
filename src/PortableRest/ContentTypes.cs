@@ -30,5 +30,9 @@ namespace PortableRest
         /// 
         /// </summary>
         Xml,
+		/// <summary>
+		/// 
+		/// </summary>
+		MultipartFormData
     }
 }

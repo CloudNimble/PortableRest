@@ -32,6 +32,11 @@ namespace PortableRest
         /// </summary>
         internal List<EncodedParameter> Parameters { get; set; }
 
+		/// <summary>
+		/// 
+		/// </summary>
+		internal List<FileParameter> Files { get; set; }
+
         #endregion
 
         #region Properties
@@ -93,6 +98,7 @@ namespace PortableRest
         {
             UrlSegments = new List<UrlSegment>();
             Parameters = new List<EncodedParameter>();
+			Files = new List<FileParameter>();
             Headers = new Dictionary<string, object>();
             Method = HttpMethod.Get;
         }
@@ -192,6 +198,17 @@ namespace PortableRest
             Parameters.Add(new EncodedParameter(key, value, encoding));
         }
 
+		/// <summary>
+		/// Adds the bytes to the Files collection with the specified file name
+		/// </summary>
+		/// <param name="name">The parameter name to use in the request</param>
+		/// <param name="bytes">The file data</param>
+		/// <param name="fileName">The file name to use for the uploaded file</param>
+		/// <returns>This request</returns>
+		public void AddFile(string name, byte[] bytes, string fileName)
+		{
+			Files.Add(new FileParameter(name, bytes, fileName));
+		}
 
         /// <summary>
         /// Replaces tokenized segments of the URL with a desired value.
