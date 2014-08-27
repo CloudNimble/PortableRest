@@ -19,7 +19,7 @@ namespace PortableRest
     /// <summary>
     /// Base client to create REST requests and process REST responses. Uses <see cref="HttpClient"/> as the underlying transport.
     /// </summary>
-    public class RestClient
+    public class RestClient : IDisposable
     {
 
         #region Private Members
@@ -192,6 +192,15 @@ namespace PortableRest
             {
                 return new RestResponse<T>(new HttpResponseMessage(HttpStatusCode.BadRequest), null, ex);
             }
+        }
+
+        /// <summary>
+        /// Disposes of the resources used by RestClient.
+        /// </summary>
+        public void Dispose()
+        {
+            HttpHandler.Dispose();
+            _client.Dispose();
         }
 
         #endregion
@@ -438,6 +447,8 @@ namespace PortableRest
             }
             return result;
         }
+
+
 
         #endregion
 
