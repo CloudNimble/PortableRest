@@ -137,6 +137,7 @@
     <Compile Include="CoreTests.cs" />
     <Compile Include="ExecuteAsyncTests.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Mocks\JsonConverterMock.cs" />
     <Compile Include="SendAsyncTests.cs" />
     <Compile Include="GoogleDiscoveryClientTest.cs" />
     <Compile Include="GoogleDiscovery\Api.cs" />
