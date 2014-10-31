@@ -74,6 +74,15 @@ namespace PortableRest
         public JsonSerializerSettings JsonSerializerSettings { get; set; }
 
         /// <summary>
+        /// Allows you to have more control over how JSON content is deserialized from the response body.
+        /// </summary>
+        /// <value>
+        /// The json deserializer settings.
+        /// </value>
+        public JsonSerializerSettings JsonDeserializerSettings { get; set; }
+
+
+        /// <summary>
         /// A list of KeyValuePairs that will be appended to the Headers collection for all requests.
         /// </summary>
         private List<KeyValuePair<string, string>> Headers { get; set; }
@@ -356,7 +365,7 @@ namespace PortableRest
         /// <param name="restRequest"></param>
         /// <param name="httpResponseMessage"></param>
         /// <returns></returns>
-        private static async Task<T> GetResponseContent<T>(RestRequest restRequest, HttpResponseMessage httpResponseMessage) where T : class
+        private async Task<T> GetResponseContent<T>(RestRequest restRequest, HttpResponseMessage httpResponseMessage) where T : class
         {
             var rawResponseContent = await GetRawResponseContent(httpResponseMessage).ConfigureAwait(false);
             if (rawResponseContent == null) return null;
@@ -392,7 +401,7 @@ namespace PortableRest
         /// <param name="response"></param>
         /// <param name="responseContent"></param>
         /// <returns></returns>
-        private static T DeserializeResponseContent<T>(RestRequest restRequest, HttpResponseMessage response, string responseContent) where T : class
+        private T DeserializeResponseContent<T>(RestRequest restRequest, HttpResponseMessage response, string responseContent) where T : class
         {
             switch (response.Content.Headers.ContentType.MediaType)
             {
@@ -401,7 +410,7 @@ namespace PortableRest
                     return DeserializeApplicationXml<T>(restRequest, responseContent);
                     //TODO: Handle more response types... like files.
                 default:
-                    return JsonConvert.DeserializeObject<T>(responseContent);
+                    return JsonConvert.DeserializeObject<T>(responseContent, JsonDeserializerSettings);
             }
         }
 
