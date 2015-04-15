@@ -192,6 +192,10 @@ namespace PortableRest
             Parameters.Add(new EncodedParameter(key, value, encoding));
         }
 
+		public void AddFileParameter(string key, Stream fileStream, string filename)
+		{
+			Parameters.Add(new FileParameter(key, fileStream, filename));
+		}
 
         /// <summary>
         /// Replaces tokenized segments of the URL with a desired value.
@@ -290,6 +294,8 @@ namespace PortableRest
                     return "application/x-www-form-urlencoded";
                 case ContentTypes.Xml:
                     return "application/xml";
+				case ContentTypes.MultiPartFormData:
+					return "multipart/form-data";
                 default:
                     return "application/json";
             }
