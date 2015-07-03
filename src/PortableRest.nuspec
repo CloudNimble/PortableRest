@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata minClientVersion="2.8.1">
         <id>PortableRest</id>
-        <version>3.0.0</version>
+        <version>3.1.0-Beta1</version>
         <title>PortableRest</title>
         <authors>Robert McLaws, Richard Beauchamp</authors>
         <owners>AdvancedREI</owners>
@@ -11,7 +11,7 @@
         <iconUrl>https://advancedrei.blob.core.windows.net/nuget/PortableRest.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>A library for consuming REST APIs from Portable Class Libraries (.NET 4.5, Silverlight 5, Windows Phone 8.x, and Windows 8.x). Designed to be partially drop-in compatible with RestSharp.</description>
-        <releaseNotes>3.0.0
+        <releaseNotes>3.0.1
   • Tons of bug fixes.
   • Improved the way PortableRest handles parameters being sent over the wire.
   • Added constructor overload that accepts a custom HttpMessageHandler for all requests the HttpClient makes.
@@ -63,15 +63,13 @@
         <copyright>Copyright © 2013-2014 AdvancedREI, LLC.</copyright>
         <tags>HttpClient, REST, Portable Class Library, PCL, RestSharp, HTTP, API, JSON, XML</tags>
         <dependencies>
-          <group>
+          <group targetFramework=".NETPortable0.0-net45+sl5+wp8+win8+wpa81">
             <dependency id="Newtonsoft.Json" version="6.0.4" />
+            <dependency id="Microsoft.Bcl" version="1.1.9" />
+            <dependency id="Microsoft.Bcl.Async" version="1.0.168" />
+            <dependency id="Microsoft.Bcl.Build" version="1.0.14" />
+            <dependency id="Microsoft.Net.Http" version="2.2.22" />
           </group>
-            <group targetFramework=".NETPortable0.0-net45+sl5+wp8+win8+wpa81">
-              <dependency id="Microsoft.Bcl" version="1.1.9" />
-              <dependency id="Microsoft.Bcl.Async" version="1.0.168" />
-              <dependency id="Microsoft.Bcl.Build" version="1.0.14" />
-              <dependency id="Microsoft.Net.Http" version="2.2.22" />
-            </group>
         </dependencies>
     </metadata>
     <files>

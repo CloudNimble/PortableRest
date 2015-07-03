@@ -8,5 +8,6 @@ del *.nupkg
 ".nuget/nuget.exe" pack PortableRest.Signed.nuspec -symbols
 if /i %choice% equ y (
     ".nuget/nuget.exe" push PortableRest.*.nupkg
+    ".nuget/nuget.exe" push PortableRest.Signed.*.nupkg
 )
 pause
