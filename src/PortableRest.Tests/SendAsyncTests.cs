@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Owin.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using PortableRest.Tests.AsyncTestUtilities;
+using PortableRest.Tests.Mocks;
 using PortableRest.Tests.OwinSelfHostServer;
 
 namespace PortableRest.Tests
@@ -146,6 +148,34 @@ namespace PortableRest.Tests
 
         }
 
+        [TestMethod]
+        public void JsonDeserializerSettingsAreUsedWhenDeserializingJson()
+        {
+            // Setup
+            var settings = new JsonSerializerSettings();
+            var converterMock = new JsonConverterMock();
+            settings.Converters.Add(converterMock);
+            var client = new RestClient { BaseUrl = BaseAddress, JsonDeserializerSettings = settings};
+            var request = new RestRequest("api/books");
+            RestResponse<List<Book>> response = null;
+
+            // Execute
+            using (WebApp.Start<WebApiStartup>(BaseAddress))
+            {
+                // Simulate ASP.NET and Windows Forms thread affinity
+                WindowsFormsContext.Run(() =>
+                {
+                    // Should not deadlock on this call
+                    response = client.SendAsync<List<Book>>(request).Result;
+                });
+            }
+
+            // Validate
+            converterMock.Calls.Should().NotBe(0);
+            response.Content.Should().NotBeNull();
+            response.Content.Count().Should().Be(5);
+            
+        }
     }
 
 }

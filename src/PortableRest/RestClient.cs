@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
@@ -72,6 +73,15 @@ namespace PortableRest
         /// Allows you to have more control over how JSON content is serialized to the request body.
         /// </summary>
         public JsonSerializerSettings JsonSerializerSettings { get; set; }
+
+        /// <summary>
+        /// Allows you to have more control over how JSON content is deserialized from the response body.
+        /// </summary>
+        /// <value>
+        /// The json deserializer settings.
+        /// </value>
+        public JsonSerializerSettings JsonDeserializerSettings { get; set; }
+
 
         /// <summary>
         /// A list of KeyValuePairs that will be appended to the Headers collection for all requests.
@@ -337,7 +347,31 @@ namespace PortableRest
                     if (restRequest.Parameters.Count > 0)
                     {
                         message.Content = new ByteArrayContent(restRequest.Parameters[0].GetEncodedValue() as byte[]);
-                    }
+					}
+					else if (restRequest.ContentType == ContentTypes.MultipartFormData)
+					{
+						var multipartPartFormDataContent = new MultipartFormDataContent();
+						var contentJson = new StringContent(restRequest.GetRequestBody());
+						multipartPartFormDataContent.Add(contentJson);
+						message.Content = contentJson;
+
+						if (restRequest.Files.Any())
+						{
+							foreach (var fileParameter in restRequest.Files)
+							{
+								var streamContent = new StreamContent(new MemoryStream(fileParameter.Data, 0, fileParameter.Data.Length));
+								streamContent.Headers.ContentDisposition = ContentDispositionHeaderValue.Parse("form-data");
+								streamContent.Headers.ContentDisposition.Parameters.Add(
+									new NameValueHeaderValue("name", string.Format("\"{0}\"", fileParameter.Name)));
+								streamContent.Headers.ContentDisposition.Parameters.Add(
+									new NameValueHeaderValue("filename", string.Format("\"{0}\"", fileParameter.FileName)));
+
+								multipartPartFormDataContent.Add(streamContent);
+							}
+
+							message.Content = multipartPartFormDataContent;
+						}
+					}
                 }
                 else
                 {
@@ -356,7 +390,7 @@ namespace PortableRest
         /// <param name="restRequest"></param>
         /// <param name="httpResponseMessage"></param>
         /// <returns></returns>
-        private static async Task<T> GetResponseContent<T>(RestRequest restRequest, HttpResponseMessage httpResponseMessage) where T : class
+        private async Task<T> GetResponseContent<T>(RestRequest restRequest, HttpResponseMessage httpResponseMessage) where T : class
         {
             var rawResponseContent = await GetRawResponseContent(httpResponseMessage).ConfigureAwait(false);
             if (rawResponseContent == null) return null;
@@ -392,7 +426,7 @@ namespace PortableRest
         /// <param name="response"></param>
         /// <param name="responseContent"></param>
         /// <returns></returns>
-        private static T DeserializeResponseContent<T>(RestRequest restRequest, HttpResponseMessage response, string responseContent) where T : class
+        private T DeserializeResponseContent<T>(RestRequest restRequest, HttpResponseMessage response, string responseContent) where T : class
         {
             switch (response.Content.Headers.ContentType.MediaType)
             {
@@ -401,7 +435,7 @@ namespace PortableRest
                     return DeserializeApplicationXml<T>(restRequest, responseContent);
                     //TODO: Handle more response types... like files.
                 default:
-                    return JsonConvert.DeserializeObject<T>(responseContent);
+                    return JsonConvert.DeserializeObject<T>(responseContent, JsonDeserializerSettings);
             }
         }
 
