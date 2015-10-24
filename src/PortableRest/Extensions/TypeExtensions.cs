@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 
 namespace PortableRest
 {
@@ -9,29 +10,39 @@ namespace PortableRest
     /// </summary>
     public static class TypeExtensions
     {
+
+        private static Type[] SimpleTypes = new Type[]
+            {
+                typeof (string),
+                typeof (decimal),
+                typeof (DateTime),
+                typeof (DateTimeOffset),
+                typeof (TimeSpan),
+                typeof (Guid)
+            };
+
         /// <summary>
         /// Determine whether a type is simple (String, Decimal, DateTime, etc) 
         /// or complex (i.e. custom class with public properties and methods).
         /// </summary>
         /// <see href="http://stackoverflow.com/questions/2442534/how-to-test-if-type-is-primitive"/>
-        //public static bool IsSimpleType(this TypeInfo type)
+                //public static bool IsSimpleType(this TypeInfo type)
         public static bool IsSimpleType(this Type type)
         {
+#if UWP
+            var info = type.GetTypeInfo();
+#endif
             return
+#if UWP
+                info.IsValueType ||
+                info.IsPrimitive ||
+#else
                 type.IsValueType ||
                 type.IsPrimitive ||
-                new Type[]
-                {
-                    typeof (String),
-                    typeof (Decimal),
-                    typeof (DateTime),
-                    typeof (DateTimeOffset),
-                    typeof (TimeSpan),
-                    typeof (Guid)
-                }
-                //.Contains(type.AsType());
-                .Contains(type);
+#endif
+                SimpleTypes.Contains(type);
         }
+
     }
 
 }

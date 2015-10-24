@@ -1,5 +1,12 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Microsoft.Owin.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PortableRest.Tests.OwinSelfHostServer;
 using PortableRest.Tests.XmlTest;
 
 namespace PortableRest.Tests
@@ -83,6 +90,40 @@ namespace PortableRest.Tests
 
 					Assert.AreEqual(expected.AsXmlSanitized(), body.AsXmlSanitized());
         }
+
+        [TestMethod]
+        public void RestResponseWithNullMessageShouldThrowError()
+        {
+            Action action = () => new RestResponse<string>(null, "Testing");
+            action.ShouldThrow<Exception>();
+        }
+
+
+
+        //private const string BaseAddress = "http://localhost:9385/";
+
+        //[TestMethod]
+        //public async Task CanAddAuthorizationHeaderWithoutError()
+        //{
+        //    // Setup
+        //    var client = new RestClient { BaseUrl = BaseAddress };
+        //    client.AddHeader("Authortization", );
+        //    var request = new RestRequest("api/books");
+        //    List<Book> response;
+
+        //    // Execute
+        //    using (WebApp.Start<WebApiStartup>(BaseAddress))
+        //    {
+        //        response = await client.ExecuteAsync<List<Book>>(request);
+        //    }
+
+        //    // Validate
+        //    response.Should().NotBeNull();
+        //    response.Count().Should().Be(5);
+        //}
+
+
+
     }
 
 }

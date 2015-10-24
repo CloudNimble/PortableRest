@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
-    <metadata minClientVersion="2.8.1">
-        <id>PortableRest</id>
-        <version>3.1.0-Beta1</version>
-        <title>PortableRest</title>
-        <authors>Robert McLaws, Richard Beauchamp</authors>
-        <owners>AdvancedREI</owners>
-        <licenseUrl>http://choosealicense.com/licenses/mit/</licenseUrl>
-        <projectUrl>http://github.com/AdvancedREI/PortableRest</projectUrl>
-        <iconUrl>https://advancedrei.blob.core.windows.net/nuget/PortableRest.png</iconUrl>
-        <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>A library for consuming REST APIs from Portable Class Libraries (.NET 4.5, Silverlight 5, Windows Phone 8.x, and Windows 8.x). Designed to be partially drop-in compatible with RestSharp.</description>
-        <releaseNotes>3.0.1
+  <metadata minClientVersion="2.8.1">
+    <id>PortableRest</id>
+    <version>3.1.0-Beta2</version>
+    <title>PortableRest</title>
+    <authors>Robert McLaws, Richard Beauchamp</authors>
+    <owners>AdvancedREI</owners>
+    <licenseUrl>http://choosealicense.com/licenses/mit/</licenseUrl>
+    <projectUrl>http://github.com/AdvancedREI/PortableRest</projectUrl>
+    <iconUrl>https://advancedrei.blob.core.windows.net/nuget/PortableRest.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A library for consuming REST APIs from Portable Class Libraries (.NET 4.5, Silverlight 5, Windows Phone 8.x, Windows 8.x, and Windows 10). Designed to be partially drop-in compatible with RestSharp.</description>
+    <releaseNotes>3.0.1
   • Tons of bug fixes.
   • Improved the way PortableRest handles parameters being sent over the wire.
   • Added constructor overload that accepts a custom HttpMessageHandler for all requests the HttpClient makes.
@@ -60,22 +60,101 @@
   1.0.4-alpha: Added basic POST support, &amp; updated XML deserialization.
   1.0.3: Added XML deserialization with DataContracts.
   1.0.0: First release.</releaseNotes>
-        <copyright>Copyright © 2013-2014 AdvancedREI, LLC.</copyright>
-        <tags>HttpClient, REST, Portable Class Library, PCL, RestSharp, HTTP, API, JSON, XML</tags>
-        <dependencies>
-          <group targetFramework=".NETPortable0.0-net45+sl5+wp8+win8+wpa81">
-            <dependency id="Newtonsoft.Json" version="6.0.4" />
-            <dependency id="Microsoft.Bcl" version="1.1.9" />
-            <dependency id="Microsoft.Bcl.Async" version="1.0.168" />
-            <dependency id="Microsoft.Bcl.Build" version="1.0.14" />
-            <dependency id="Microsoft.Net.Http" version="2.2.22" />
-          </group>
-        </dependencies>
-    </metadata>
-    <files>
-        <file src="PortableRest\bin\Release\PortableRest.dll" target="lib\portable-net45+sl5+wp8+win8+wpa81+MonoTouch1+MonoAndroid1\" />
-        <file src="PortableRest\bin\Release\PortableRest.pdb" target="lib\portable-net45+sl5+wp8+win8+wpa81+MonoTouch1+MonoAndroid1\" />
-        <file src="PortableRest\bin\Release\PortableRest.xml" target="lib\portable-net45+sl5+wp8+win8+wpa81+MonoTouch1+MonoAndroid1\" />
-        <file src="PortableRest\**\*.cs" exclude="**\obj\**\*.*" target="src" />
-    </files>
+    <copyright>Copyright © 2013-2015 AdvancedREI, LLC.</copyright>
+    <tags>HttpClient, REST, Portable Class Library, PCL, RestSharp, HTTP, API, JSON, XML</tags>
+    <dependencies>
+      <group targetFramework=".NETPortable0.0-net45+sl5+wp8+win8+wpa81">
+        <dependency id="Newtonsoft.Json" version="7.0.1" />
+        <dependency id="Microsoft.Bcl" version="1.1.10" />
+        <dependency id="Microsoft.Bcl.Async" version="1.0.168" />
+        <dependency id="Microsoft.Bcl.Build" version="1.0.21" />
+        <dependency id="Microsoft.Net.Http" version="2.2.29" />
+      </group>
+      <group targetFramework="dotnet">
+        <dependency id="Newtonsoft.Json" version="7.0.1" />
+        <dependency id="System.Collections" version="4.0.10" />
+        <dependency id="System.Diagnostics.Debug" version="4.0.10" />
+        <dependency id="System.IO" version="4.0.10" />
+        <dependency id="System.Linq" version="4.0.0" />
+        <dependency id="System.Net.Http" version="4.0.0" />
+        <dependency id="System.Net.Primitives" version="4.0.10" />
+        <dependency id="System.Reflection" version="4.0.10" />
+        <dependency id="System.Reflection.Extensions" version="4.0.0" />
+        <dependency id="System.Reflection.TypeExtensions" version="4.0.0" />
+        <dependency id="System.Resources.ResourceManager" version="4.0.0" />
+        <dependency id="System.Runtime" version="4.0.20" />
+        <dependency id="System.Runtime.Extensions" version="4.0.10" />
+        <dependency id="System.Runtime.Serialization.Primitives" version="4.0.10" />
+        <dependency id="System.Runtime.Serialization.Xml" version="4.0.10" />
+        <dependency id="System.Text.Encoding" version="4.0.10" />
+        <dependency id="System.Threading.Tasks" version="4.0.10" />
+        <dependency id="System.Xml.ReaderWriter" version="4.0.10" />
+        <dependency id="System.Xml.XDocument" version="4.0.10" />
+        <dependency id="System.Xml.XmlSerializer" version="4.0.10" />
+      </group>
+      <group targetFramework="uap10.0">
+        <dependency id="Newtonsoft.Json" version="7.0.1" />
+        <dependency id="System.Collections" version="4.0.10" />
+        <dependency id="System.Diagnostics.Debug" version="4.0.10" />
+        <dependency id="System.IO" version="4.0.10" />
+        <dependency id="System.Linq" version="4.0.0" />
+        <dependency id="System.Net.Http" version="4.0.0" />
+        <dependency id="System.Net.Primitives" version="4.0.10" />
+        <dependency id="System.Reflection" version="4.0.10" />
+        <dependency id="System.Reflection.Extensions" version="4.0.0" />
+        <dependency id="System.Reflection.TypeExtensions" version="4.0.0" />
+        <dependency id="System.Resources.ResourceManager" version="4.0.0" />
+        <dependency id="System.Runtime" version="4.0.20" />
+        <dependency id="System.Runtime.Extensions" version="4.0.10" />
+        <dependency id="System.Runtime.Serialization.Primitives" version="4.0.10" />
+        <dependency id="System.Runtime.Serialization.Xml" version="4.0.10" />
+        <dependency id="System.Text.Encoding" version="4.0.10" />
+        <dependency id="System.Threading.Tasks" version="4.0.10" />
+        <dependency id="System.Xml.ReaderWriter" version="4.0.10" />
+        <dependency id="System.Xml.XDocument" version="4.0.10" />
+        <dependency id="System.Xml.XmlSerializer" version="4.0.10" />
+      </group>
+      <group targetFramework="net46">
+        <dependency id="Newtonsoft.Json" version="7.0.1" />
+        <dependency id="System.Collections" version="4.0.10" />
+        <dependency id="System.Diagnostics.Debug" version="4.0.10" />
+        <dependency id="System.IO" version="4.0.10" />
+        <dependency id="System.Linq" version="4.0.0" />
+        <dependency id="System.Net.Http" version="4.0.0" />
+        <dependency id="System.Net.Primitives" version="4.0.10" />
+        <dependency id="System.Reflection" version="4.0.10" />
+        <dependency id="System.Reflection.Extensions" version="4.0.0" />
+        <dependency id="System.Reflection.TypeExtensions" version="4.0.0" />
+        <dependency id="System.Resources.ResourceManager" version="4.0.0" />
+        <dependency id="System.Runtime" version="4.0.20" />
+        <dependency id="System.Runtime.Extensions" version="4.0.10" />
+        <dependency id="System.Runtime.Serialization.Primitives" version="4.0.10" />
+        <dependency id="System.Runtime.Serialization.Xml" version="4.0.10" />
+        <dependency id="System.Text.Encoding" version="4.0.10" />
+        <dependency id="System.Threading.Tasks" version="4.0.10" />
+        <dependency id="System.Xml.ReaderWriter" version="4.0.10" />
+        <dependency id="System.Xml.XDocument" version="4.0.10" />
+        <dependency id="System.Xml.XmlSerializer" version="4.0.10" />
+      </group>
+      <group targetFramework="net45" />
+      <group targetFramework="wp8" />
+      <group targetFramework="win8" />
+      <group targetFramework="wpa81" />
+      <group targetFramework="xamarin.ios" />
+      <group targetFramework="monotouch" />
+      <group targetFramework="monoandroid" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="PortableRest\bin\Release\PortableRest.dll" target="lib\lib\portable-net45+sl5+wp8+win8+wpa81+MonoTouch10+MonoAndroid10+xamarinmac20+xamarinios10\" />
+    <file src="PortableRest\bin\Release\PortableRest.pdb" target="lib\lib\portable-net45+sl5+wp8+win8+wpa81+MonoTouch10+MonoAndroid10+xamarinmac20+xamarinios10\" />
+    <file src="PortableRest\bin\Release\PortableRest.xml" target="lib\lib\portable-net45+sl5+wp8+win8+wpa81+MonoTouch10+MonoAndroid10+xamarinmac20+xamarinios10\" />
+    <file src="PortableRest.Universal\bin\Release\PortableRest.dll" target="lib\dotnet\" />
+    <file src="PortableRest.Universal\bin\Release\PortableRest.pdb" target="lib\dotnet\" />
+    <file src="PortableRest.Universal\bin\Release\PortableRest.xml" target="lib\dotnet\" />
+    <file src="PortableRest.Universal\bin\Release\PortableRest.dll" target="lib\uap10.0\" />
+    <file src="PortableRest.Universal\bin\Release\PortableRest.pdb" target="lib\uap10.0\" />
+    <file src="PortableRest.Universal\bin\Release\PortableRest.xml" target="lib\uap10.0\" />
+    <file src="PortableRest\**\*.cs" exclude="**\obj\**\*.*" target="src" />
+  </files>
 </package>

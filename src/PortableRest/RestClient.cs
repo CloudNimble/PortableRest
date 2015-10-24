@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 
 namespace PortableRest
@@ -63,7 +64,7 @@ namespace PortableRest
             get { return _httpHandler; }
             set
             {
-                _httpHandler = value; 
+                _httpHandler = value;
                 ConfigureHandler(_httpHandler);
             }
         }
@@ -71,6 +72,7 @@ namespace PortableRest
         /// <summary>
         /// Allows you to have more control over how JSON content is serialized to the request body.
         /// </summary>
+        /// <contributor>https://github.com/jeffijoe</contributor>
         public JsonSerializerSettings JsonSerializerSettings { get; set; }
 
         /// <summary>
@@ -99,7 +101,7 @@ namespace PortableRest
         /// Creates a new instance of the RestClient class.
         /// </summary>
         /// <param name="handler">The HttpMessageHandler instance to use for all requests with this RestClient.</param>
-        public RestClient(HttpMessageHandler handler)
+        public RestClient([NotNull] HttpMessageHandler handler)
         {
             Headers = new List<KeyValuePair<string, string>>();
             CookieContainer = new CookieContainer();
@@ -115,7 +117,7 @@ namespace PortableRest
         /// </summary>
         /// <param name="key">The header to add.</param>
         /// <param name="value">The value of the header being added.</param>
-        public void AddHeader(string key, string value)
+        public void AddHeader([NotNull] string key, string value)
         {
             Headers.Add(new KeyValuePair<string, string>(key, value));
         }
@@ -130,21 +132,38 @@ namespace PortableRest
         /// <remarks>This will set the <see cref="UserAgent"/> to "YourAssemblyName Major.Minor.Revision (PortableRest Major.Minor.Revision)</remarks>
         public void SetUserAgent<T>(string displayName = null)
         {
+#if UWP
+            var thisAssembly = typeof(T).GetTypeInfo().Assembly;
+#else
             var thisAssembly = typeof(T).Assembly;
+#endif
             var thisAssemblyName = new AssemblyName(thisAssembly.FullName);
             var thisVersion = thisAssemblyName.Version;
 
             if (displayName == null)
             {
+#if UWP
+                var attributes = thisAssembly.GetCustomAttributes<AssemblyTitleAttribute>().ToList();
+                if (attributes.Count() == 0)
+                {
+                    throw new Exception("The assembly containing the class inheriting from PortableRest.RestClient must have an AssemblyTitle attribute specified.");
+                }
+                displayName = attributes[0].Title;
+#else
                 var attributes = thisAssembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
                 if (attributes.Length == 0)
                 {
                     throw new Exception("The assembly containing the class inheriting from PortableRest.RestClient must have an AssemblyTitle attribute specified.");
                 }
                 displayName = ((AssemblyTitleAttribute)attributes[0]).Title;
+#endif
             }
 
+#if UWP
+            var prAssembly = typeof(RestRequest).GetTypeInfo().Assembly;
+#else
             var prAssembly = typeof(RestRequest).Assembly;
+#endif
             var prAssemblyName = new AssemblyName(prAssembly.FullName);
             var prVersion = prAssemblyName.Version;
 
@@ -161,7 +180,7 @@ namespace PortableRest
         /// <exception cref="HttpRequestException">
         /// Throws an exception if the <see cref="HttpResponseMessage.IsSuccessStatusCode"/> property for the HTTP response is false.
         /// </exception>
-        public async Task<T> ExecuteAsync<T>(RestRequest restRequest, CancellationToken cancellationToken = default(CancellationToken)) where T : class
+        public async Task<T> ExecuteAsync<T>([NotNull] RestRequest restRequest, CancellationToken cancellationToken = default(CancellationToken)) where T : class
         {
             var httpResponseMessage = await GetHttpResponseMessage<T>(restRequest, cancellationToken).ConfigureAwait(false);
 
@@ -180,13 +199,19 @@ namespace PortableRest
         /// <returns></returns>
         /// <exception cref="PortableRestException">This type of exception is thrown when an error happens either before a request has started,
         /// or after it has finished and the result is being processed.</exception>
-        public async Task<RestResponse<T>> SendAsync<T>(RestRequest restRequest, CancellationToken cancellationToken = default(CancellationToken)) where T : class
+        public async Task<RestResponse<T>> SendAsync<T>([NotNull] RestRequest restRequest, CancellationToken cancellationToken = default(CancellationToken)) where T : class
         {
             try
             {
                 HttpResponseMessage httpResponseMessage = await GetHttpResponseMessage<T>(restRequest, cancellationToken).ConfigureAwait(false);
                 var content = await GetResponseContent<T>(restRequest, httpResponseMessage).ConfigureAwait(false);
                 return new RestResponse<T>(httpResponseMessage, content);
+            }
+            //RWM: Added 22 Oct 2015.
+            //     If we caught an exception lower on the stack, make sure it's bubbled up.
+            catch (PortableRestException prEx)
+            {
+                throw prEx;
             }
             catch (Exception ex)
             {
@@ -203,9 +228,9 @@ namespace PortableRest
             _client.Dispose();
         }
 
-        #endregion
+#endregion
 
-        #region Private Methods
+#region Private Methods
 
         /// <summary>
         /// Configures the HttpMessageHandler to ensure requests can be compressed and use the specified CookieContainer.
@@ -219,15 +244,16 @@ namespace PortableRest
                                                 "passed into the RestClient constructor create a new instace of HttpClientHandler at the base of its DelegatingHandler chain.");
             }
             //RWM: This Handler could be a part of a chain of handlers. Recursion!
-            if (handler is DelegatingHandler)
+            var delegatingHandler = handler as DelegatingHandler;
+            if (delegatingHandler != null)
             {
-                ConfigureHandler((handler as DelegatingHandler).InnerHandler);
+                ConfigureHandler(delegatingHandler.InnerHandler);
             }
 
             //RWM: We can't do anything if we get down the chain and we don't have an HttpClientHandler, so bail.
             if (!(handler is HttpClientHandler)) return;
 
-            var clientHandler = (handler as HttpClientHandler);
+            var clientHandler = ((HttpClientHandler)handler);
             clientHandler.AllowAutoRedirect = true;
             if (clientHandler.SupportsAutomaticDecompression)
             {
@@ -247,7 +273,7 @@ namespace PortableRest
         /// <param name="request"></param>
         /// <returns></returns>
         /// <remarks>Technique from http://blogs.msdn.com/b/ericwhite/archive/2009/07/20/a-tutorial-in-the-recursive-approach-to-pure-functional-transformations-of-xml.aspx </remarks>
-        private static object Transform(XNode node, RestRequest request)
+        private static object Transform(XNode node, [NotNull] RestRequest request)
         {
             var element = node as XElement;
             if (element == null) return node;
@@ -289,7 +315,7 @@ namespace PortableRest
         /// <param name="restRequest"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private async Task<HttpResponseMessage> GetHttpResponseMessage<T>(RestRequest restRequest, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<HttpResponseMessage> GetHttpResponseMessage<T>([NotNull] RestRequest restRequest, CancellationToken cancellationToken = default(CancellationToken))
         {
             //RWM If we've specified a DateFormat for the Client, but not not the Request, pass it down.
             if (!string.IsNullOrWhiteSpace(DateFormat) && string.IsNullOrWhiteSpace(restRequest.DateFormat))
@@ -356,7 +382,7 @@ namespace PortableRest
         /// <param name="restRequest"></param>
         /// <param name="httpResponseMessage"></param>
         /// <returns></returns>
-        private static async Task<T> GetResponseContent<T>(RestRequest restRequest, HttpResponseMessage httpResponseMessage) where T : class
+        private static async Task<T> GetResponseContent<T>([NotNull] RestRequest restRequest, HttpResponseMessage httpResponseMessage) where T : class
         {
             var rawResponseContent = await GetRawResponseContent(httpResponseMessage).ConfigureAwait(false);
             if (rawResponseContent == null) return null;
@@ -374,7 +400,7 @@ namespace PortableRest
         /// </summary>
         /// <param name="response"></param>
         /// <returns></returns>
-        private static async Task<string> GetRawResponseContent(HttpResponseMessage response)
+        private static async Task<string> GetRawResponseContent([NotNull] HttpResponseMessage response)
         {
             //RWM: Explicitly check for NoContent... because the request was successful but there is nothing to do.
             if (response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.NoContent)
@@ -392,17 +418,26 @@ namespace PortableRest
         /// <param name="response"></param>
         /// <param name="responseContent"></param>
         /// <returns></returns>
-        private static T DeserializeResponseContent<T>(RestRequest restRequest, HttpResponseMessage response, string responseContent) where T : class
+        private static T DeserializeResponseContent<T>([NotNull] RestRequest restRequest, [NotNull] HttpResponseMessage response, string responseContent) where T : class
         {
+
             switch (response.Content.Headers.ContentType.MediaType)
             {
                 case "application/xml":
                 case "text/xml":
                     return DeserializeApplicationXml<T>(restRequest, responseContent);
-                    //TODO: Handle more response types... like files.
+                //TODO: Handle more response types... like files.
                 default:
-                    return JsonConvert.DeserializeObject<T>(responseContent);
+                    try
+                    {
+                        return JsonConvert.DeserializeObject<T>(responseContent, restRequest.JsonSerializerSettings);
+                    }
+                    catch (JsonSerializationException jEx)
+                    {
+                        throw new PortableRestException("The JsonConverter failed. Please see InnerException for details.", jEx);
+                    }
             }
+
         }
 
         /// <summary>
@@ -412,7 +447,7 @@ namespace PortableRest
         /// <param name="restRequest"></param>
         /// <param name="responseContent"></param>
         /// <returns></returns>
-        private static T DeserializeApplicationXml<T>(RestRequest restRequest, string responseContent) where T : class
+        private static T DeserializeApplicationXml<T>([NotNull] RestRequest restRequest, string responseContent) where T : class
         {
             T result;
             // RWM: IDEA - The DataContractSerializer doesn't like attributes, but will handle everything else.
@@ -450,7 +485,7 @@ namespace PortableRest
 
 
 
-        #endregion
+#endregion
 
     }
 }

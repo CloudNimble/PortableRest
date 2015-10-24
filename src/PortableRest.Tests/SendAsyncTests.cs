@@ -8,6 +8,8 @@ using Microsoft.Owin.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PortableRest.Tests.AsyncTestUtilities;
 using PortableRest.Tests.OwinSelfHostServer;
+using Newtonsoft.Json;
+using PortableRest.Tests.Mocks;
 
 namespace PortableRest.Tests
 {
@@ -141,6 +143,35 @@ namespace PortableRest.Tests
 
             // Validate
             Assert.IsTrue(true, "If we got to this assertion, then we didn't deadlock on the call to SendAsync.");
+            response.Content.Should().NotBeNull();
+            response.Content.Count().Should().Be(5);
+
+        }
+
+        [TestMethod]
+        public void JsonDeserializerSettingsAreUsedWhenDeserializingJson()
+        {
+            // Setup
+            var settings = new JsonSerializerSettings();
+            var converterMock = new JsonConverterMock();
+            settings.Converters.Add(converterMock);
+            var client = new RestClient { BaseUrl = BaseAddress, JsonSerializerSettings = settings };
+            var request = new RestRequest("api/books");
+            RestResponse<List<Book>> response = null;
+
+            // Execute
+            using (WebApp.Start<WebApiStartup>(BaseAddress))
+            {
+                // Simulate ASP.NET and Windows Forms thread affinity
+                WindowsFormsContext.Run(() =>
+                {
+                    // Should not deadlock on this call
+                    response = client.SendAsync<List<Book>>(request).Result;
+                });
+            }
+
+            // Validate
+            converterMock.Calls.Should().NotBe(0);
             response.Content.Should().NotBeNull();
             response.Content.Count().Should().Be(5);
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using JetBrains.Annotations;
 
 namespace PortableRest
 {
@@ -42,7 +43,7 @@ namespace PortableRest
         /// </summary>
         /// <param name="httpResponseMessage">The HTTP response. Cannot be null.</param>
         /// <param name="content">The deserialized content from the response.</param>
-        public RestResponse(HttpResponseMessage httpResponseMessage, T content)
+        public RestResponse([NotNull] HttpResponseMessage httpResponseMessage, T content)
         {
             if (httpResponseMessage == null)
             {

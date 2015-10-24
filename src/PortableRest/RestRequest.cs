@@ -10,6 +10,7 @@ using System.Xml.Serialization;
 using Newtonsoft.Json;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using System.Reflection;
 
 namespace PortableRest
 {
@@ -367,8 +368,11 @@ namespace PortableRest
             //RWM: Do the recursion first, so matching elements in child objects don't accidentally get picked up early.
 
             //TODO: Handle generic lists
-            //foreach (var prop in t.DeclaredProperties.Where(c => !(c.PropertyType.GetTypeInfo().IsSimpleType())))
+#if UWP
+            foreach (var prop in type.GetTypeInfo().DeclaredProperties.Where(c => !(c.PropertyType.IsSimpleType())))
+#else
             foreach (var prop in type.GetProperties().Where(c => !(c.PropertyType.IsSimpleType())))
+#endif
             {
                 Debug.WriteLine(prop.Name);
                 var xnode = element.Descendants().FirstOrDefault(c => c.Name.ToString() == prop.Name);
@@ -401,6 +405,6 @@ namespace PortableRest
 
         }
 
-        #endregion
+#endregion
     }
 }
