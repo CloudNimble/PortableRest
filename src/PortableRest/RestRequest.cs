@@ -317,7 +317,7 @@ namespace PortableRest
                                 Uri.EscapeDataString(next.Key),
                                 next.GetEncodedValue())));
                     return parameters.ToString();
-
+                //case ContentTypes.MultiPartFormData:
                 case ContentTypes.Xml:
                     var result = "";
                     if (Parameters.Count == 0) return result;

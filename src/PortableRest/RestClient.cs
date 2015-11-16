@@ -365,6 +365,37 @@ namespace PortableRest
                         message.Content = new ByteArrayContent(restRequest.Parameters[0].GetEncodedValue() as byte[]);
                     }
                 }
+                //RWM: This may not be the best place to keep this... might be better to refactor RestRequest.GetRequestBody to return a HttpContent object instead.
+                else if (restRequest.ContentType == ContentTypes.MultiPartFormData)
+                {
+                    var content = new MultipartFormDataContent();
+
+                    foreach (var p in restRequest.Parameters)
+                    {
+                        if (p is FileParameter)
+                        {
+                            var fileParameter = p as FileParameter;
+                            if (string.IsNullOrEmpty(fileParameter.Filename))
+                            {
+                                content.Add(new StreamContent(fileParameter.Value as Stream), fileParameter.Key);
+                            }
+                            else
+                            {
+                                content.Add(new StreamContent(fileParameter.Value as Stream), fileParameter.Key, fileParameter.Filename);
+                            }
+                        }
+                        else if (p.Encoding == ParameterEncoding.ByteArray)
+                        {
+                            content.Add(new ByteArrayContent(p.GetEncodedValue() as byte[]));
+                        }
+                        else
+                        {
+                            content.Add(new StringContent(p.GetEncodedValue().ToString()), p.Key);
+                        }
+                    }
+
+                    message.Content = content;
+                }
                 else
                 {
                     var contentString = new StringContent(restRequest.GetRequestBody(), Encoding.UTF8, restRequest.GetContentType());
@@ -426,6 +457,9 @@ namespace PortableRest
                 case "application/xml":
                 case "text/xml":
                     return DeserializeApplicationXml<T>(restRequest, responseContent);
+                //TODO: RWM: Figure out how to parse returned files.
+                //case "multipart/form-data":
+
                 //TODO: Handle more response types... like files.
                 default:
                     try
