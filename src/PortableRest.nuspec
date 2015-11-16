@@ -11,7 +11,10 @@
     <iconUrl>https://advancedrei.blob.core.windows.net/nuget/PortableRest.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A library for consuming REST APIs from Portable Class Libraries (.NET 4.5, Silverlight 5, Windows Phone 8.x, Windows 8.x, and Windows 10). Designed to be partially drop-in compatible with RestSharp.</description>
-    <releaseNotes>3.0.1
+    <releaseNotes>3.1.0
+  • Multipart/form-data support.
+  • Windows Universal-specific binaries. 
+3.0.1
   • Tons of bug fixes.
   • Improved the way PortableRest handles parameters being sent over the wire.
   • Added constructor overload that accepts a custom HttpMessageHandler for all requests the HttpClient makes.
@@ -146,15 +149,15 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="PortableRest\bin\Release\PortableRest.dll" target="lib\lib\portable-net45+sl5+wp8+win8+wpa81+MonoTouch10+MonoAndroid10+xamarinmac20+xamarinios10\" />
-    <file src="PortableRest\bin\Release\PortableRest.pdb" target="lib\lib\portable-net45+sl5+wp8+win8+wpa81+MonoTouch10+MonoAndroid10+xamarinmac20+xamarinios10\" />
-    <file src="PortableRest\bin\Release\PortableRest.xml" target="lib\lib\portable-net45+sl5+wp8+win8+wpa81+MonoTouch10+MonoAndroid10+xamarinmac20+xamarinios10\" />
-    <file src="PortableRest.Universal\bin\Release\PortableRest.dll" target="lib\dotnet\" />
-    <file src="PortableRest.Universal\bin\Release\PortableRest.pdb" target="lib\dotnet\" />
-    <file src="PortableRest.Universal\bin\Release\PortableRest.xml" target="lib\dotnet\" />
-    <file src="PortableRest.Universal\bin\Release\PortableRest.dll" target="lib\uap10.0\" />
-    <file src="PortableRest.Universal\bin\Release\PortableRest.pdb" target="lib\uap10.0\" />
-    <file src="PortableRest.Universal\bin\Release\PortableRest.xml" target="lib\uap10.0\" />
+    <file src="PortableRest\bin\Release\PortableRest.dll" target="lib\portable-net45+sl5+wp8+win8+wpa81+MonoTouch10+MonoAndroid10+xamarinmac20+xamarinios10\" />
+    <file src="PortableRest\bin\Release\PortableRest.pdb" target="lib\portable-net45+sl5+wp8+win8+wpa81+MonoTouch10+MonoAndroid10+xamarinmac20+xamarinios10\" />
+    <file src="PortableRest\bin\Release\PortableRest.xml" target="lib\portable-net45+sl5+wp8+win8+wpa81+MonoTouch10+MonoAndroid10+xamarinmac20+xamarinios10\" />
+    <file src="PortableRest.Universal\bin\Release\PortableRest.Universal.dll" target="lib\dotnet\" />
+    <file src="PortableRest.Universal\bin\Release\PortableRest.Universal.pdb" target="lib\dotnet\" />
+    <file src="PortableRest.Universal\bin\Release\PortableRest.Universal.xml" target="lib\dotnet\" />
+    <file src="PortableRest.Universal\bin\Release\PortableRest.Universal.dll" target="lib\uap10.0\" />
+    <file src="PortableRest.Universal\bin\Release\PortableRest.Universal.pdb" target="lib\uap10.0\" />
+    <file src="PortableRest.Universal\bin\Release\PortableRest.Universal.xml" target="lib\uap10.0\" />
     <file src="PortableRest\**\*.cs" exclude="**\obj\**\*.*" target="src" />
   </files>
 </package>

@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("AdvancedREI, LLC.")]
 [assembly: AssemblyProduct("PortableRest")]
-[assembly: AssemblyCopyright("Copyright © 2013-2014 AdvancedREI, LLC.")]
+[assembly: AssemblyCopyright("Copyright © 2013-2015 AdvancedREI, LLC.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en")]

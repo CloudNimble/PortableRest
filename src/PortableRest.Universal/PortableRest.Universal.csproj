@@ -34,12 +34,29 @@
     <DefineConstants>TRACE;UWP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\PortableRest.Universal.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-Signed|AnyCPU'">
+    <OutputPath>bin\Release-Signed\</OutputPath>
+    <DefineConstants>TRACE;UWP;SIGNED</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\Release-Signed\PortableRest.Universal.xml</DocumentationFile>
+    <AssemblyOriginatorKeyFile>..\PortableRest.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
     <None Include="project.json" />
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\PortableRest\PortableRest.snk">
+      <Link>PortableRest.snk</Link>
+    </None>
     <Compile Include="..\PortableRest\ContentTypes.cs">
       <Link>ContentTypes.cs</Link>
     </Compile>
@@ -61,6 +78,9 @@
     <Compile Include="..\PortableRest\PortableRestException.cs">
       <Link>PortableRestException.cs</Link>
     </Compile>
+    <Compile Include="..\PortableRest\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="..\PortableRest\Properties\JetBrains.Annotations.cs">
       <Link>Properties\JetBrains.Annotations.cs</Link>
     </Compile>
@@ -76,7 +96,6 @@
     <Compile Include="..\PortableRest\UrlSegment.cs">
       <Link>UrlSegment.cs</Link>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <NuSpecFile Include="$(SolutionDir)PortableRest.nuspec" Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
