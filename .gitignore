@@ -168,3 +168,5 @@ pip-log.txt
 .DS_Store
 
 !*.targets
+src/.vs/config/applicationhost.config
+src/PortableRest.Tests/OAuthTests.cs

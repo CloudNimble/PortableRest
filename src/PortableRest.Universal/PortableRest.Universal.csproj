@@ -76,8 +76,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <!-- example NuSpec file that must be specified -->
-    <NuSpecFile Include="$(SolutionDir)PortableRest.nuspec">
+    <NuSpecFile Include="$(SolutionDir)PortableRest.nuspec" Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+      <Visible>False</Visible>
+    </NuSpecFile>
+    <NuSpecFile Include="$(SolutionDir)PortableRest.Signed.nuspec" Condition="'$(Configuration)|$(Platform)' == 'Release-Signed|AnyCPU'">
       <Visible>False</Visible>
     </NuSpecFile>
   </ItemGroup>
