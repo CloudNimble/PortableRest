@@ -1,6 +1,5 @@
-﻿using System.Reflection;
+﻿using Google.Discovery;
 using System.Threading.Tasks;
-using Google.Discovery;
 
 namespace PortableRest.Tests
 {

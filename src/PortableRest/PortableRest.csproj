@@ -76,13 +76,16 @@
       <Link>PortableRest.snk</Link>
     </None>
     <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContentTypes.cs" />
     <Compile Include="EncodedParameter.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
+    <Compile Include="FileParameter.cs" />
     <Compile Include="Properties\JetBrains.Annotations.cs" />
     <Compile Include="RestResponse.cs" />
     <Compile Include="ParameterEncoding.cs" />

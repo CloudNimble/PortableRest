@@ -52,6 +52,9 @@
     <Compile Include="..\PortableRest\Extensions\TypeExtensions.cs">
       <Link>Extensions\TypeExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\PortableRest\FileParameter.cs">
+      <Link>FileParameter.cs</Link>
+    </Compile>
     <Compile Include="..\PortableRest\ParameterEncoding.cs">
       <Link>ParameterEncoding.cs</Link>
     </Compile>
