@@ -433,10 +433,11 @@ namespace PortableRest
         /// <returns></returns>
         private static async Task<string> GetRawResponseContent([NotNull] HttpResponseMessage response)
         {
-            //RWM: Explicitly check for NoContent... because the request was successful but there is nothing to do.
-            if (response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.NoContent)
+            //KW: If there's content I want to know what it is regardless of the wether the response has a success code
+            if (response.StatusCode != HttpStatusCode.NoContent)
             {
-                return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                string stringContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                return string.IsNullOrEmpty(stringContent) ? null : stringContent;
             }
             return null;
         }
