@@ -469,7 +469,10 @@ namespace PortableRest
                     }
                     catch (JsonSerializationException jEx)
                     {
-                        throw new PortableRestException("The JsonConverter failed. Please see InnerException for details.", jEx);
+                        var prEx = new PortableRestException(
+                            "The JsonConverter failed. Please see InnerException " +
+                            $"for details. StatusCode {response.StatusCode} : ReasonPhrase {response.ReasonPhrase}", jEx);
+                        throw prEx;
                     }
             }
 
