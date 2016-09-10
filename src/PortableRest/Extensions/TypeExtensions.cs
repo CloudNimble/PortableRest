@@ -29,17 +29,10 @@ namespace PortableRest
                 //public static bool IsSimpleType(this TypeInfo type)
         public static bool IsSimpleType(this Type type)
         {
-#if UWP
             var info = type.GetTypeInfo();
-#endif
             return
-#if UWP
                 info.IsValueType ||
                 info.IsPrimitive ||
-#else
-                type.IsValueType ||
-                type.IsPrimitive ||
-#endif
                 SimpleTypes.Contains(type);
         }
 

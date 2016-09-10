@@ -170,3 +170,4 @@ pip-log.txt
 !*.targets
 src/.vs/config/applicationhost.config
 src/PortableRest.Tests/OAuthTests.cs
+src/PortableRest/project.lock.json

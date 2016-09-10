@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24713.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortableRest", "PortableRest\PortableRest.csproj", "{A3546D1A-CE87-49BB-800A-98018C1FCA00}"
 EndProject
@@ -18,8 +18,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{155D32
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortableRest.Universal", "PortableRest.Universal\PortableRest.Universal.csproj", "{4766A70B-7C1B-42EC-913A-01CA368049A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,30 +83,6 @@ Global
 		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|x64.Build.0 = Release-Signed|Any CPU
 		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|x86.ActiveCfg = Release-Signed|Any CPU
 		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|x86.Build.0 = Release-Signed|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Debug|ARM.Build.0 = Debug|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Debug|x64.Build.0 = Debug|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Debug|x86.Build.0 = Debug|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Release|ARM.ActiveCfg = Release|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Release|ARM.Build.0 = Release|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Release|x64.ActiveCfg = Release|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Release|x64.Build.0 = Release|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Release|x86.ActiveCfg = Release|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Release|x86.Build.0 = Release|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Release-Signed|Any CPU.ActiveCfg = Release-Signed|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Release-Signed|Any CPU.Build.0 = Release-Signed|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Release-Signed|ARM.ActiveCfg = Release|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Release-Signed|ARM.Build.0 = Release|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Release-Signed|x64.ActiveCfg = Release|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Release-Signed|x64.Build.0 = Release|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Release-Signed|x86.ActiveCfg = Release|Any CPU
-		{4766A70B-7C1B-42EC-913A-01CA368049A5}.Release-Signed|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

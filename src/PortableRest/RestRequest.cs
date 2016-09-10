@@ -193,6 +193,12 @@ namespace PortableRest
             Parameters.Add(new EncodedParameter(key, value, encoding));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="fileStream"></param>
+        /// <param name="filename"></param>
 		public void AddFileParameter(string key, Stream fileStream, string filename)
 		{
 			Parameters.Add(new FileParameter(key, fileStream, filename));
@@ -230,16 +236,12 @@ namespace PortableRest
             AddQueryString(key, value.ToString());
         }
 
-        #endregion
-
-        #region Internal Methods
-
         /// <summary>
         /// 
         /// </summary>
         /// <param name="baseUrl"></param>
         /// <returns></returns>
-        internal Uri GetResourceUri(string baseUrl)
+        public Uri GetResourceUri(string baseUrl)
         {
             foreach (var segment in UrlSegments.Where(c => !c.IsQueryString))
             {
@@ -261,6 +263,11 @@ namespace PortableRest
 
             return new Uri(Resource, UriKind.RelativeOrAbsolute);
         }
+
+        #endregion
+
+        #region Internal Methods
+
 
         /// <summary>
         /// Combines URI parts, taking care of trailing and starting slashes.
@@ -369,16 +376,12 @@ namespace PortableRest
             if (element == null) return;
             element.Attributes().Remove();
 
-            //var t = type.GetTypeInfo();
+            var t = type.GetTypeInfo();
 
             //RWM: Do the recursion first, so matching elements in child objects don't accidentally get picked up early.
 
             //TODO: Handle generic lists
-#if UWP
-            foreach (var prop in type.GetTypeInfo().DeclaredProperties.Where(c => !(c.PropertyType.IsSimpleType())))
-#else
-            foreach (var prop in type.GetProperties().Where(c => !(c.PropertyType.IsSimpleType())))
-#endif
+            foreach (var prop in t.DeclaredProperties.Where(c => !(c.PropertyType.IsSimpleType())))
             {
                 Debug.WriteLine(prop.Name);
                 var xnode = element.Descendants().FirstOrDefault(c => c.Name.ToString() == prop.Name);
@@ -388,8 +391,8 @@ namespace PortableRest
                 }
             }
 
-            //foreach (var prop in t.DeclaredProperties.Where(c => c.GetCustomAttributes(typeof(XmlAttributeAttribute), true).Any()))
-            foreach (var prop in type.GetProperties().Where(c => c.GetCustomAttributes(typeof(XmlAttributeAttribute), true).Any()))
+            foreach (var prop in t.DeclaredProperties.Where(c => c.GetCustomAttributes(typeof(XmlAttributeAttribute), true).Any()))
+            //foreach (var prop in type.GetProperties().Where(c => c.GetCustomAttributes(typeof(XmlAttributeAttribute), true).Any()))
             {
                 var attribs = prop.GetCustomAttributes(true);
                 if (attribs.Any(c => c is IgnoreDataMemberAttribute || c is XmlIgnoreAttribute)) continue;

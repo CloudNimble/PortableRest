@@ -1,16 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using PortableRest.Extensions;
 
 namespace PortableRest
 {
 
     /// <summary>
-    /// 
+    /// A parameter that can be passed over an HTTP request with a given encoding.
     /// </summary>
+    /// <remarks>
+    /// This enables parameters to be encoded individually. For example, some parameters in a request may need to be 
+    /// unencoded, and some may need to be UrlEncoded.
+    /// </remarks>
     internal class EncodedParameter
     {
 
@@ -89,5 +91,7 @@ namespace PortableRest
         }
 
         #endregion
+
     }
+
 }

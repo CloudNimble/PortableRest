@@ -132,38 +132,21 @@ namespace PortableRest
         /// <remarks>This will set the <see cref="UserAgent"/> to "YourAssemblyName Major.Minor.Revision (PortableRest Major.Minor.Revision)</remarks>
         public void SetUserAgent<T>(string displayName = null)
         {
-#if UWP
             var thisAssembly = typeof(T).GetTypeInfo().Assembly;
-#else
-            var thisAssembly = typeof(T).Assembly;
-#endif
             var thisAssemblyName = new AssemblyName(thisAssembly.FullName);
             var thisVersion = thisAssemblyName.Version;
 
             if (displayName == null)
             {
-#if UWP
                 var attributes = thisAssembly.GetCustomAttributes<AssemblyTitleAttribute>().ToList();
                 if (attributes.Count() == 0)
                 {
                     throw new Exception("The assembly containing the class inheriting from PortableRest.RestClient must have an AssemblyTitle attribute specified.");
                 }
                 displayName = attributes[0].Title;
-#else
-                var attributes = thisAssembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
-                if (attributes.Length == 0)
-                {
-                    throw new Exception("The assembly containing the class inheriting from PortableRest.RestClient must have an AssemblyTitle attribute specified.");
-                }
-                displayName = ((AssemblyTitleAttribute)attributes[0]).Title;
-#endif
             }
 
-#if UWP
             var prAssembly = typeof(RestRequest).GetTypeInfo().Assembly;
-#else
-            var prAssembly = typeof(RestRequest).Assembly;
-#endif
             var prAssemblyName = new AssemblyName(prAssembly.FullName);
             var prVersion = prAssemblyName.Version;
 
