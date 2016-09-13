@@ -97,6 +97,28 @@ namespace PortableRest.Tests
         }
 
         [TestMethod]
+        public async Task SettingAcceptsHeaderOnGetDoesntThrow()
+        {
+            // Setup
+            var client = new RestClient { BaseUrl = BaseAddress };
+            var request = new RestRequest("api/books");
+            request.AddHeader("Content-Type", "application/json");
+            RestResponse<IEnumerable<Book>> response;
+
+            // Execute
+            using (WebApp.Start<WebApiStartup>(BaseAddress))
+            {
+                response = await client.SendAsync<IEnumerable<Book>>(request);
+            }
+
+            // Validate
+            response.HttpResponseMessage.Should().NotBeNull();
+            response.HttpResponseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Content.Should().NotBeNull();
+            response.Content.Count().Should().Be(5);
+        }
+
+        [TestMethod]
         public async Task GracefullyHandleNullContentWithNonStringType()
         {
             // Setup

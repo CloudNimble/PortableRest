@@ -25,7 +25,7 @@ namespace PortableRest
 
         #region Private Members
 
-        private HttpClient _client;
+        private static HttpClient _client;
         private HttpMessageHandler _httpHandler;
 
         #endregion
@@ -95,6 +95,7 @@ namespace PortableRest
             {
                 AllowAutoRedirect = true
             };
+            _client = new HttpClient(HttpHandler);
         }
 
         /// <summary>
@@ -106,6 +107,7 @@ namespace PortableRest
             Headers = new List<KeyValuePair<string, string>>();
             CookieContainer = new CookieContainer();
             HttpHandler = handler;
+            _client = new HttpClient(HttpHandler);
         }
 
         #endregion
@@ -312,28 +314,31 @@ namespace PortableRest
                 restRequest.JsonSerializerSettings = JsonSerializerSettings;
             }
 
-            //RWM: We've moved this call to inside the HttpHandler setter... let's see if that solves our Mono problems.
-            //ConfigureHandler(HttpHandler);
-            _client = new HttpClient(HttpHandler);
-
             if (string.IsNullOrWhiteSpace(UserAgent))
             {
                 SetUserAgent<T>();
             }
-            _client.DefaultRequestHeaders.Add("user-agent", UserAgent);
+
+            //RWM: We likely only need to set this once.
+            if (!_client.DefaultRequestHeaders.UserAgent.Any())
+            {
+                _client.DefaultRequestHeaders.Add("user-agent", UserAgent);
+            }
 
             var message = new HttpRequestMessage(restRequest.Method, restRequest.GetResourceUri(BaseUrl));
 
             //RWM: Add the global headers for all requests.
             foreach (var header in Headers)
             {
-                message.Headers.Add(header.Key, header.Value);
+                message.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                //message.Headers.Add(header.Key, header.Value);
             }
 
             //RWM: Add request-specific headers.
             foreach (var header in restRequest.Headers)
             {
-                message.Headers.Add(header.Key, header.Value.ToString());
+                message.Headers.TryAddWithoutValidation(header.Key, header.Value.ToString());
+                //message.Headers.Add(header.Key, header.Value.ToString());
             }
 
             //RWM: Not sure if this is sufficient, or if HEAD supports a body, will need to check into the RFC.

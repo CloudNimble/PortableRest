@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata minClientVersion="2.8.1">
     <id>PortableRest</id>
-    <version>3.1.0-beta5</version>
+    <version>3.1.0-beta6</version>
     <title>PortableRest</title>
     <authors>Robert McLaws, Richard Beauchamp</authors>
     <owners>AdvancedREI</owners>
@@ -14,6 +14,7 @@
     <releaseNotes>3.1.0
   • Multipart/form-data support.
   • .NET Standard 1.1 Support.
+  • Now uses a static HttpClient internal instance. (fixes http://aspnetmonsters.com/2016/08/2016-08-27-httpclientwrong/)
 
 3.0.1
   • Tons of bug fixes.
