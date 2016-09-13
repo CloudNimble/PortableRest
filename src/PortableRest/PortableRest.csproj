@@ -77,9 +77,6 @@
       <Link>PortableRest.snk</Link>
     </None>
     <None Include="app.config" />
-    <None Include="packages.config2">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
