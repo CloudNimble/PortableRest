@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Microsoft.Owin.Hosting;
+﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PortableRest.Tests.OwinSelfHostServer;
 using PortableRest.Tests.XmlTest;
+using System;
+using System.Net.Http;
 
 namespace PortableRest.Tests
 {
@@ -21,14 +16,14 @@ namespace PortableRest.Tests
         [TestMethod]
         public void CheckMessageBodyXmlWithAttributes()
         {
-						var expected = @"
+            var expected = @"
 							<PhoneNumber ID=""1"">
 								 <Call />
 								 <Calls />
 								 <Number>514-9700</Number>
 							</PhoneNumber>
 						";
-            var request = new RestRequest("/test?test1={test1}", HttpMethod.Get) {ContentType = ContentTypes.Xml};
+            var request = new RestRequest("/test?test1={test1}", HttpMethod.Get) { ContentType = ContentTypes.Xml };
             request.AddParameter(new PhoneNumber("1", "514-9700"));
             var body = request.GetRequestBody();
             Assert.IsNotNull(body);
@@ -41,7 +36,7 @@ namespace PortableRest.Tests
         [TestMethod]
         public void CheckMessageBodyXmlWithAttributes2()
         {
-						var expected = @"
+            var expected = @"
 							<PhoneNumber ID=""1"">
 								 <Call ID=""1"">
 										<Number>864-5789</Number>
@@ -52,10 +47,14 @@ namespace PortableRest.Tests
 							</PhoneNumber>
 						";
             var request = new RestRequest("/test?test1={test1}", HttpMethod.Get) { ContentType = ContentTypes.Xml };
-            var pn = new PhoneNumber("1", "514-9700") { Call = new PhoneCall
+            var pn = new PhoneNumber("1", "514-9700")
             {
-                ID = "1", Number = "864-5789"
-            }};
+                Call = new PhoneCall
+                {
+                    ID = "1",
+                    Number = "864-5789"
+                }
+            };
             request.AddParameter(pn);
             var body = request.GetRequestBody();
             Assert.IsNotNull(body);
@@ -68,7 +67,7 @@ namespace PortableRest.Tests
         [TestMethod]
         public void CheckMessageBodyXmlWithAttributes3()
         {
-					var expected = @"
+            var expected = @"
               <PhoneNumber ID=""1"">
                  <Call />
                  <Calls>
@@ -81,14 +80,14 @@ namespace PortableRest.Tests
                  <Number>514-9700</Number>
               </PhoneNumber>
             ";
-					var request = new RestRequest("/test?test1={test1}", HttpMethod.Get) { ContentType = ContentTypes.Xml };
-					var pn = new PhoneNumber("1", "514-9700");
-					pn.Calls.Add(new PhoneCall { ID = "1", Number = "864-5789" });
-					request.AddParameter(pn);
-					var body = request.GetRequestBody();
-					Assert.IsNotNull(body);
+            var request = new RestRequest("/test?test1={test1}", HttpMethod.Get) { ContentType = ContentTypes.Xml };
+            var pn = new PhoneNumber("1", "514-9700");
+            pn.Calls.Add(new PhoneCall { ID = "1", Number = "864-5789" });
+            request.AddParameter(pn);
+            var body = request.GetRequestBody();
+            Assert.IsNotNull(body);
 
-					Assert.AreEqual(expected.AsXmlSanitized(), body.AsXmlSanitized());
+            Assert.AreEqual(expected.AsXmlSanitized(), body.AsXmlSanitized());
         }
 
         [TestMethod]

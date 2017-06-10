@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata minClientVersion="2.8.1">
     <id>PortableRest.Signed</id>
-    <version>3.1.0-beta6</version>
+    <version>3.1.0-beta7</version>
     <title>PortableRest.Signed</title>
     <authors>Robert McLaws, Richard Beauchamp</authors>
     <owners>AdvancedREI</owners>

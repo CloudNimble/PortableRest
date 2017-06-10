@@ -125,37 +125,6 @@ namespace PortableRest
         }
 
         /// <summary>
-        /// Sets the <see cref="UserAgent"/> for this client in a standardized format using a Type from your client library.
-        /// </summary>
-        /// <param name="displayName">
-        /// Optional. The name you want displayed for this Client. If left blank, it will default to the AssemblyTitleAttribute value from the AssemblyInfo file.
-        /// </param>
-        /// <typeparam name="T">A type from your Client Library that can be used to get the assembly information.</typeparam>
-        /// <remarks>This will set the <see cref="UserAgent"/> to "YourAssemblyName Major.Minor.Revision (PortableRest Major.Minor.Revision)</remarks>
-        public void SetUserAgent<T>(string displayName = null)
-        {
-            var thisAssembly = typeof(T).GetTypeInfo().Assembly;
-            var thisAssemblyName = new AssemblyName(thisAssembly.FullName);
-            var thisVersion = thisAssemblyName.Version;
-
-            if (displayName == null)
-            {
-                var attributes = thisAssembly.GetCustomAttributes<AssemblyTitleAttribute>().ToList();
-                if (attributes.Count() == 0)
-                {
-                    throw new Exception("The assembly containing the class inheriting from PortableRest.RestClient must have an AssemblyTitle attribute specified.");
-                }
-                displayName = attributes[0].Title;
-            }
-
-            var prAssembly = typeof(RestRequest).GetTypeInfo().Assembly;
-            var prAssemblyName = new AssemblyName(prAssembly.FullName);
-            var prVersion = prAssemblyName.Version;
-
-            UserAgent = string.Format("{0} {1} (PortableRest {2})", displayName, thisVersion.ToString(3), prVersion.ToString(3));
-        }
-
-        /// <summary>
         /// Executes an asynchronous request to the given resource and deserializes the response content to an object of T.
         /// </summary>
         /// <typeparam name="T">The type to deserialize to.</typeparam>
@@ -202,6 +171,37 @@ namespace PortableRest
             {
                 return new RestResponse<T>(new HttpResponseMessage(HttpStatusCode.BadRequest), null, ex);
             }
+        }
+
+        /// <summary>
+        /// Sets the <see cref="UserAgent"/> for this client in a standardized format using a Type from your client library.
+        /// </summary>
+        /// <param name="displayName">
+        /// Optional. The name you want displayed for this Client. If left blank, it will default to the AssemblyTitleAttribute value from the AssemblyInfo file.
+        /// </param>
+        /// <typeparam name="T">A type from your Client Library that can be used to get the assembly information.</typeparam>
+        /// <remarks>This will set the <see cref="UserAgent"/> to "YourAssemblyName Major.Minor.Revision (PortableRest Major.Minor.Revision)</remarks>
+        public void SetUserAgent<T>(string displayName = null)
+        {
+            var thisAssembly = typeof(T).GetTypeInfo().Assembly;
+            var thisAssemblyName = new AssemblyName(thisAssembly.FullName);
+            var thisVersion = thisAssemblyName.Version;
+
+            if (displayName == null)
+            {
+                var attributes = thisAssembly.GetCustomAttributes<AssemblyTitleAttribute>().ToList();
+                if (attributes.Count() == 0)
+                {
+                    throw new Exception("The assembly containing the class inheriting from PortableRest.RestClient must have an AssemblyTitle attribute specified.");
+                }
+                displayName = attributes[0].Title;
+            }
+
+            var prAssembly = typeof(RestRequest).GetTypeInfo().Assembly;
+            var prAssemblyName = new AssemblyName(prAssembly.FullName);
+            var prVersion = prAssemblyName.Version;
+
+            UserAgent = string.Format("{0} {1} (PortableRest {2})", displayName, thisVersion.ToString(3), prVersion.ToString(3));
         }
 
         /// <summary>
@@ -252,45 +252,79 @@ namespace PortableRest
         }
 
         /// <summary>
-        /// Helps deal with the fact that the XmlSerializer is not supported, and the DataContractSerializer hates XmlAttributes.
+        /// 
         /// </summary>
-        /// <param name="node"></param>
-        /// <param name="request"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="restRequest"></param>
+        /// <param name="response"></param>
+        /// <param name="responseContent"></param>
         /// <returns></returns>
-        /// <remarks>Technique from http://blogs.msdn.com/b/ericwhite/archive/2009/07/20/a-tutorial-in-the-recursive-approach-to-pure-functional-transformations-of-xml.aspx </remarks>
-        private static object Transform(XNode node, [NotNull] RestRequest request)
+        private static T DeserializeResponseContent<T>([NotNull] RestRequest restRequest, [NotNull] HttpResponseMessage response, string responseContent) where T : class
         {
-            var element = node as XElement;
-            if (element == null) return node;
 
-            if (!request.IgnoreXmlAttributes)
+            switch (response.Content.Headers.ContentType.MediaType)
             {
-                foreach (var attrib in element.Attributes())
+                case "application/xml":
+                case "text/xml":
+                    return DeserializeApplicationXml<T>(restRequest, responseContent);
+                //TODO: RWM: Figure out how to parse returned files.
+                //case "multipart/form-data":
+
+                //TODO: Handle more response types... like files.
+                default:
+                    try
+                    {
+                        return JsonConvert.DeserializeObject<T>(responseContent, restRequest.JsonSerializerSettings);
+                    }
+                    catch (JsonSerializationException jEx)
+                    {
+                        throw new PortableRestException("The JsonConverter failed. Please see InnerException for details.", jEx);
+                    }
+            }
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="restRequest"></param>
+        /// <param name="responseContent"></param>
+        /// <returns></returns>
+        private static T DeserializeApplicationXml<T>([NotNull] RestRequest restRequest, string responseContent) where T : class
+        {
+            T result;
+            // RWM: IDEA - The DataContractSerializer doesn't like attributes, but will handle everything else.
+            // So instead of trying to mess with a double-conversion to JSON and then to the Object, we'll just turn the attributes
+            // into elements, and sort the elements into alphabetical order so the DataContracterializer doesn't crap itself.
+
+            // On post, use a C# attribute to specify if a property is an XML attribute, DataContractSerialize to XML, then
+            // query the object for [XmlAttribute] attributes and move them from elements to attributes using code similar to below.
+            // If the POST request requires the attributes in a certain order, oh well. Shouldn't have used PHP :P.
+
+            var root = XElement.Parse(responseContent);
+            var newRoot = (XElement)Transform(restRequest.IgnoreRootElement ? root.Descendants().First() : root, restRequest);
+
+            using (var memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(newRoot.ToString())))
+            {
+                var settings = new XmlReaderSettings
                 {
-                    element.Add(new XElement(attrib.Name, (string)attrib));
+                    IgnoreWhitespace = true,
+                };
+                using (var reader = XmlReader.Create(memoryStream, settings))
+                {
+                    try
+                    {
+                        var serializer = new DataContractSerializer(typeof(T));
+                        result = serializer.ReadObject(reader) as T;
+                    }
+                    catch (SerializationException ex)
+                    {
+                        throw new PortableRestException(string.Format("The serializer failed on node '{0}'", reader.Name), reader.Name, ex);
+                    }
                 }
             }
-
-            if (!string.IsNullOrWhiteSpace(request.DateFormat) &&
-                (element.Name.LocalName.ToLower().Contains("date") ||
-                 element.Name.LocalName.ToLower().Contains("time")))
-            {
-                var newValue = DateTime.ParseExact(element.Value, request.DateFormat, null);
-                element.Value = XmlConvert.ToString(newValue);
-            }
-
-            //RWM: NOTE the DataContractSerializer does not like null nodes when parsing nullable numbers.
-            //However removing empty nodes seems to work.
-            if (!element.Nodes().Any()) return null;
-
-            return new XElement(XNamespace.None.GetName(element.Name.LocalName),
-                element.Nodes()
-                    .OrderBy(c => (c as XElement) != null ? (c as XElement).Name.LocalName : c.ToString())
-                    .Select(n =>
-                    {
-                        var e = n as XElement;
-                        return e != null ? Transform(e, request) : n;
-                    }));
+            return result;
         }
 
         /// <summary>
@@ -397,6 +431,21 @@ namespace PortableRest
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="response"></param>
+        /// <returns></returns>
+        private static async Task<string> GetRawResponseContent([NotNull] HttpResponseMessage response)
+        {
+            //RWM: Explicitly check for NoContent... because the request was successful but there is nothing to do.
+            if (response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.NoContent)
+            {
+                return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="restRequest"></param>
         /// <param name="httpResponseMessage"></param>
@@ -415,99 +464,49 @@ namespace PortableRest
         }
 
         /// <summary>
-        /// 
+        /// Helps deal with the fact that the XmlSerializer is not supported, and the DataContractSerializer hates XmlAttributes.
         /// </summary>
-        /// <param name="response"></param>
+        /// <param name="node"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
-        private static async Task<string> GetRawResponseContent([NotNull] HttpResponseMessage response)
+        /// <remarks>Technique from http://blogs.msdn.com/b/ericwhite/archive/2009/07/20/a-tutorial-in-the-recursive-approach-to-pure-functional-transformations-of-xml.aspx </remarks>
+        private static object Transform(XNode node, [NotNull] RestRequest request)
         {
-            //RWM: Explicitly check for NoContent... because the request was successful but there is nothing to do.
-            if (response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.NoContent)
+            var element = node as XElement;
+            if (element == null) return node;
+
+            if (!request.IgnoreXmlAttributes)
             {
-                return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="restRequest"></param>
-        /// <param name="response"></param>
-        /// <param name="responseContent"></param>
-        /// <returns></returns>
-        private static T DeserializeResponseContent<T>([NotNull] RestRequest restRequest, [NotNull] HttpResponseMessage response, string responseContent) where T : class
-        {
-
-            switch (response.Content.Headers.ContentType.MediaType)
-            {
-                case "application/xml":
-                case "text/xml":
-                    return DeserializeApplicationXml<T>(restRequest, responseContent);
-                //TODO: RWM: Figure out how to parse returned files.
-                //case "multipart/form-data":
-
-                //TODO: Handle more response types... like files.
-                default:
-                    try
-                    {
-                        return JsonConvert.DeserializeObject<T>(responseContent, restRequest.JsonSerializerSettings);
-                    }
-                    catch (JsonSerializationException jEx)
-                    {
-                        throw new PortableRestException("The JsonConverter failed. Please see InnerException for details.", jEx);
-                    }
-            }
-
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="restRequest"></param>
-        /// <param name="responseContent"></param>
-        /// <returns></returns>
-        private static T DeserializeApplicationXml<T>([NotNull] RestRequest restRequest, string responseContent) where T : class
-        {
-            T result;
-            // RWM: IDEA - The DataContractSerializer doesn't like attributes, but will handle everything else.
-            // So instead of trying to mess with a double-conversion to JSON and then to the Object, we'll just turn the attributes
-            // into elements, and sort the elements into alphabetical order so the DataContracterializer doesn't crap itself.
-
-            // On post, use a C# attribute to specify if a property is an XML attribute, DataContractSerialize to XML, then
-            // query the object for [XmlAttribute] attributes and move them from elements to attributes using code similar to below.
-            // If the POST request requires the attributes in a certain order, oh well. Shouldn't have used PHP :P.
-
-            var root = XElement.Parse(responseContent);
-            var newRoot = (XElement)Transform(restRequest.IgnoreRootElement ? root.Descendants().First() : root, restRequest);
-
-            using (var memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(newRoot.ToString())))
-            {
-                var settings = new XmlReaderSettings
+                foreach (var attrib in element.Attributes())
                 {
-                    IgnoreWhitespace = true,
-                };
-                using (var reader = XmlReader.Create(memoryStream, settings))
-                {
-                    try
-                    {
-                        var serializer = new DataContractSerializer(typeof(T));
-                        result = serializer.ReadObject(reader) as T;
-                    }
-                    catch (SerializationException ex)
-                    {
-                        throw new PortableRestException(string.Format("The serializer failed on node '{0}'", reader.Name), reader.Name, ex);
-                    }
+                    element.Add(new XElement(attrib.Name, (string)attrib));
                 }
             }
-            return result;
+
+            if (!string.IsNullOrWhiteSpace(request.DateFormat) &&
+                (element.Name.LocalName.ToLower().Contains("date") ||
+                 element.Name.LocalName.ToLower().Contains("time")))
+            {
+                var newValue = DateTime.ParseExact(element.Value, request.DateFormat, null);
+                element.Value = XmlConvert.ToString(newValue);
+            }
+
+            //RWM: NOTE the DataContractSerializer does not like null nodes when parsing nullable numbers.
+            //However removing empty nodes seems to work.
+            if (!element.Nodes().Any()) return null;
+
+            return new XElement(XNamespace.None.GetName(element.Name.LocalName),
+                element.Nodes()
+                    .OrderBy(c => (c as XElement) != null ? (c as XElement).Name.LocalName : c.ToString())
+                    .Select(n =>
+                    {
+                        var e = n as XElement;
+                        return e != null ? Transform(e, request) : n;
+                    }));
         }
 
-
-
-#endregion
+        #endregion
 
     }
+
 }

@@ -18,6 +18,7 @@ namespace PortableRest
     /// <summary>
     /// Specifies the parameters for the HTTP request that will be executed against a given resource.
     /// </summary>
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class RestRequest
     {
 
@@ -82,6 +83,15 @@ namespace PortableRest
         /// </summary>
         [Obsolete("ReturnRawString is deprecated, please just specify RestClient.ExecuteAsync<string> instead.")]
         public bool ReturnRawString { get; set; }
+
+        /// <summary>
+        /// Returns a string suitable for display in the debugger. Ensures such strings are compiled by the runtime and not interpreted by the currently-executing language.
+        /// </summary>
+        /// <remarks>http://blogs.msdn.com/b/jaredpar/archive/2011/03/18/debuggerdisplay-attribute-best-practices.aspx</remarks>
+        private string DebuggerDisplay
+        {
+            get { return $"Method: {Method}, Header Count: {Headers.Count}, Parameter Count: {Parameters.Count}, Resource: {Resource}"; }
+        }
 
         #endregion
 

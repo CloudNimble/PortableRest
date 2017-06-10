@@ -1,109 +1,92 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A3546D1A-CE87-49BB-800A-98018C1FCA00}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PortableRest</RootNamespace>
-    <AssemblyName>PortableRest</AssemblyName>
-    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>4.0</OldToolsVersion>
-    <UpgradeBackupLocation />
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <NuGetPackageImportStamp>7af89cb5</NuGetPackageImportStamp>
+    <TargetFrameworks>netstandard1.3;netstandard2.0</TargetFrameworks>
+    <Company>AdvancedREI, LLC.</Company>
+    <Description>A library for building REST API client wrappers to be used by .NET Standard 1.3+ apps.</Description>
+    <Copyright>Copyright © 2013-2017 AdvancedREI, LLC.</Copyright>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <FileVersion>4.0.0.0</FileVersion>
+    <Authors>Robert McLaws, Richard Beauchamp</Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>4.0.0-alpha1</Version>
+    <PackageLicenseUrl>http://choosealicense.com/licenses/mit/</PackageLicenseUrl>
+    <PackageProjectUrl>http://github.com/AdvancedREI/PortableRest</PackageProjectUrl>
+    <PackageIconUrl>https://advancedrei.blob.core.windows.net/nuget/PortableRest.png&lt;</PackageIconUrl>
+    <PackageReleaseNotes>4.0.0
+  • .NET Standard 1.3 and 2.0 support.
+
+3.1.0
+  • Multipart/form-data support.
+  • .NET Standard 1.1 Support.
+  • Now uses a static HttpClient internal instance. (fixes http://aspnetmonsters.com/2016/08/2016-08-27-httpclientwrong/)
+
+3.0.1
+  • Tons of bug fixes.
+  • Improved the way PortableRest handles parameters being sent over the wire.
+  • Added constructor overload that accepts a custom HttpMessageHandler for all requests the HttpClient makes.
+  • Added support for using the AsyncOAuth NuGet package for leveraging OAuth in your requests.
+  • Added support for specifying the JsonSerializerSettings on a client-wide or per-request basis, with request-specific settings taking precedence.
+  • Enhanced the SendAsync method to pass exceptions thrown by the serializer into the RestResponse.
+  • The serializer now strips namespaces from XML payloads before attempting to de-serialize. You may need to update your objects to [DataContract(Namespace="")] if you use XML-based Rest services.
+  • WARNING: Strong name signing is removed in this version. See the PortableRest.Signed package for those needing SNK support (but you will not be able to use AsyncOAuth, as it is not signed).
+
+2.5
+  • New generic and non-generic SendAsync() methods that return a RestResponse with more detailed information.
+  • Fixed an issue where the Async call can deadlock in certain situations.
+  • Added CancellationToken support.
+  • Windows Phone 8.1 support.
+
+2.4.1
+  • RestClient.CookieContainer property to share cookies between requests.
+  • (Breaking) Reorganized namespaces.
+  • Added more documentation.
+
+2.4
+  • Added ability to set encoding on individual parameters.
+  • Added request-specific headers for OAuth compatibility.
+  • Added RestClient.SetUserAgent()to set the UserAgent for you.
+
+2.3
+  • Triumphant return of SL5 support.
+  • Better documentation.
+  • RestClient.ExecuteAsync can return the raw string.
+  • Misc. bug fixes.
+
+2.1
+  • Adds RestRequest.AddQueryString().
+  • Updated minimum package references for Mono-compatible licenses.
+
+2.0
+  • Removed support for Silverlight due to Microsoft's new Reflection framework on .NET 4.5.
+  • Added initial support for submitting XML payloads.
+  • Strong-name signed the assembly so it can be used in strong-name signed projects.
+
+  1.2: Updated to latest packages, include Microsoft.Bcl.Build directly to help with app.config issues.
+  1.1: Compiled to HttpClient 2.2.
+  1.0.8: Compile to new dependencies.
+  1.0.6: Update based on changes to HttpClient.Compression.
+  1.0.5: Added Compression support.
+  1.0.4-alpha: Added basic POST support, &amp;amp; updated XML deserialization.
+  1.0.3: Added XML deserialization with DataContracts.
+  1.0.0: First release.</PackageReleaseNotes>
+    <PackageTags>HttpClient, REST, Portable Class Library, PCL, RestSharp, HTTP, API, JSON, XML</PackageTags>
+    <IncludeSource>True</IncludeSource>
+    <IncludeSymbols>True</IncludeSymbols>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\PortableRest.xml</DocumentationFile>
-    <SignAssembly>false</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\PortableRest.xml</DocumentationFile>
-    <SignAssembly>false</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release-Signed|AnyCPU'">
-    <OutputPath>bin\Release-Signed\</OutputPath>
-    <DefineConstants>TRACE;SIGNED</DefineConstants>
-    <DocumentationFile>bin\Release-Signed\PortableRest.xml</DocumentationFile>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <AssemblyOriginatorKeyFile>..\PortableRest.snk</AssemblyOriginatorKeyFile>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
+
   <ItemGroup>
-    <!-- A reference to the entire .NET Framework is automatically included -->
-    <None Include="..\PortableRest.snk">
-      <Link>PortableRest.snk</Link>
-    </None>
-    <None Include="app.config" />
-    <None Include="project.json" />
+    <Compile Remove="Extensions\EnumerableExtensions.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="ContentTypes.cs" />
-    <Compile Include="EncodedParameter.cs" />
-    <Compile Include="Extensions\StreamExtensions.cs" />
-    <Compile Include="Extensions\TypeExtensions.cs" />
-    <Compile Include="FileParameter.cs" />
-    <Compile Include="Properties\JetBrains.Annotations.cs" />
-    <Compile Include="RestResponse.cs" />
-    <Compile Include="ParameterEncoding.cs" />
-    <Compile Include="PortableRestException.cs" />
-    <Compile Include="RestClient.cs" />
-    <Compile Include="RestRequest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UrlSegment.cs" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
+    <PackageReference Include="System.Runtime.Serialization.Xml" Version="4.3.0" />
+    <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
   </ItemGroup>
-  <PropertyGroup>
-    <!-- netstandard1.x and uap10.0 tfms -->
-    <NuSpecTfm>netstandard1.1</NuSpecTfm>
-  </PropertyGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
+    <PackageReference Include="System.Net.Http" Version="4.3.2" />
+  </ItemGroup>
+
 </Project>

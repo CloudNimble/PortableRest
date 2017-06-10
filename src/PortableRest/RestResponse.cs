@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using JetBrains.Annotations;
+using System.Diagnostics;
 
 namespace PortableRest
 {
@@ -9,6 +10,7 @@ namespace PortableRest
     /// if the response was successful.
     /// </summary>
     /// <typeparam name="T">The type of data returned in the response.</typeparam>
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public sealed class RestResponse<T> : IDisposable where T : class
     {
 
@@ -33,6 +35,15 @@ namespace PortableRest
         /// The exception that was thrown during object de-serializtion.
         /// </summary>
         public Exception Exception { get; private set; }
+
+        /// <summary>
+        /// Returns a string suitable for display in the debugger. Ensures such strings are compiled by the runtime and not interpreted by the currently-executing language.
+        /// </summary>
+        /// <remarks>http://blogs.msdn.com/b/jaredpar/archive/2011/03/18/debuggerdisplay-attribute-best-practices.aspx</remarks>
+        private string DebuggerDisplay
+        {
+            get { return $"Status: {HttpResponseMessage.StatusCode}, HasContentObject: {Content != null}, HasException: {Exception != null}"; }
+        }
 
         #endregion
 

@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26606.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortableRest", "PortableRest\PortableRest.csproj", "{A3546D1A-CE87-49BB-800A-98018C1FCA00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortableRest", "PortableRest\PortableRest.csproj", "{A3546D1A-CE87-49BB-800A-98018C1FCA00}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortableRest.Tests", "PortableRest.Tests\PortableRest.Tests.csproj", "{EE7DCA96-146F-496B-9C8E-5368487DEE82}"
 EndProject
@@ -51,14 +51,14 @@ Global
 		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release|x64.Build.0 = Release|Any CPU
 		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release|x86.ActiveCfg = Release|Any CPU
 		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release|x86.Build.0 = Release|Any CPU
-		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release-Signed|Any CPU.ActiveCfg = Release-Signed|Any CPU
-		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release-Signed|Any CPU.Build.0 = Release-Signed|Any CPU
-		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release-Signed|ARM.ActiveCfg = Release-Signed|Any CPU
-		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release-Signed|ARM.Build.0 = Release-Signed|Any CPU
-		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release-Signed|x64.ActiveCfg = Release-Signed|Any CPU
-		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release-Signed|x64.Build.0 = Release-Signed|Any CPU
-		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release-Signed|x86.ActiveCfg = Release-Signed|Any CPU
-		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release-Signed|x86.Build.0 = Release-Signed|Any CPU
+		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release-Signed|Any CPU.ActiveCfg = Release|Any CPU
+		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release-Signed|Any CPU.Build.0 = Release|Any CPU
+		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release-Signed|ARM.ActiveCfg = Release|Any CPU
+		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release-Signed|ARM.Build.0 = Release|Any CPU
+		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release-Signed|x64.ActiveCfg = Release|Any CPU
+		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release-Signed|x64.Build.0 = Release|Any CPU
+		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release-Signed|x86.ActiveCfg = Release|Any CPU
+		{A3546D1A-CE87-49BB-800A-98018C1FCA00}.Release-Signed|x86.Build.0 = Release|Any CPU
 		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Debug|ARM.ActiveCfg = Debug|Any CPU
@@ -75,14 +75,14 @@ Global
 		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release|x64.Build.0 = Release|Any CPU
 		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release|x86.ActiveCfg = Release|Any CPU
 		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release|x86.Build.0 = Release|Any CPU
-		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|Any CPU.ActiveCfg = Release-Signed|Any CPU
-		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|Any CPU.Build.0 = Release-Signed|Any CPU
-		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|ARM.ActiveCfg = Release-Signed|Any CPU
-		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|ARM.Build.0 = Release-Signed|Any CPU
-		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|x64.ActiveCfg = Release-Signed|Any CPU
-		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|x64.Build.0 = Release-Signed|Any CPU
-		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|x86.ActiveCfg = Release-Signed|Any CPU
-		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|x86.Build.0 = Release-Signed|Any CPU
+		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|Any CPU.ActiveCfg = Release|Any CPU
+		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|Any CPU.Build.0 = Release|Any CPU
+		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|ARM.ActiveCfg = Release|Any CPU
+		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|ARM.Build.0 = Release|Any CPU
+		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|x64.ActiveCfg = Release|Any CPU
+		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|x64.Build.0 = Release|Any CPU
+		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|x86.ActiveCfg = Release|Any CPU
+		{EE7DCA96-146F-496B-9C8E-5368487DEE82}.Release-Signed|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
