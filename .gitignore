@@ -172,3 +172,4 @@ src/.vs/config/applicationhost.config
 src/PortableRest.Tests/OAuthTests.cs
 src/PortableRest/project.lock.json
 /src/.vs/PortableRest/v15/sqlite3
+/src/.vs/PortableRest/v15/Server/sqlite3
