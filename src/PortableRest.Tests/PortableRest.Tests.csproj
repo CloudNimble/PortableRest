@@ -27,9 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="PortableRest">
-      <HintPath>..\PortableRest\bin\Debug\netstandard1.3\PortableRest.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\PortableRest\PortableRest.csproj" />
   </ItemGroup>
 
 </Project>
