@@ -229,8 +229,7 @@ namespace PortableRest
                                                 "passed into the RestClient constructor create a new instace of HttpClientHandler at the base of its DelegatingHandler chain.");
             }
             //RWM: This Handler could be a part of a chain of handlers. Recursion!
-            var delegatingHandler = handler as DelegatingHandler;
-            if (delegatingHandler != null)
+            if (handler is DelegatingHandler delegatingHandler)
             {
                 ConfigureHandler(delegatingHandler.InnerHandler);
             }
@@ -455,7 +454,7 @@ namespace PortableRest
             var rawResponseContent = await GetRawResponseContent(httpResponseMessage).ConfigureAwait(false);
             if (rawResponseContent == null) return null;
             // ReSharper disable once CSharpWarnings::CS0618
-            if (typeof(T) == typeof(string) || restRequest.ReturnRawString)
+            if (typeof(T) == typeof(string))
             {
                 return rawResponseContent as T;
             }
@@ -488,7 +487,7 @@ namespace PortableRest
                  element.Name.LocalName.ToLower().Contains("time")))
             {
                 var newValue = DateTime.ParseExact(element.Value, request.DateFormat, null);
-                element.Value = XmlConvert.ToString(newValue);
+                element.Value = XmlConvert.ToString(newValue, XmlDateTimeSerializationMode.Unspecified);
             }
 
             //RWM: NOTE the DataContractSerializer does not like null nodes when parsing nullable numbers.
@@ -500,8 +499,7 @@ namespace PortableRest
                     .OrderBy(c => (c as XElement) != null ? (c as XElement).Name.LocalName : c.ToString())
                     .Select(n =>
                     {
-                        var e = n as XElement;
-                        return e != null ? Transform(e, request) : n;
+                        return n is XElement e ? Transform(e, request) : n;
                     }));
         }
 

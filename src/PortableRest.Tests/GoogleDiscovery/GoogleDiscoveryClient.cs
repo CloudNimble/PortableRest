@@ -55,7 +55,7 @@ namespace PortableRest.Tests
         /// <returns>An ApiResult object containing the APIs available from Google.</returns>
         public async Task<string> GetApisRaw(string name = "")
         {
-            var request = new RestRequest("apis") { ReturnRawString = true };
+            var request = new RestRequest("apis");
             if (!string.IsNullOrWhiteSpace(name))
             {
                 request.AddQueryString("name", name);

@@ -1,4 +1,4 @@
-﻿using AdvancedREI.Breakdance.WebApi;
+﻿using CloudNimble.Breakdance.WebApi;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PortableRest.Tests.OwinSelfHostServer;
@@ -17,7 +17,7 @@ namespace PortableRest.Tests
         public async Task ExecuteAsyncOfTReturnsDeserializedContentOfT()
         {
             // Setup
-            var server = WebApiTestHelpers.GetTestableServer();
+            var server = WebApiTestHelpers.GetTestableHttpServer();
             var client = new RestClient(server) { BaseUrl = WebApiConstants.Localhost };
             var request = new RestRequest("api/books");
             var response = await client.ExecuteAsync<List<Book>>(request);
@@ -31,7 +31,7 @@ namespace PortableRest.Tests
         public async Task MultipleRequestsFromSameClientShouldNotFail()
         {
             // Setup
-            var server = WebApiTestHelpers.GetTestableServer();
+            var server = WebApiTestHelpers.GetTestableHttpServer();
             var client = new RestClient(server) { BaseUrl = WebApiConstants.Localhost };
             var request = new RestRequest("api/books");
             List<Book> response;

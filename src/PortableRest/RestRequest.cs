@@ -79,12 +79,6 @@ namespace PortableRest
         public string Resource { internal get; set; }
 
         /// <summary>
-        /// Tells the RestClient to skip deserialization and return the raw result.
-        /// </summary>
-        [Obsolete("ReturnRawString is deprecated, please just specify RestClient.ExecuteAsync<string> instead.")]
-        public bool ReturnRawString { get; set; }
-
-        /// <summary>
         /// Returns a string suitable for display in the debugger. Ensures such strings are compiled by the runtime and not interpreted by the currently-executing language.
         /// </summary>
         /// <remarks>http://blogs.msdn.com/b/jaredpar/archive/2011/03/18/debuggerdisplay-attribute-best-practices.aspx</remarks>

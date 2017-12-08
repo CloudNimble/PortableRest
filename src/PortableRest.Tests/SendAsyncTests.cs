@@ -1,4 +1,4 @@
-﻿using AdvancedREI.Breakdance.WebApi;
+﻿using CloudNimble.Breakdance.WebApi;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PortableRest.Tests.OwinSelfHostServer;
@@ -19,7 +19,7 @@ namespace PortableRest.Tests
         public async Task NotFound404ReturnedWhenServerReturnsNotFoundHttpStatus()
         {
             // Setup
-            var server = WebApiTestHelpers.GetTestableServer();
+            var server = WebApiTestHelpers.GetTestableHttpServer();
             var client = new RestClient(server) { BaseUrl = WebApiConstants.Localhost };
             var request = new RestRequest("notsuccess/notfound");
             RestResponse<string> response;
@@ -36,7 +36,7 @@ namespace PortableRest.Tests
         public async Task InternalServerError500ReturnedWhenServerReturns500HttpStatus()
         {
             // Setup
-            var server = WebApiTestHelpers.GetTestableServer();
+            var server = WebApiTestHelpers.GetTestableHttpServer();
             var client = new RestClient(server) { BaseUrl = WebApiConstants.Localhost };
             var request = new RestRequest("notsuccess/internalservererror");
             RestResponse<string> response;
@@ -53,7 +53,7 @@ namespace PortableRest.Tests
         public async Task DeleteShouldReturn204WithNoContent()
         {
             // Setup
-            var server = WebApiTestHelpers.GetTestableServer();
+            var server = WebApiTestHelpers.GetTestableHttpServer();
             var client = new RestClient(server) { BaseUrl = WebApiConstants.Localhost };
             var request = new RestRequest("api/books", HttpMethod.Delete);
             RestResponse<string> response;
@@ -70,7 +70,7 @@ namespace PortableRest.Tests
         public async Task SendAsyncOfTContainsHttpResponseAndDeserializedContent()
         {
             // Setup
-            var server = WebApiTestHelpers.GetTestableServer();
+            var server = WebApiTestHelpers.GetTestableHttpServer();
             var client = new RestClient(server) { BaseUrl = WebApiConstants.Localhost };
             var request = new RestRequest("api/books");
             RestResponse<IEnumerable<Book>> response;
@@ -89,7 +89,7 @@ namespace PortableRest.Tests
         public async Task SettingAcceptsHeaderOnGetDoesntThrow()
         {
             // Setup
-            var server = WebApiTestHelpers.GetTestableServer();
+            var server = WebApiTestHelpers.GetTestableHttpServer();
             var client = new RestClient(server) { BaseUrl = WebApiConstants.Localhost };
             var request = new RestRequest("api/books");
             request.AddHeader("Accept", "application/json");
@@ -109,7 +109,7 @@ namespace PortableRest.Tests
         public async Task GracefullyHandleNullContentWithNonStringType()
         {
             // Setup
-            var server = WebApiTestHelpers.GetTestableServer();
+            var server = WebApiTestHelpers.GetTestableHttpServer();
             var client = new RestClient(server) { BaseUrl = WebApiConstants.Localhost };
             var request = new RestRequest("notsuccess/notfound");
             RestResponse<IEnumerable<Book>> response;
