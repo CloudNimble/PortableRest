@@ -94,7 +94,7 @@ namespace PortableRest.Tests
         public void RestResponseWithNullMessageShouldThrowError()
         {
             Action action = () => new RestResponse<string>(null, "Testing");
-            action.ShouldThrow<Exception>();
+            action.Should().Throw<Exception>();
         }
 
 

@@ -11,7 +11,6 @@ namespace PortableRest.Tests
     [TestClass]
     public class ExecuteAsyncTests
     {
-        private const string BaseAddress = "http://localhost:9385/";
 
         [TestMethod]
         public async Task ExecuteAsyncOfTReturnsDeserializedContentOfT()
@@ -24,7 +23,7 @@ namespace PortableRest.Tests
 
             // Validate
             response.Should().NotBeNull();
-            response.Count().Should().Be(5);
+            response.Count.Should().Be(5);
         }
 
         [TestMethod]
@@ -41,7 +40,7 @@ namespace PortableRest.Tests
 
             // Validate
             response.Should().NotBeNull();
-            response.Count().Should().Be(5);
+            response.Count.Should().Be(5);
 
             var request2 = new RestRequest("api/books");
             List<Book> response2;
@@ -51,7 +50,7 @@ namespace PortableRest.Tests
 
             // Validate
             response2.Should().NotBeNull();
-            response2.Count().Should().Be(5);
+            response2.Count.Should().Be(5);
         }
 
         /// <summary>

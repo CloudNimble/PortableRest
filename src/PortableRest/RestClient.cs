@@ -157,7 +157,7 @@ namespace PortableRest
         {
             try
             {
-                HttpResponseMessage httpResponseMessage = await GetHttpResponseMessage<T>(restRequest, cancellationToken).ConfigureAwait(false);
+                var httpResponseMessage = await GetHttpResponseMessage<T>(restRequest, cancellationToken).ConfigureAwait(false);
                 var content = await GetResponseContent<T>(restRequest, httpResponseMessage).ConfigureAwait(false);
                 return new RestResponse<T>(httpResponseMessage, content);
             }
@@ -165,7 +165,7 @@ namespace PortableRest
             //     If we caught an exception lower on the stack, make sure it's bubbled up.
             catch (PortableRestException prEx)
             {
-                throw prEx;
+                throw;
             }
             catch (Exception ex)
             {
@@ -190,7 +190,7 @@ namespace PortableRest
             if (displayName == null)
             {
                 var attributes = thisAssembly.GetCustomAttributes<AssemblyTitleAttribute>().ToList();
-                if (attributes.Count() == 0)
+                if (!attributes.Any())
                 {
                     throw new Exception("The assembly containing the class inheriting from PortableRest.RestClient must have an AssemblyTitle attribute specified.");
                 }
@@ -364,14 +364,12 @@ namespace PortableRest
             foreach (var header in Headers)
             {
                 message.Headers.TryAddWithoutValidation(header.Key, header.Value);
-                //message.Headers.Add(header.Key, header.Value);
             }
 
             //RWM: Add request-specific headers.
             foreach (var header in restRequest.Headers)
             {
                 message.Headers.TryAddWithoutValidation(header.Key, header.Value.ToString());
-                //message.Headers.Add(header.Key, header.Value.ToString());
             }
 
             //RWM: Not sure if this is sufficient, or if HEAD supports a body, will need to check into the RFC.
@@ -471,8 +469,7 @@ namespace PortableRest
         /// <remarks>Technique from http://blogs.msdn.com/b/ericwhite/archive/2009/07/20/a-tutorial-in-the-recursive-approach-to-pure-functional-transformations-of-xml.aspx </remarks>
         private static object Transform(XNode node, [NotNull] RestRequest request)
         {
-            var element = node as XElement;
-            if (element == null) return node;
+            if (!(node is XElement element)) return node;
 
             if (!request.IgnoreXmlAttributes)
             {
@@ -496,7 +493,7 @@ namespace PortableRest
 
             return new XElement(XNamespace.None.GetName(element.Name.LocalName),
                 element.Nodes()
-                    .OrderBy(c => (c as XElement) != null ? (c as XElement).Name.LocalName : c.ToString())
+                    .OrderBy(c => (c is XElement) ? (c as XElement).Name.LocalName : c.ToString())
                     .Select(n =>
                     {
                         return n is XElement e ? Transform(e, request) : n;

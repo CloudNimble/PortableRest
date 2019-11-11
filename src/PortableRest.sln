@@ -5,12 +5,11 @@ VisualStudioVersion = 15.0.26606.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortableRest", "PortableRest\PortableRest.csproj", "{A3546D1A-CE87-49BB-800A-98018C1FCA00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PortableRest.Tests", "PortableRest.Tests\PortableRest.Tests.csproj", "{EE7DCA96-146F-496B-9C8E-5368487DEE82}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortableRest.Tests", "PortableRest.Tests\PortableRest.Tests.csproj", "{EE7DCA96-146F-496B-9C8E-5368487DEE82}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{336F7F6F-8380-4C7C-9EE1-5AC824B58342}"
 	ProjectSection(SolutionItems) = preProject
 		PortableRest.nuspec = PortableRest.nuspec
-		PortableRest.Signed.nuspec = PortableRest.Signed.nuspec
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
@@ -86,5 +85,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4728944B-F056-480F-947E-7D35349F3BA8}
 	EndGlobalSection
 EndGlobal

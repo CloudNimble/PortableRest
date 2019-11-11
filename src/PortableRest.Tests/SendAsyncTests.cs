@@ -13,7 +13,6 @@ namespace PortableRest.Tests
     [TestClass]
     public class SendAsyncTests
     {
-        private const string BaseAddress = "http://localhost:9385/";
 
         [TestMethod]
         public async Task NotFound404ReturnedWhenServerReturnsNotFoundHttpStatus()

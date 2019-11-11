@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
 
     <IsPackable>false</IsPackable>
+    <AssemblyTitle>PortableRest.Tests</AssemblyTitle>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,12 +13,13 @@
 
   <ItemGroup>
     <PackageReference Include="AsyncOAuth" Version="0.8.4" />
-    <PackageReference Include="Breakdance.WebApi" Version="1.0.0-beta1.1" />
-    <PackageReference Include="FluentAssertions" Version="4.19.4" />
-    <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.3" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.2.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Breakdance.WebApi" Version="2.0.0-CI-20191027-152246" />
+    <PackageReference Include="FluentAssertions" Version="5.9.0" />
+    <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.7" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.0.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.0.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="System.Runtime.Serialization.Xml" Version="4.3.0" />
   </ItemGroup>
 
@@ -27,6 +29,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PortableRest\PortableRest.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
 
 </Project>
