@@ -75,11 +75,17 @@ namespace BrickSet.Core
 
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     [CollectionDataContract(Name="ArrayOfThemes", Namespace = "")]
-    public class ThemesList: List<Theme>
+    public class ThemesList : List<Theme>
     {
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     [CollectionDataContract(Name = "ArrayOfAdditionalImages", Namespace = "")]
     public class AdditionalImagesList : List<AdditionalImage>
     {

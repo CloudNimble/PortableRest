@@ -9,7 +9,9 @@ namespace PortableRest
     /// <summary>
     /// The types of content supported in PortableRest requests and responses.
     /// </summary>
+#pragma warning disable CA1717 // Only FlagsAttribute enums should have plural names
     public enum ContentTypes
+#pragma warning restore CA1717 // Only FlagsAttribute enums should have plural names
     {
         /// <summary>
         /// 
@@ -31,6 +33,9 @@ namespace PortableRest
         /// </summary>
         Xml,
 
+        /// <summary>
+        /// 
+        /// </summary>
 		MultiPartFormData
     }
 }

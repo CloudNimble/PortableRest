@@ -2,19 +2,10 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <Company>CloudNimble, Inc.</Company>
     <Description>A library for building REST API client wrappers to be used by .NET Standard 2.0 apps.</Description>
-    <Copyright>Copyright © 2018-2020 CloudNimble, Inc.</Copyright>
-    <AssemblyVersion>4.0.0.0</AssemblyVersion>
-    <FileVersion>4.0.0.0</FileVersion>
-    <Authors>Robert McLaws, Richard Beauchamp</Authors>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>4.0.0</Version>
-    <PackageLicenseUrl>http://choosealicense.com/licenses/mit/</PackageLicenseUrl>
-    <PackageProjectUrl>http://github.com/CloudNimble/PortableRest</PackageProjectUrl>
-    <PackageIconUrl>https://advancedrei.blob.core.windows.net/nuget/PortableRest.png</PackageIconUrl>
     <PackageReleaseNotes>4.0.0
   • .NET Standard 2.0 support.
+  • Back to strong-name signing, per Microsoft's OSS reccomendations.
 
 3.1.0
   • Multipart/form-data support.
@@ -70,24 +61,24 @@
   1.0.4-alpha: Added basic POST support, &amp;amp; updated XML deserialization.
   1.0.3: Added XML deserialization with DataContracts.
   1.0.0: First release.</PackageReleaseNotes>
-    <PackageTags>HttpClient, REST, Portable Class Library, PCL, RestSharp, HTTP, API, JSON, XML</PackageTags>
-    <IncludeSource>True</IncludeSource>
-    <IncludeSymbols>True</IncludeSymbols>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Http" Version="[3.0.0, 5.0)" />
-    <PackageReference Include="Microsoft.NetFramework.Analyzers" Version="2.9.7">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="[11.0.2, 13.0)" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.0.0.9566">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="System.Runtime.Serialization.Xml" Version="[4.3.0, 5.0)" />
     <PackageReference Include="System.Xml.XmlSerializer" Version="[4.3.0, 5.0)" />
   </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>PortableRest.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100c384ab1e009e833f50689dfa1c441b3bf65f1d8086d0a7caa335fd03fc7a14f5c70e25d3c534e7a5453560ef8dce1b72b3340dfb5a408a09e300cfa50cdd55fc4ab6dbfaf6992ed0c33f5fdcaeb02bec36c87a0a10c88e22fa60aa6aae64c3ee2f00df2fb4103bd8be4c68df17fc9bacb116d14df7017b05208babce4044b6b4</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
 
 </Project>

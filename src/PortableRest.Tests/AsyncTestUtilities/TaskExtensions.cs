@@ -4,6 +4,10 @@ using System.Threading.Tasks;
 
 namespace PortableRest.Tests.AsyncTestUtilities
 {
+
+    /// <summary>
+    /// 
+    /// </summary>
     public static class TaskExtensions
     {
         /// <summary>
@@ -30,5 +34,7 @@ namespace PortableRest.Tests.AsyncTestUtilities
 
             task.GetAwaiter().GetResult();
         }
+
     }
+
 }

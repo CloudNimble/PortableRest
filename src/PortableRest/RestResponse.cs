@@ -58,7 +58,7 @@ namespace PortableRest
         {
             if (httpResponseMessage == null)
             {
-                throw new ArgumentNullException("httpResponseMessage");
+                throw new ArgumentNullException(nameof(httpResponseMessage));
             }
 
             HttpResponseMessage = httpResponseMessage;

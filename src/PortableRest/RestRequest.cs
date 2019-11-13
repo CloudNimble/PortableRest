@@ -76,7 +76,7 @@ namespace PortableRest
         /// <summary>
         /// A string representation of the specific resource to access, using ASP.NET MVC-like replaceable tokens.
         /// </summary>
-        public string Resource { internal get; set; }
+        public string Resource { get; internal set; }
 
         /// <summary>
         /// Returns a string suitable for display in the debugger. Ensures such strings are compiled by the runtime and not interpreted by the currently-executing language.
@@ -237,6 +237,11 @@ namespace PortableRest
         /// <param name="value">The value to append to the QueryString (we will call .ToString() for you).</param>
         public void AddQueryString(string key, object value)
         {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
             AddQueryString(key, value.ToString());
         }
 

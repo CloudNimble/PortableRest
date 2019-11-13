@@ -134,8 +134,13 @@ namespace PortableRest
         /// <exception cref="HttpRequestException">
         /// Throws an exception if the <see cref="HttpResponseMessage.IsSuccessStatusCode"/> property for the HTTP response is false.
         /// </exception>
-        public async Task<T> ExecuteAsync<T>([NotNull] RestRequest restRequest, CancellationToken cancellationToken = default(CancellationToken)) where T : class
+        public async Task<T> ExecuteAsync<T>(RestRequest restRequest, CancellationToken cancellationToken = default) where T : class
         {
+            if (restRequest == null)
+            {
+                throw new ArgumentNullException(nameof(restRequest));
+            }
+
             var httpResponseMessage = await GetHttpResponseMessage<T>(restRequest, cancellationToken).ConfigureAwait(false);
 
             httpResponseMessage.EnsureSuccessStatusCode();
@@ -153,8 +158,13 @@ namespace PortableRest
         /// <returns></returns>
         /// <exception cref="PortableRestException">This type of exception is thrown when an error happens either before a request has started,
         /// or after it has finished and the result is being processed.</exception>
-        public async Task<RestResponse<T>> SendAsync<T>([NotNull] RestRequest restRequest, CancellationToken cancellationToken = default(CancellationToken)) where T : class
+        public async Task<RestResponse<T>> SendAsync<T>(RestRequest restRequest, CancellationToken cancellationToken = default(CancellationToken)) where T : class
         {
+            if (restRequest == null)
+            {
+                throw new ArgumentNullException(nameof(restRequest));
+            }
+
             try
             {
                 var httpResponseMessage = await GetHttpResponseMessage<T>(restRequest, cancellationToken).ConfigureAwait(false);
@@ -163,11 +173,15 @@ namespace PortableRest
             }
             //RWM: Added 22 Oct 2015.
             //     If we caught an exception lower on the stack, make sure it's bubbled up.
+#pragma warning disable CS0168 // Variable is declared but never used
             catch (PortableRestException prEx)
+#pragma warning restore CS0168 // Variable is declared but never used
             {
                 throw;
             }
+#pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 return new RestResponse<T>(new HttpResponseMessage(HttpStatusCode.BadRequest), null, ex);
             }
@@ -207,15 +221,41 @@ namespace PortableRest
         /// <summary>
         /// Disposes of the resources used by RestClient.
         /// </summary>
+        // Dispose() calls Dispose(true)
         public void Dispose()
         {
-            HttpHandler.Dispose();
-            _client.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
-#endregion
+        // The bulk of the clean-up code is implemented in Dispose(bool)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // free managed resources
+                if (HttpHandler != null)
+                {
+                    HttpHandler.Dispose();
+                    HttpHandler = null;
+                }
 
-#region Private Methods
+                if (_client != null)
+                {
+                    _client.Dispose();
+                    _client = null;
+                }
+            }
+            // free native resources if there are any.
+        }
+
+        #endregion
+
+        #region Private Methods
 
         /// <summary>
         /// Configures the HttpMessageHandler to ensure requests can be compressed and use the specified CookieContainer.
