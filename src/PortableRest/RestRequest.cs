@@ -381,8 +381,7 @@ namespace PortableRest
         /// <remarks>Technique from http://blogs.msdn.com/b/ericwhite/archive/2009/07/20/a-tutorial-in-the-recursive-approach-to-pure-functional-transformations-of-xml.aspx </remarks>
         private static void Transform(XNode node, Type type)
         {
-            var element = node as XElement;
-            if (element == null) return;
+            if (!(node is XElement element)) return;
             element.Attributes().Remove();
 
             var t = type.GetTypeInfo();
