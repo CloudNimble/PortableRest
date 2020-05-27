@@ -282,7 +282,7 @@ namespace PortableRest
             {
                 clientHandler.AllowAutoRedirect = true;
             }
-            catch (NotSupportedException ex)
+            catch (PlatformNotSupportedException ex)
             {
                 Console.WriteLine($"Bypassing unsupported ClientHandler settings: {ex.Message}");
             }
