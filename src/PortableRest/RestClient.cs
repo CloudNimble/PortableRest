@@ -284,7 +284,7 @@ namespace PortableRest
             }
             catch (NotSupportedException ex)
             {
-                Console.WriteLine("Bypassing unsupported ClientHandler settings.");
+                Console.WriteLine($"Bypassing unsupported ClientHandler settings: {ex.Message}");
             }
 
             if (clientHandler.SupportsAutomaticDecompression)
