@@ -278,7 +278,15 @@ namespace PortableRest
             if (!(handler is HttpClientHandler)) return;
 
             var clientHandler = ((HttpClientHandler)handler);
-            clientHandler.AllowAutoRedirect = true;
+            try
+            {
+                clientHandler.AllowAutoRedirect = true;
+            }
+            catch (NotSupportedException ex)
+            {
+                Console.WriteLine("Bypassing unsupported ClientHandler settings.");
+            }
+
             if (clientHandler.SupportsAutomaticDecompression)
             {
                 clientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
