@@ -294,7 +294,15 @@ namespace PortableRest
 
             if (CookieContainer != null)
             {
-                clientHandler.CookieContainer = CookieContainer;
+                try
+                {
+                    clientHandler.CookieContainer = CookieContainer;
+                }
+                catch (PlatformNotSupportedException ex)
+                {
+                    Console.WriteLine($"Bypassing unsupported ClientHandler settings: {ex.Message}");
+                }
+
             }
         }
 
