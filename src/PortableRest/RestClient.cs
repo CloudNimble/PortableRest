@@ -599,6 +599,7 @@ namespace PortableRest
                 }
 
                 fetchOptions["credentials"] = "include";
+                fetchOptions["mode"] = "cors";
             }
             catch
             {
