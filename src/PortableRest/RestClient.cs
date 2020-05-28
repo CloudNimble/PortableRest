@@ -579,7 +579,7 @@ namespace PortableRest
         /// </summary>
         /// <param name="message"></param>
         /// <param name="values"></param>
-        private void SetAuthorization(HttpRequestMessage message, string[] values)
+        private static void SetAuthorization(HttpRequestMessage message, string[] values)
         {
             message.Headers.Authorization = new AuthenticationHeaderValue(values[0], values[1]);
 
