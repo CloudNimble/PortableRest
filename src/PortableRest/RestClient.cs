@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
@@ -419,13 +420,29 @@ namespace PortableRest
             //RWM: Add the global headers for all requests.
             foreach (var header in Headers)
             {
-                message.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                if (header.Key == "Authorization")
+                {
+                    var values = header.Value.Split(new char[] { ' ' });
+                    message.Headers.Authorization = new AuthenticationHeaderValue(values[0], values[1]);
+                }
+                else
+                {
+                    message.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                }
             }
 
             //RWM: Add request-specific headers.
             foreach (var header in restRequest.Headers)
             {
-                message.Headers.TryAddWithoutValidation(header.Key, header.Value.ToString());
+                if (header.Key == "Authorization")
+                {
+                    var values = header.Value.ToString().Split(new char[] { ' ' });
+                    message.Headers.Authorization = new AuthenticationHeaderValue(values[0], values[1]);
+                }
+                else
+                {
+                    message.Headers.TryAddWithoutValidation(header.Key, header.Value.ToString());
+                }
             }
 
             //RWM: Not sure if this is sufficient, or if HEAD supports a body, will need to check into the RFC.
