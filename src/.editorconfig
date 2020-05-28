@@ -14,3 +14,6 @@ dotnet_diagnostic.CA1062.severity = suggestion
 
 # CA1710: Identifiers should have correct suffix
 dotnet_diagnostic.CA1710.severity = suggestion
+
+# CA1031: Do not catch general exception types
+dotnet_diagnostic.CA1031.severity = suggestion
