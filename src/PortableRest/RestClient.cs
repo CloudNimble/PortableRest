@@ -92,10 +92,7 @@ namespace PortableRest
         {
             Headers = new List<KeyValuePair<string, string>>();
             CookieContainer = new CookieContainer();
-            HttpHandler = new HttpClientHandler
-            {
-                AllowAutoRedirect = true
-            };
+            HttpHandler = new HttpClientHandler();
             _client = new HttpClient(HttpHandler);
         }
 
@@ -279,14 +276,12 @@ namespace PortableRest
             if (!(handler is HttpClientHandler)) return;
 
             var clientHandler = ((HttpClientHandler)handler);
-            try
+
+            if (clientHandler.SupportsRedirectConfiguration)
             {
                 clientHandler.AllowAutoRedirect = true;
             }
-            catch (PlatformNotSupportedException ex)
-            {
-                Console.WriteLine($"Bypassing unsupported ClientHandler settings: {ex.Message}");
-            }
+
 
             if (clientHandler.SupportsAutomaticDecompression)
             {
@@ -423,7 +418,7 @@ namespace PortableRest
                 if (header.Key == "Authorization")
                 {
                     var values = header.Value.Split(new char[] { ' ' });
-                    SetAuthorization(message, values);
+                    message.Headers.Authorization = new AuthenticationHeaderValue(values[0], values[1]);
                 }
                 else
                 {
@@ -438,7 +433,7 @@ namespace PortableRest
                 if (header.Key == "Authorization")
                 {
                     var values = header.Value.ToString().Split(new char[] { ' ' });
-                    SetAuthorization(message, values);
+                    message.Headers.Authorization = new AuthenticationHeaderValue(values[0], values[1]);
                 }
                 else
                 {
@@ -574,41 +569,4 @@ namespace PortableRest
                     }));
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="values"></param>
-        private static void SetAuthorization(HttpRequestMessage message, string[] values)
-        {
-            message.Headers.Authorization = new AuthenticationHeaderValue(values[0], values[1]);
-
-            try
-            {
-                const string FetchRequestOptionsKey = "WebAssemblyFetchOptions";
-                IDictionary<string, object> fetchOptions;
-
-                if (message.Properties.TryGetValue(FetchRequestOptionsKey, out var entry))
-                {
-                    fetchOptions = (IDictionary<string, object>)entry;
-                }
-                else
-                {
-                    fetchOptions = new Dictionary<string, object>(StringComparer.Ordinal);
-                    message.Properties[FetchRequestOptionsKey] = fetchOptions;
-                }
-
-                fetchOptions["credentials"] = "include";
-                fetchOptions["mode"] = "cors";
-            }
-            catch
-            {
-                Console.WriteLine("Could not set WebAssemblyFetchOptions. If you're not on WebAssembly, please ignore this message.");
-            }
-        }
-
-        #endregion
-
     }
-
-}
