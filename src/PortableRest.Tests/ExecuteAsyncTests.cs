@@ -23,7 +23,7 @@ namespace PortableRest.Tests
 
             // Validate
             response.Should().NotBeNull();
-            response.Count.Should().Be(5);
+            response.Should().HaveCount(5);
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@ namespace PortableRest.Tests
 
             // Validate
             response.Should().NotBeNull();
-            response.Count.Should().Be(5);
+            response.Should().HaveCount(5);
 
             var request2 = new RestRequest("api/books");
             List<Book> response2;
@@ -50,7 +50,7 @@ namespace PortableRest.Tests
 
             // Validate
             response2.Should().NotBeNull();
-            response2.Count.Should().Be(5);
+            response2.Should().HaveCount(5);
         }
 
         /// <summary>
