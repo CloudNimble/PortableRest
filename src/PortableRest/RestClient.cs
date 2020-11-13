@@ -156,7 +156,7 @@ namespace PortableRest
         /// <returns></returns>
         /// <exception cref="PortableRestException">This type of exception is thrown when an error happens either before a request has started,
         /// or after it has finished and the result is being processed.</exception>
-        public async Task<RestResponse<T>> SendAsync<T>(RestRequest restRequest, CancellationToken cancellationToken = default(CancellationToken)) where T : class
+        public async Task<RestResponse<T>> SendAsync<T>(RestRequest restRequest, CancellationToken cancellationToken = default) where T : class
         {
             if (restRequest == null)
             {
@@ -384,7 +384,7 @@ namespace PortableRest
         /// <param name="restRequest"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private async Task<HttpResponseMessage> GetHttpResponseMessage<T>([NotNull] RestRequest restRequest, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<HttpResponseMessage> GetHttpResponseMessage<T>([NotNull] RestRequest restRequest, CancellationToken cancellationToken = default)
         {
             //RWM If we've specified a DateFormat for the Client, but not not the Request, pass it down.
             if (!string.IsNullOrWhiteSpace(DateFormat) && string.IsNullOrWhiteSpace(restRequest.DateFormat))
