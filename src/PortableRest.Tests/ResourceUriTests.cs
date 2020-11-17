@@ -87,5 +87,15 @@ namespace PortableRest.Tests
             Assert.AreEqual("https://www.googleapis.com/discovery/v1/apis?&name=adexchangebuyer", 
                 request.GetResourceUri("https://www.googleapis.com/discovery/v1/apis?&name=adexchangebuyer").ToString());
         }
+
+        [TestMethod]
+        public void TestUriIdempodence()
+        {
+            var request = new RestRequest("/test");
+            request.AddQueryString("test", "value");
+            var originalResource = request.Resource;
+            request.GetResourceUri("http://some.base.url");
+            Assert.AreEqual(originalResource, request.Resource);
+        }
     }
 }

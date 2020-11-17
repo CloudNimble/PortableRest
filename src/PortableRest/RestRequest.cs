@@ -252,9 +252,10 @@ namespace PortableRest
         /// <returns></returns>
         public Uri GetResourceUri(string baseUrl)
         {
+            string resource = Resource; 
             foreach (var segment in UrlSegments.Where(c => !c.IsQueryString))
             {
-                Resource = Resource.Replace("{" + segment.Key + "}", Uri.EscapeUriString(segment.Value));
+                resource = resource.Replace("{" + segment.Key + "}", Uri.EscapeUriString(segment.Value));
             }
 
             if (UrlSegments.Any(c => c.IsQueryString))
@@ -265,12 +266,12 @@ namespace PortableRest
                             current.Append(string.Format("&{0}={1}", Uri.EscapeUriString(next.Key), Uri.EscapeDataString(next.Value))))
                     .ToString();
 
-                Resource = string.Format(Resource.Contains("?") ? "{0}{1}" : "{0}?{1}", Resource, queryString);
+                resource = string.Format(resource.Contains("?") ? "{0}{1}" : "{0}?{1}", resource, queryString);
             }
 
-            Resource = CombineUriParts(baseUrl, Resource);
+            resource = CombineUriParts(baseUrl, resource);
 
-            return new Uri(Resource, UriKind.RelativeOrAbsolute);
+            return new Uri(resource, UriKind.RelativeOrAbsolute);
         }
 
         #endregion
