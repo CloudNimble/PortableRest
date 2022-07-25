@@ -24,7 +24,7 @@ namespace PortableRest.Tests
         public async Task GetApisWithNameTest()
         {
             var client = new GoogleDiscoveryClient();
-            var result = await client.GetApis("adexchangebuyer");
+            var result = await client.GetApis("abusiveexperiencereport");
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(ApisResult));
             Assert.IsInstanceOfType(result.Apis, typeof(List<Api>));
@@ -35,7 +35,7 @@ namespace PortableRest.Tests
         public async Task GetApisRawTest()
         {
             var client = new GoogleDiscoveryClient();
-            var result = await client.GetApisRaw("adexchangebuyer");
+            var result = await client.GetApisRaw("abusiveexperiencereport");
             Assert.AreNotEqual(result, "");
         }
 

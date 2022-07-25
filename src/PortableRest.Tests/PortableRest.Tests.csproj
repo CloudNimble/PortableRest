@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFrameworks>net472</TargetFrameworks>
 
     <IsPackable>false</IsPackable>
     <AssemblyTitle>PortableRest.Tests</AssemblyTitle>
@@ -13,13 +13,10 @@
 
   <ItemGroup>
     <PackageReference Include="AsyncOAuth" Version="0.8.4" />
-    <PackageReference Include="Breakdance.WebApi" Version="2.0.0-CI-20191027-152246" />
-    <PackageReference Include="FluentAssertions" Version="5.9.0" />
-    <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.7" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="3.0.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.0.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Breakdance.WebApi" Version="*-*" />
+    <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.*" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="6.*" />
+    <PackageReference Include="Newtonsoft.Json" Version="*" />
     <PackageReference Include="System.Runtime.Serialization.Xml" Version="4.3.0" />
   </ItemGroup>
 

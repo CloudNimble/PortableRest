@@ -32,7 +32,7 @@ namespace PortableRest.Tests
 
             SetUserAgent<ApisResult>("PortableRest Unit Test Client");
             ApiVersion = "v1";
-            BaseUrl = "https://www.googleapis.com/discovery/" + ApiVersion;
+            BaseUrl = "https://discovery.googleapis.com/discovery/" + ApiVersion;
         }
 
         /// <summary>

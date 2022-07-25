@@ -254,7 +254,7 @@ namespace PortableRest
         {
             foreach (var segment in UrlSegments.Where(c => !c.IsQueryString))
             {
-                Resource = Resource.Replace("{" + segment.Key + "}", Uri.EscapeUriString(segment.Value));
+                Resource = Resource.Replace("{" + segment.Key + "}", Uri.EscapeDataString(segment.Value));
             }
 
             if (UrlSegments.Any(c => c.IsQueryString))
@@ -262,7 +262,7 @@ namespace PortableRest
                 var queryString = UrlSegments.Where(c => c.IsQueryString)
                     .Aggregate(new StringBuilder(),
                         (current, next) =>
-                            current.Append(string.Format("&{0}={1}", Uri.EscapeUriString(next.Key), Uri.EscapeDataString(next.Value))))
+                            current.Append(string.Format("&{0}={1}", Uri.EscapeDataString(next.Key), Uri.EscapeDataString(next.Value))))
                     .ToString();
 
                 Resource = string.Format(Resource.Contains("?") ? "{0}{1}" : "{0}?{1}", Resource, queryString);
