@@ -1,35 +1,35 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net472</TargetFrameworks>
+	<PropertyGroup>
+		<TargetFrameworks>net48</TargetFrameworks>
+		<IsPackable>false</IsPackable>
+		<AssemblyTitle>PortableRest.Tests</AssemblyTitle>
+	</PropertyGroup>
 
-    <IsPackable>false</IsPackable>
-    <AssemblyTitle>PortableRest.Tests</AssemblyTitle>
-  </PropertyGroup>
+	<ItemGroup>
+		<Compile Remove="AsyncTestUtilities\WindowsFormsContext.cs" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="AsyncTestUtilities\WindowsFormsContext.cs" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="AsyncOAuth" Version="0.8.4" />
+		<PackageReference Include="Breakdance.WebApi" Version="*-*" />
+		<PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.*" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="9.*" />
+		<PackageReference Include="Newtonsoft.Json" Version="*" />
+		<PackageReference Include="System.Runtime.Serialization.Xml" Version="4.*" />
+		<PackageReference Include="System.Text.RegularExpressions" Version="4.*" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AsyncOAuth" Version="0.8.4" />
-    <PackageReference Include="Breakdance.WebApi" Version="*-*" />
-    <PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.*" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="8.*" />
-    <PackageReference Include="Newtonsoft.Json" Version="*" />
-    <PackageReference Include="System.Runtime.Serialization.Xml" Version="4.3.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Properties\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\PortableRest\PortableRest.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\PortableRest\PortableRest.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
-  </ItemGroup>
+	<ItemGroup>
+		<Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+	</ItemGroup>
 
 </Project>
