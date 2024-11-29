@@ -72,12 +72,12 @@ namespace PortableRest
             switch (Encoding)
             {
                 case ParameterEncoding.Base64:
-                    if (!(Value is Stream)) throw new ArgumentException("ByteArray encoded objects must be passed in as a stream.");
+                    if (Value is not Stream) throw new ArgumentException("ByteArray encoded objects must be passed in as a stream.");
                     var bytes1 = (Value as Stream).ToArray();
                     finalValue = Convert.ToBase64String(bytes1);
                     break;
                 case ParameterEncoding.ByteArray:
-                    if (!(Value is Stream)) throw new ArgumentException("ByteArray encoded objects must be passed in as a stream.");
+                    if (Value is not Stream) throw new ArgumentException("ByteArray encoded objects must be passed in as a stream.");
                     finalValue = (Value as Stream).ToArray();
                     break;
                 case ParameterEncoding.Unencoded:

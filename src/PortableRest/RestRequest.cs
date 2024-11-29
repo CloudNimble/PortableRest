@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -9,6 +7,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Text.Json;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
@@ -66,7 +65,7 @@ namespace PortableRest
         /// <summary>
         /// Allows you to have more control over how JSON content is serialized to the request body.
         /// </summary>
-        public JsonSerializerSettings JsonSerializerSettings { get; set; }
+        public JsonSerializerOptions JsonSerializerOptions { get; set; }
 
         /// <summary>
         /// The HTTP method to use for the request.
@@ -237,7 +236,7 @@ namespace PortableRest
         /// <param name="value">The value to append to the QueryString (we will call .ToString() for you).</param>
         public void AddQueryString(string key, object value)
         {
-            if (value == null)
+            if (value is null)
             {
                 throw new ArgumentNullException(nameof(value));
             }
@@ -286,7 +285,7 @@ namespace PortableRest
         private static string CombineUriParts(params string[] uriParts)
         {
             var uri = string.Empty;
-            if (uriParts != null && uriParts.Any())
+            if (uriParts is not null && uriParts.Any())
             {
                 uriParts = uriParts.Where(part => !string.IsNullOrWhiteSpace(part)).ToArray();
                 char[] trimChars = { '\\', '/' };
@@ -393,7 +392,7 @@ namespace PortableRest
             {
                 Debug.WriteLine(prop.Name);
                 var xnode = element.Descendants().FirstOrDefault(c => c.Name.ToString() == prop.Name);
-                if (xnode != null)
+                if (xnode is not null)
                 {
                     Transform(xnode, prop.PropertyType);
                 }
@@ -406,7 +405,7 @@ namespace PortableRest
                 if (attribs.Any(c => c is IgnoreDataMemberAttribute || c is XmlIgnoreAttribute)) continue;
 
                 var xnode = element.Descendants().FirstOrDefault(c => c.Name.ToString() == prop.Name);
-                if (xnode == null) continue;
+                if (xnode is null) continue;
                 element.SetAttributeValue(xnode.Name, xnode.Value);
                 xnode.Remove();
             }
@@ -415,7 +414,7 @@ namespace PortableRest
             //foreach (var prop in t.DeclaredProperties.Where(c => c.PropertyType == typeof (DateTime)))
             //{
             //    var xnode = element.Descendants().FirstOrDefault(c => c.Name.ToString() == prop.Name);
-            //    if (xnode == null) continue;
+            //    if (xnode is null) continue;
             //    var newValue = DateTime.ParseExact(element.Value, DateFormat, null);
             //    element.Value = XmlConvert.ToString(newValue);
             //}

@@ -9,6 +9,7 @@
 		<IsSampleProject Condition="$(MSBuildProjectName.ToLower().Contains('.samples.'))">true</IsSampleProject>
 		<IsNetCore Condition=" '$(TargetFramework)' == 'netcoreapp3.1' OR '$(TargetFramework)' == 'net6.0' OR '$(TargetFramework)' == 'net7.0'  OR '$(TargetFramework)' == 'net8.0' ">true</IsNetCore>
 		<IsPrimaryProject Condition=" ('$(IsBenchmarkProject)' != 'true' And '$(IsTestProject)' != 'true' And '$(IsTestAssetProject)' != 'true' And '$(IsSampleProject)' != 'true' And '$(IsSampleProject)' != 'true') or '$(IsTemplatePackageProject)' == 'true' ">true</IsPrimaryProject>
+		<IncludeReadmeFile Condition="Exists('$(MSBuildProjectDirectory)\readme.md')">true</IncludeReadmeFile>
 
 		<IncludeSource>false</IncludeSource>
 		<IncludeSymbols>true</IncludeSymbols>
@@ -24,7 +25,7 @@
 
 	<PropertyGroup>
 		<Product>PortableRest</Product>
-		<Version>4.0.1-beta1</Version>
+		<Version>5.0.0-beta1</Version>
 
 		<Authors>Robert McLaws, Richard Beauchamp</Authors>
 		<Owners>CloudNimble</Owners>
@@ -35,6 +36,8 @@
 		<PackageLicenseUrl>https://raw.githubusercontent.com/OData/RESTier/master/License.txt</PackageLicenseUrl>
 		<!-- The SPDX name for the source license. See https://spdx.org/licenses/. -->
 		<PackageLicenseType>MIT</PackageLicenseType>
+		<PackageReadmeFile Condition="$(IncludeReadmeFile) == 'true'">readme.md</PackageReadmeFile>
+
 		<!--
       Suppress a warning about upcoming deprecation of PackageLicenseUrl. When embedding licenses are supported,
       replace PackageLicenseUrl with PackageLicenseExpression.
@@ -92,24 +95,19 @@
 	</PropertyGroup>
 
 	<ItemGroup Condition=" $(IsTestProject) != 'true' and $(IsSampleProject) != 'true' ">
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.*" PrivateAssets="All" />
-		<!-- RWM: The code quality on the unit tests right now is not awesome, so let's skip checking it for now. -->
-		<!--<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.*">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>-->
-
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-			<_Parameter1>$(AssemblyName.Replace("PortableRest", "PortableRest.Tests")), $(StrongNamePublicKey)</_Parameter1>
-		</AssemblyAttribute>
-
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.*" PrivateAssets="All" />
+		<InternalsVisibleTo Include="$(AssemblyName.Replace('PortableRest', 'PortableRest.Tests')), $(StrongNamePublicKey)" />
 	</ItemGroup>
 
 	<ItemGroup Condition=" $(IsTestProject) == 'true' and $(IsSampleProject) != 'true' ">
 		<PackageReference Include="FluentAssertions" Version="6.*" PrivateAssets="All" />
 		<PackageReference Include="FluentAssertions.Analyzers" Version="0.*" PrivateAssets="All" />
-		<PackageReference Include="MSTest.TestAdapter" Version="2.*" />
-		<PackageReference Include="MSTest.TestFramework" Version="2.*" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
+		<PackageReference Include="MSTest" Version="3.*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!--<None Include="$(MSBuildThisFileDirectory)alexis-logo.png" Pack="true" PackagePath="\" Condition="'$(IsPrimaryProject)' == 'true'" />-->
+		<None Include="readme.md" Pack="true" PackagePath="\" Condition="$(IncludeReadmeFile) == 'true'" />
 	</ItemGroup>
 
 </Project>

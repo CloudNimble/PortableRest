@@ -42,7 +42,7 @@ namespace PortableRest
         /// <remarks>http://blogs.msdn.com/b/jaredpar/archive/2011/03/18/debuggerdisplay-attribute-best-practices.aspx</remarks>
         private string DebuggerDisplay
         {
-            get { return $"Status: {HttpResponseMessage.StatusCode}, HasContentObject: {Content != null}, HasException: {Exception != null}"; }
+            get { return $"Status: {HttpResponseMessage.StatusCode}, HasContentObject: {Content is not null}, HasException: {Exception is not null}"; }
         }
 
         #endregion
@@ -56,7 +56,7 @@ namespace PortableRest
         /// <param name="content">The deserialized content from the response.</param>
         public RestResponse([NotNull] HttpResponseMessage httpResponseMessage, T content)
         {
-            if (httpResponseMessage == null)
+            if (httpResponseMessage is null)
             {
                 throw new ArgumentNullException(nameof(httpResponseMessage));
             }

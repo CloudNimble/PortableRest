@@ -1,5 +1,4 @@
 ﻿using JetBrains.Annotations;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -90,7 +89,7 @@ namespace PortableRest
         /// </summary>
         public RestClient()
         {
-            Headers = new List<KeyValuePair<string, string>>();
+            Headers = [];
             CookieContainer = new CookieContainer();
             HttpHandler = new HttpClientHandler();
             _client = new HttpClient(HttpHandler);
@@ -102,7 +101,7 @@ namespace PortableRest
         /// <param name="handler">The HttpMessageHandler instance to use for all requests with this RestClient.</param>
         public RestClient([NotNull] HttpMessageHandler handler)
         {
-            Headers = new List<KeyValuePair<string, string>>();
+            Headers = [];
             CookieContainer = new CookieContainer();
             HttpHandler = handler;
             _client = new HttpClient(HttpHandler);
@@ -134,7 +133,7 @@ namespace PortableRest
         /// </exception>
         public async Task<T> ExecuteAsync<T>(RestRequest restRequest, CancellationToken cancellationToken = default) where T : class
         {
-            if (restRequest == null)
+            if (restRequest is null)
             {
                 throw new ArgumentNullException(nameof(restRequest));
             }
@@ -158,7 +157,7 @@ namespace PortableRest
         /// or after it has finished and the result is being processed.</exception>
         public async Task<RestResponse<T>> SendAsync<T>(RestRequest restRequest, CancellationToken cancellationToken = default) where T : class
         {
-            if (restRequest == null)
+            if (restRequest is null)
             {
                 throw new ArgumentNullException(nameof(restRequest));
             }
@@ -199,7 +198,7 @@ namespace PortableRest
             var thisAssemblyName = new AssemblyName(thisAssembly.FullName);
             var thisVersion = thisAssemblyName.Version;
 
-            if (displayName == null)
+            if (displayName is null)
             {
                 var attributes = thisAssembly.GetCustomAttributes<AssemblyTitleAttribute>().ToList();
                 if (!attributes.Any())
@@ -236,13 +235,13 @@ namespace PortableRest
             if (disposing)
             {
                 // free managed resources
-                if (HttpHandler != null)
+                if (HttpHandler is not null)
                 {
                     HttpHandler.Dispose();
                     HttpHandler = null;
                 }
 
-                if (_client != null)
+                if (_client is not null)
                 {
                     _client.Dispose();
                     _client = null;
@@ -261,7 +260,7 @@ namespace PortableRest
         /// <param name="handler">The HttpMessageHandler to configure.</param>
         private void ConfigureHandler(HttpMessageHandler handler)
         {
-            if (handler == null)
+            if (handler is null)
             {
                 throw new PortableRestException("Could not find an HttpClientHandler instance to configure. Please check to make sure that any custom HttpMessageHandler " +
                                                 "passed into the RestClient constructor create a new instace of HttpClientHandler at the base of its DelegatingHandler chain.");
@@ -273,7 +272,7 @@ namespace PortableRest
             }
 
             //RWM: We can't do anything if we get down the chain and we don't have an HttpClientHandler, so bail.
-            if (!(handler is HttpClientHandler)) return;
+            if (handler is not HttpClientHandler) return;
 
             var clientHandler = ((HttpClientHandler)handler);
 
@@ -284,10 +283,10 @@ namespace PortableRest
 
             if (clientHandler.SupportsAutomaticDecompression)
             {
-                clientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                clientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
             }
 
-            if (CookieContainer != null)
+            if (CookieContainer is not null)
             {
                 try
                 {
@@ -393,7 +392,7 @@ namespace PortableRest
             }
 
             //RWM: If we've specified JsonSerializerSettings for the Client, but not not the Request, pass it down.
-            if (JsonSerializerSettings != null && restRequest.JsonSerializerSettings == null)
+            if (JsonSerializerSettings is not null && restRequest.JsonSerializerSettings is null)
             {
                 restRequest.JsonSerializerSettings = JsonSerializerSettings;
             }
@@ -416,7 +415,7 @@ namespace PortableRest
             {
                 if (header.Key == "Authorization")
                 {
-                    var values = header.Value.Split(new char[] { ' ' });
+                    var values = header.Value.Split([' ']);
                     message.Headers.Authorization = new AuthenticationHeaderValue(values[0], values[1]);
                 }
                 else
@@ -431,7 +430,7 @@ namespace PortableRest
             {
                 if (header.Key == "Authorization")
                 {
-                    var values = header.Value.ToString().Split(new char[] { ' ' });
+                    var values = header.Value.ToString().Split([' ']);
                     message.Headers.Authorization = new AuthenticationHeaderValue(values[0], values[1]);
                 }
                 else
@@ -441,7 +440,7 @@ namespace PortableRest
             }
 
             //RWM: Not sure if this is sufficient, or if HEAD supports a body, will need to check into the RFC.
-            if (restRequest.Method != HttpMethod.Get && restRequest.Method != HttpMethod.Head && restRequest.Method != HttpMethod.Trace)
+            if (restRequest.Method is not HttpMethod.Get && restRequest.Method is not HttpMethod.Head && restRequest.Method is not HttpMethod.Trace)
             {
                 //RWM: This feels hacky. May need some tweaking.
                 if (restRequest.ContentType == ContentTypes.ByteArray)
@@ -501,7 +500,7 @@ namespace PortableRest
         private static async Task<string> GetRawResponseContent([NotNull] HttpResponseMessage response)
         {
             //RWM: Explicitly check for NoContent... because the request was successful but there is nothing to do.
-            if (response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.NoContent)
+            if (response.IsSuccessStatusCode && response.StatusCode is not HttpStatusCode.NoContent)
             {
                 return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
@@ -518,9 +517,9 @@ namespace PortableRest
         private static async Task<T> GetResponseContent<T>([NotNull] RestRequest restRequest, HttpResponseMessage httpResponseMessage) where T : class
         {
             var rawResponseContent = await GetRawResponseContent(httpResponseMessage).ConfigureAwait(false);
-            if (rawResponseContent == null) return null;
+            if (rawResponseContent is null) return null;
             // ReSharper disable once CSharpWarnings::CS0618
-            if (typeof(T) == typeof(string))
+            if (typeof(T) is typeof(string))
             {
                 return rawResponseContent as T;
             }
@@ -537,7 +536,7 @@ namespace PortableRest
         /// <remarks>Technique from http://blogs.msdn.com/b/ericwhite/archive/2009/07/20/a-tutorial-in-the-recursive-approach-to-pure-functional-transformations-of-xml.aspx </remarks>
         private static object Transform(XNode node, [NotNull] RestRequest request)
         {
-            if (!(node is XElement element)) return node;
+            if (node is not XElement element) return node;
 
             if (!request.IgnoreXmlAttributes)
             {
@@ -548,8 +547,8 @@ namespace PortableRest
             }
 
             if (!string.IsNullOrWhiteSpace(request.DateFormat) &&
-                (element.Name.LocalName.ToLower().Contains("date") ||
-                 element.Name.LocalName.ToLower().Contains("time")))
+                (element.Name.LocalName.ToLowerInvariant().Contains("date") ||
+                 element.Name.LocalName.ToLowerInvariant().Contains("time")))
             {
                 var newValue = DateTime.ParseExact(element.Value, request.DateFormat, null);
                 element.Value = XmlConvert.ToString(newValue, XmlDateTimeSerializationMode.Unspecified);
